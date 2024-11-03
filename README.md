@@ -2,6 +2,7 @@
 An extended version of SPL with object-oriented elements, featuring structs that contain functions. This project aims to provide an efficient, flexible language with support to different paradigms.
 
 ## Project overview
+```plaintext
 project-root/
 ├── docs/                   
 ├── src/                    
@@ -23,3 +24,4 @@ project-root/
 ├── examples/               # Example programs
 ├── scripts/                               
 └── README.md               
+```
