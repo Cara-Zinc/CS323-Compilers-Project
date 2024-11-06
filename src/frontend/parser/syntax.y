@@ -2,6 +2,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "declarations.h"   // 定义 %union 和 %token
+#include "program.h"        // 程序结构的辅助函数和声明
+#include "type_struct.h"    // 类型和结构体相关的函数和声明
+#include "declaration.h"    // 变量和函数声明相关的函数和声明
+#include "compound_stmt.h"  // 复合语句相关的函数和声明
+#include "stmt.h"           // 各种语句的函数和声明
+#include "def.h"            // 定义相关的辅助函数和声明
+#include "exp.h"            // 表达式相关的辅助函数和声明
+
 void yyerror(const char *s) {
     fprintf(stderr, "Error: %s\n", s);
 }
@@ -40,8 +49,8 @@ ExtDecList : VarDec
            | VarDec COMMA ExtDecList
            ;
 
-Specifier : TYPE
-          | StructSpecifier
+Specifier : TYPE 
+          | StructSpecifier 
           ;
 
 StructSpecifier : STRUCT ID LC DefList RC
@@ -102,7 +111,7 @@ Exp : Exp ASSIGN Exp
     | Exp GE Exp
     | Exp NE Exp
     | Exp EQ Exp
-    | Exp PLUS Exp { $$ = process($1, $3) } 
+    | Exp PLUS Exp 
     | Exp MINUS Exp
     | Exp MUL Exp
     | Exp DIV Exp
