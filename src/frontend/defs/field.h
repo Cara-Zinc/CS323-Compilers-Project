@@ -35,7 +35,7 @@ typedef struct {
 } global_field_def;
 
 // create a new global field definition
-global_field_def *readonly_field_def_new(char *name, type_spec_def *type_spec, void *value) {
+global_field_def *global_field_def_new(char *name, type_spec_def *type_spec, void *value) {
     global_field_def *res = new(global_field_def);
     res->name = name;
     res->type_spec = type_spec;
@@ -44,7 +44,7 @@ global_field_def *readonly_field_def_new(char *name, type_spec_def *type_spec, v
 }
 
 // free a global field definition
-void readonly_field_def_free(global_field_def *f) {
+void global_field_def_free(global_field_def *f) {
     free(f->name);
     type_spec_def_free(f->type_spec);
     free(f->value);
