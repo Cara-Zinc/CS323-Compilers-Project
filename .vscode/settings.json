@@ -1,6 +1,17 @@
 {
     "files.associations": {
+        "*.rdlevel": "json",
+        "*.spl": "c",
         "*.h": "c",
-        "*.c": "c"
+        "*.c": "c",
+        "*.tcc": "c",
+        "concepts": "c",
+        "memory_resource": "c",
+        "optional": "c",
+        "new": "c",
+        "functional": "c",
+        "variant": "c",
+        "ranges": "c",
+        "type_traits": "c"
     }
 }
