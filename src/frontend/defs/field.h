@@ -8,49 +8,39 @@
 
 typedef struct {
     char *name;
-    type_id type;
-    bool is_struct;
-    bool is_array;
-    size_t array_size;
+    type_spec_def *type_spec;
 } field_def;
 
-field_def *field_def_new(char *name, type_id type) {
+field_def *field_def_new(char *name, type_spec_def *type_spec) {
     field_def *res = new(field_def);
     res->name = name;
-    res->type = type;
-    res->is_struct = false;
-    res->is_array = false;
-    res->array_size = 0;
+    res->type_spec = type_spec;
     return res;
 }
 
 void field_def_free(field_def *f) {
     free(f->name);
+    type_spec_def_free(f->type_spec);
     free(f);
 }
 
 typedef struct {
     char *name;
-    type_id type;
-    bool is_struct;
-    bool is_array;
-    size_t array_size;
+    type_spec_def *type_spec;
     void *value;
 } readonly_field_def;
 
-readonly_field_def *readonly_field_def_new(char *name, type_id type, void *value) {
+readonly_field_def *readonly_field_def_new(char *name, type_spec_def *type_spec, void *value) {
     readonly_field_def *res = new(readonly_field_def);
     res->name = name;
-    res->type = type;
-    res->is_struct = false;
-    res->is_array = false;
-    res->array_size = 0;
+    res->type_spec = type_spec;
     res->value = value;
     return res;
 }
 
 void readonly_field_def_free(readonly_field_def *f) {
     free(f->name);
+    type_spec_def_free(f->type_spec);
     free(f->value);
     free(f);
 }
