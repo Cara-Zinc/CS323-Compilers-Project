@@ -1,0 +1,3 @@
+[submodule "src/frontend/utils/clist"]
+	path = src/frontend/utils/clist
+	url = https://github.com/AlexanderAgd/CLIST.git
