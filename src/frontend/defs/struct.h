@@ -6,11 +6,11 @@
 #include "field.h"
 #include "func.h"
 
-struct struct_def {
+typedef struct {
     char *name;
     list *fields;
     list *funcs;
-};
+} struct_def;
 
 struct_def *new_struct_def(char *name) {
     struct_def *s = malloc(struct_def);
