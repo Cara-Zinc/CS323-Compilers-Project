@@ -3,6 +3,6 @@
 
 #include <stdlib.h>
 
-#define malloc(type) ((type *) malloc(sizeof(type)))
+#define new(type) ((type *) malloc(sizeof(type)))
 
 #endif

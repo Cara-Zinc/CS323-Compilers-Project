@@ -7,6 +7,7 @@
 typedef struct {
     char *name;
     type_id type;
+
 } field_def;
 
 typedef struct {
