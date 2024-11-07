@@ -24,6 +24,11 @@ field_def *field_def_new(char *name, type_id type) {
     return res;
 }
 
+void field_def_free(field_def *f) {
+    free(f->name);
+    free(f);
+}
+
 typedef struct {
     char *name;
     type_id type;
@@ -42,6 +47,12 @@ readonly_field_def *readonly_field_def_new(char *name, type_id type, void *value
     res->array_size = 0;
     res->value = value;
     return res;
+}
+
+void readonly_field_def_free(readonly_field_def *f) {
+    free(f->name);
+    free(f->value);
+    free(f);
 }
 
 #endif

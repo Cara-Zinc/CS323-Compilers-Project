@@ -12,11 +12,19 @@ typedef struct {
     list *funcs;
 } struct_def;
 
-struct_def *new_struct_def(char *name) {
+struct_def *struct_def_new(char *name) {
     struct_def *s = new(struct_def);
     s->name = name;
     s->fields = list_new(field_def);
     s->funcs = list_new(func_def);
 }
+
+void struct_def_free(struct_def *s) {
+    free(s->name);
+    list_free(s->fields);
+    list_free(s->funcs);
+    free(s);
+}
+
 // Let's call it Structra! 
 #endif

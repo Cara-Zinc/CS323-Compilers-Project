@@ -20,4 +20,10 @@ func_def *func_def_new(char *name, type_id return_type) {
     return res;
 }
 
+void func_def_free(func_def *f) {
+    free(f->name);
+    list_free(f->args);
+    free(f);
+}
+
 #endif
