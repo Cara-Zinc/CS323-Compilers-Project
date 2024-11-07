@@ -2,6 +2,7 @@
 #define __LIST_H__
 
 #include "clist/clist.h"
+#include <stdbool.h>
 
 typedef CList list;
 
@@ -51,6 +52,10 @@ void list_clear(list *l) {
 
 void list_free(list *l) {
     l->free(l);
+}
+
+bool list_is_empty(list *l) {
+    return list_size(l) == 0;
 }
 
 #endif
