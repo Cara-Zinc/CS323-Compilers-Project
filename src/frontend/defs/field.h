@@ -28,17 +28,17 @@ typedef struct {
     char *name;
     type_spec_def *type_spec;
     void *value;
-} readonly_field_def;
+} global_field_def;
 
-readonly_field_def *readonly_field_def_new(char *name, type_spec_def *type_spec, void *value) {
-    readonly_field_def *res = new(readonly_field_def);
+global_field_def *readonly_field_def_new(char *name, type_spec_def *type_spec, void *value) {
+    global_field_def *res = new(global_field_def);
     res->name = name;
     res->type_spec = type_spec;
     res->value = value;
     return res;
 }
 
-void readonly_field_def_free(readonly_field_def *f) {
+void readonly_field_def_free(global_field_def *f) {
     free(f->name);
     type_spec_def_free(f->type_spec);
     free(f->value);
