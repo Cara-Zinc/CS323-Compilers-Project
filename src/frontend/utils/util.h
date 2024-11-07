@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 
+// allocate memory for a new object of type
 #define new(type) ((type *) malloc(sizeof(type)))
 
 #endif
