@@ -1,3 +1,6 @@
 [submodule "src/frontend/utils/clist"]
 	path = src/frontend/utils/clist
 	url = https://github.com/AlexanderAgd/CLIST.git
+[submodule "dep/cmc"]
+	path = dep/cmc
+	url = https://github.com/LeoVen/C-Macro-Collections.git
