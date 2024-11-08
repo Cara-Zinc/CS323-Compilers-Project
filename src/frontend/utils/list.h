@@ -1,7 +1,7 @@
 #ifndef __LIST_H__
 #define __LIST_H__
 
-#include "clist/clist.h"
+#include <clist/clist.h>
 #include <stdbool.h>
 
 typedef CList list;
