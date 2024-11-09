@@ -33,6 +33,8 @@ void field_def_free(field_def *f) {
 #define V field_def*
 #include <cmc/hashmap.h>
 
+typedef struct varmap varmap;
+
 int field_def_cmp(field_def *f1, field_def *f2) {
     return cmc_chr_cmp(f1->name, f2->name);
 }
@@ -73,6 +75,8 @@ struct varmap_fval vmap_fvals = {
 #define PFX vlist
 #define V field_def*
 #include <cmc/list.h>
+
+typedef struct varlist varlist;
 
 struct varlist_fval vlist_fvals = {
     .cmp = field_def_cmp,
