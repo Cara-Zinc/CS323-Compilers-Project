@@ -3,8 +3,8 @@
 
 #include <stddef.h>
 #include <stdbool.h>
-#include <string.h>
 #include "util.h"
+#include "copy.h"
 
 typedef size_t type_id;
 
@@ -33,9 +33,7 @@ type_def *type_def_new(type_id type_id, bool is_struct) {
 }
 
 type_def *type_def_cpy(type_def *t) {
-    type_def *res = new(type_def);
-    memcpy(res, t, sizeof(type_def));
-    return res;
+    return mem_copy(type_def, t);
 }
 
 // create a new primitive type specification
