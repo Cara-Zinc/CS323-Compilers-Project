@@ -16,4 +16,8 @@ void *scope_free(scope *s) {
     free(s);
 }
 
+scope *scope_cpy(scope *s) {
+    return scope_new();
+}
+
 #endif
