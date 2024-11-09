@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <stdbool.h>
+#include <string.h>
 #include "util.h"
 
 typedef size_t type_id;
@@ -28,6 +29,12 @@ type_def *type_def_new(type_id type_id, bool is_struct) {
     res->is_struct = is_struct;
     res->is_array = false;
     res->array_size = 0;
+    return res;
+}
+
+type_def *type_def_cpy(type_def *t) {
+    type_def *res = new(type_def);
+    memcpy(res, t, sizeof(type_def));
     return res;
 }
 
