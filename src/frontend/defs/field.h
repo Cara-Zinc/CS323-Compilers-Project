@@ -1,19 +1,17 @@
 #ifndef __FIELD_H__
 #define __FIELD_H__
 
-#include "list.h"
 #include "type.h"
 #include "util.h"
-#include <stdbool.h>
 
 // field definition
 typedef struct {
     char *name; // field name
-    type_spec_def *type_spec; // field type specification
+    type_def *type_spec; // field type specification
 } field_def;
 
 // create a new field definition
-field_def *field_def_new(char *name, type_spec_def *type_spec) {
+field_def *field_def_new(char *name, type_def *type_spec) {
     field_def *res = new(field_def);
     res->name = name;
     res->type_spec = type_spec;
