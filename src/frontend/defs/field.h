@@ -21,7 +21,7 @@ field_def *field_def_new(char *name, type_def *type_spec) {
 // free a field definition
 void field_def_free(field_def *f) {
     free(f->name);
-    type_spec_def_free(f->type_spec);
+    type_def_free(f->type_spec);
     free(f);
 }
 

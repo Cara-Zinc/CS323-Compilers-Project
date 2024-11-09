@@ -25,7 +25,7 @@ func_def *func_def_new(char *name, type_def *return_type_spec) {
 // free a function definition
 void func_def_free(func_def *f) {
     free(f->name);
-    type_spec_def_free(f->return_type_spec);
+    type_def_free(f->return_type_spec);
     list_free(f->args);
     free(f);
 }
