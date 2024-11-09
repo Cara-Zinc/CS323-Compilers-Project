@@ -7,12 +7,12 @@
 typedef struct {
 } scope;
 
-scope *pscope_new() {
+scope *scope_new() {
     scope *s = new(scope);
     return s;
 }
 
-void *pscope_free(scope *s) {
+void *scope_free(scope *s) {
     free(s);
 }
 
