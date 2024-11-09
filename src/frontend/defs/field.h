@@ -27,28 +27,4 @@ void field_def_free(field_def *f) {
     free(f);
 }
 
-// global field definition
-typedef struct {
-    char *name; // field name
-    type_spec_def *type_spec; // field type specification
-    void *value; // field initial value
-} global_field_def;
-
-// create a new global field definition
-global_field_def *global_field_def_new(char *name, type_spec_def *type_spec, void *value) {
-    global_field_def *res = new(global_field_def);
-    res->name = name;
-    res->type_spec = type_spec;
-    res->value = value;
-    return res;
-}
-
-// free a global field definition
-void global_field_def_free(global_field_def *f) {
-    free(f->name);
-    type_spec_def_free(f->type_spec);
-    free(f->value);
-    free(f);
-}
-
 #endif
