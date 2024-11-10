@@ -35,6 +35,11 @@ scope *scope_cpy(scope *s) {
     return res;
 }
 
+bool scope_str(FILE *file, scope *s) {
+    fprintf(file, "scope with %d struct defs, %d fields, %d funcs", s->struct_defs->count, s->fields->count, s->funcs->count);
+    return true;
+}
+
 void scope_add_struct(scope *s, struct_def* struct_def) {
     smap_insert(s->struct_defs, struct_def->name, struct_def);
 }
@@ -46,5 +51,21 @@ void scope_add_field(scope *s, field_def *f) {
 void scope_add_func(scope *s, func_def* f) {
     fmap_insert(s->funcs, f->name, f);
 }
+
+#define SNAME scopelist
+#define PFX sclist
+#define V scope*
+#include <cmc/list.h>
+
+typedef struct scopelist scopelist;
+
+struct scopelist_fval sclist_fvals = {
+    .cmp = NULL,
+    .cpy = scope_cpy,
+    .str = scope_str,
+    .free = scope_free,
+    .hash = NULL,
+    .pri = NULL,
+};
 
 #endif
