@@ -1,7 +1,6 @@
 #ifndef __FUNC_H__
 #define __FUNC_H__
 
-#include "list.h"
 #include "type.h"
 #include "field.h"
 #include "scope.h"

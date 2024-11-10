@@ -1,4 +1,3 @@
-#include "../frontend/utils/list.h"
 #include "../frontend/utils/util.h"
 #include "../frontend/defs/field.h"
 #include "../frontend/defs/struct.h"

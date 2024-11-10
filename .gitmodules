@@ -1,6 +1,3 @@
 [submodule "dep/cmc"]
 	path = dep/cmc
 	url = https://github.com/LeoVen/C-Macro-Collections.git
-[submodule "dep/clist"]
-	path = dep/clist
-	url = https://github.com/AlexanderAgd/CLIST.git
