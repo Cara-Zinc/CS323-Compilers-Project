@@ -40,16 +40,16 @@ bool scope_str(FILE *file, scope *s) {
     return true;
 }
 
-void scope_add_struct(scope *s, struct_def* struct_def) {
-    smap_insert(s->struct_defs, struct_def->name, struct_def);
+void scope_add_struct(scope *s, struct_def *struct_def) {
+    smap_insert(s->struct_defs, str_copy(struct_def->name), struct_def);
 }
 
 void scope_add_field(scope *s, field_def *f) {
-    vmap_insert(s->fields, f->name, f);
+    vmap_insert(s->fields, str_copy(f->name), f);
 }
 
-void scope_add_func(scope *s, func_def* f) {
-    fmap_insert(s->funcs, f->name, f);
+void scope_add_func(scope *s, func_def *f) {
+    fmap_insert(s->funcs, str_copy(f->name), f);
 }
 
 #define SNAME scopelist
