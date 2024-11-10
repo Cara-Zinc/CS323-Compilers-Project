@@ -35,4 +35,16 @@ scope *scope_cpy(scope *s) {
     return res;
 }
 
+void scope_add_struct(scope *s, struct_def* struct_def) {
+    smap_insert(s->struct_defs, struct_def->name, struct_def);
+}
+
+void scope_add_field(scope *s, field_def *f) {
+    vmap_insert(s->fields, f->name, f);
+}
+
+void scope_add_func(scope *s, func_def* f) {
+    fmap_insert(s->funcs, f->name, f);
+}
+
 #endif
