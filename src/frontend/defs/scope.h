@@ -76,6 +76,10 @@ scope *scope_get_subscope(scope *s, size_t index) {
     return sclist_get(s->subscopes, index);
 }
 
+size_t scope_get_subscope_count(scope *s) {
+    return s->subscopes->count;
+}
+
 #define SNAME scopelist
 #define PFX sclist
 #define V scope*

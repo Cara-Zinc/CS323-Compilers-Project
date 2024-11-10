@@ -61,6 +61,10 @@ scope *struct_def_get_subscope(struct_def *s, size_t index) {
     return scope_get_subscope(s->scope, index);
 }
 
+size_t struct_def_get_subscope_count(struct_def *s) {
+    return scope_get_subscope_count(s->scope);
+}
+
 int struct_def_cmp(struct_def *s1, struct_def *s2) {
     return cmc_size_cmp(s1->id, s2->id);
 }

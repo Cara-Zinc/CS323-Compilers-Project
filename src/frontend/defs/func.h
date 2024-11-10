@@ -43,6 +43,10 @@ field_def *func_def_get_arg(func_def *f, size_t index) {
     return vlist_get(f->args, index);
 }
 
+size_t func_def_get_arg_count(func_def *f) {
+    return f->args->count;
+}
+
 void func_def_add_variable(func_def *f, field_def *var) {
     scope_add_field(f->scope, var);
 }
@@ -73,6 +77,10 @@ void func_def_add_subscope(func_def *f, scope *scope) {
 
 scope *func_def_get_subscope(func_def *f, size_t index) {
     return scope_get_subscope(f->scope, index);
+}
+
+size_t func_def_get_subscope_count(func_def *f) {
+    return scope_get_subscope_count(f->scope);
 }
 
 #define SNAME funcmap
