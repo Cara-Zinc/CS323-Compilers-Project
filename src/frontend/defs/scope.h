@@ -40,7 +40,7 @@ scope *scope_cpy(scope *s) {
 }
 
 bool scope_str(FILE *file, scope *s) {
-    fprintf(file, "scope with %d struct defs, %d fields, %d funcs, %d scopes", s->struct_defs->count, s->fields->count, s->funcs->count, s->subscopes->count);
+    fprintf(file, "scope with %d struct defs, %d fields, %d funcs, %d subscopes", s->struct_defs->count, s->fields->count, s->funcs->count, s->subscopes->count);
     return true;
 }
 
