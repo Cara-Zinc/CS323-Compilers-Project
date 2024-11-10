@@ -44,12 +44,24 @@ void scope_add_struct(scope *s, struct_def *struct_def) {
     smap_insert(s->struct_defs, str_copy(struct_def->name), struct_def);
 }
 
+struct_def *scope_get_struct(scope *s, char *name) {
+    return smap_get(s->struct_defs, name);
+}
+
 void scope_add_field(scope *s, field_def *f) {
     vmap_insert(s->fields, str_copy(f->name), f);
 }
 
+field_def *scope_get_field(scope *s, char *name) {
+    return vmap_get(s->fields, name);
+}
+
 void scope_add_func(scope *s, func_def *f) {
     fmap_insert(s->funcs, str_copy(f->name), f);
+}
+
+func_def *scope_get_func(scope *s, char *name) {
+    return fmap_get(s->funcs, name);
 }
 
 #define SNAME scopelist
