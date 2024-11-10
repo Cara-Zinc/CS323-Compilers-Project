@@ -29,6 +29,18 @@ void struct_def_free(struct_def *s) {
     free(s);
 }
 
+void struct_def_add_field(struct_def *s, field_def *f) {
+    scope_add_field(s->scope, f);
+}
+
+void struct_def_add_func(struct_def *s, func_def *func) {
+    scope_add_func(s->scope, func);
+}
+
+void struct_def_add_struct(struct_def *s, struct_def *struct_def) {
+    scope_add_struct(s->scope, struct_def);
+}
+
 int struct_def_cmp(struct_def *s1, struct_def *s2) {
     return cmc_size_cmp(s1->id, s2->id);
 }
