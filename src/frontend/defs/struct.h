@@ -53,6 +53,14 @@ struct_def *struct_def_get_struct(struct_def *s, char *name) {
     return scope_get_struct(s->scope, name);
 }
 
+void struct_def_add_subscope(struct_def *s, scope *scope) {
+    scope_add_subscope(s->scope, scope);
+}
+
+scope *struct_def_get_subscope(struct_def *s, size_t index) {
+    return scope_get_subscope(s->scope, index);
+}
+
 int struct_def_cmp(struct_def *s1, struct_def *s2) {
     return cmc_size_cmp(s1->id, s2->id);
 }

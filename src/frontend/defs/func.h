@@ -67,6 +67,14 @@ struct_def *func_def_get_struct(func_def *f, char *name) {
     return scope_get_struct(f->scope, name);
 }
 
+void func_def_add_subscope(func_def *f, scope *scope) {
+    scope_add_subscope(f->scope, scope);
+}
+
+scope *func_def_get_subscope(func_def *f, size_t index) {
+    return scope_get_subscope(f->scope, index);
+}
+
 #define SNAME funcmap
 #define PFX fmap
 #define K char*
