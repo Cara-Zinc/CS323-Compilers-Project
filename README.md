@@ -2,7 +2,7 @@
 An extended version of SPL with object-oriented elements, featuring structs that contain functions. This project aims to provide an efficient, flexible language with support to different paradigms.
 
 ## About Submodules
-This project uses some submodules. To initize these submodules:
+This project uses some submodules. To initialize these submodules:
 ```sh
 git submodule init
 git summodule update --recursive
