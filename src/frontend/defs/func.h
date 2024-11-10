@@ -34,6 +34,23 @@ void func_def_free(func_def *f) {
     free(f);
 }
 
+void func_def_add_arg(func_def *f, field_def *arg) {
+    vlist_push_back(f->args, arg);
+    scope_add_field(f->scope, arg);
+}
+
+void func_def_add_variable(func_def *f, field_def *var) {
+    scope_add_field(f->scope, var);
+}
+
+void func_def_add_func(func_def *f, func_def *func) {
+    scope_add_func(f->scope, func);
+}
+
+void func_def_add_struct(func_def *f, struct_def *struct_def) {
+    scope_add_struct(f->scope, struct_def);
+}
+
 #define SNAME funcmap
 #define PFX fmap
 #define K char*
