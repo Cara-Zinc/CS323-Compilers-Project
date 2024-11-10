@@ -29,6 +29,7 @@ func_def *func_def_new(char *name, type_def *return_type) {
 void func_def_free(func_def *f) {
     free(f->name);
     type_def_free(f->return_type);
+    while (vlist_pop_back(f->args)) {}
     vlist_free(f->args);
     scope_free(f->scope);
     free(f);
