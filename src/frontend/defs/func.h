@@ -39,16 +39,32 @@ void func_def_add_arg(func_def *f, field_def *arg) {
     scope_add_field(f->scope, arg);
 }
 
+field_def *func_def_get_arg(func_def *f, size_t index) {
+    return vlist_get(f->args, index);
+}
+
 void func_def_add_variable(func_def *f, field_def *var) {
     scope_add_field(f->scope, var);
+}
+
+field_def *func_def_get_variable(func_def *f, char *name) {
+    return scope_get_field(f->scope, name);
 }
 
 void func_def_add_func(func_def *f, func_def *func) {
     scope_add_func(f->scope, func);
 }
 
+func_def *func_def_get_func(func_def *f, char *name) {
+    return scope_get_func(f->scope, name);
+}
+
 void func_def_add_struct(func_def *f, struct_def *struct_def) {
     scope_add_struct(f->scope, struct_def);
+}
+
+struct_def *func_def_get_struct(func_def *f, char *name) {
+    return scope_get_struct(f->scope, name);
 }
 
 #define SNAME funcmap
