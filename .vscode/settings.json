@@ -65,5 +65,6 @@
         "typeinfo": "c",
         "format": "c",
         "text_encoding": "c"
-    }
+    },
+    "cmake.sourceDirectory": "D:/cs323/CS323-Compilers-Project/dep/cmc"
 }
