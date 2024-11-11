@@ -55,9 +55,7 @@ void printAST(ASTNode *node, int level) {
     printf("%s", node->nodeType);
     if (node->text) printf(" (%s)", node->text);
     printf("\n");
-    for (int i = 0; i < node->numChildren; i++) {
-        printAST(alist_get(node->children, i), level + 1);
-    }
+    alist_print(node->children, stdout, " ", " ", " ");
 }
 
 // Function to free the AST
@@ -72,6 +70,7 @@ void freeAST(ASTNode *node) {
 #define SNAME ASTNodeList
 #define PFX alist
 #define V ASTNode*
+#define CMC_EXT_STR
 #include <cmc/list.h>
 
 typedef struct ASTNodeList ASTNodeList;
