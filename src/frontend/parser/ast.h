@@ -12,7 +12,7 @@ typedef struct ASTNode {
     char *nodeType;          // Type of the node (e.g., "Program", "ExtDefList")
     char *text;              // Token text, if any (for leaves)
     int numChildren;         // Number of child nodes
-    struct ASTNode **children; // Array of pointers to child nodes
+    ASTNodeList *children;   // List of child nodes (ASTNode *)
 } ASTNode;
 
 // Function declarations
@@ -27,11 +27,11 @@ ASTNode *createASTNode(char *type, int numChildren, ...) {
     node->nodeType = strdup(type);
     node->text = NULL;
     node->numChildren = numChildren;
-    node->children = (ASTNode **)malloc(numChildren * sizeof(ASTNode *));
+    node->children = alist_new(2, &alist_fvals);
     va_list args;
     va_start(args, numChildren);
     for (int i = 0; i < numChildren; i++) {
-        node->children[i] = va_arg(args, ASTNode *);
+        alist_push_back(node->children, va_arg(args, ASTNode *));
     }
     va_end(args);
     return node;
@@ -55,7 +55,9 @@ void printAST(ASTNode *node, int level) {
     if (node->text) printf(" (%s)", node->text);
     printf("\n");
     for (int i = 0; i < node->numChildren; i++) {
-        printAST(node->children[i], level + 1);
+        for (size_t i = 0; i < node->children->count; i++) {
+            printAST(node->children->buffer[i], level + 1);
+        }
     }
 }
 
@@ -64,11 +66,25 @@ void freeAST(ASTNode *node) {
     if (!node) return;
     if (node->nodeType) free(node->nodeType);
     if (node->text) free(node->text);
-    for (int i = 0; i < node->numChildren; i++) {
-        freeAST(node->children[i]);
+    for (size_t i = 0; i < node->children->count; i++) {
+        freeAST(node->children->buffer[i]);
     }
     if (node->children) free(node->children);
     free(node);
 }
+
+#define SNAME ASTNodeList
+#define PFX alist
+#define V ASTNode*
+#include <cmc/list.h>
+
+typedef struct ASTNodeList ASTNodeList;
+
+struct ASTNodeList_fval alist_fvals = {
+    .cmp = NULL,
+    .cpy = NULL,
+    .str = printAST,
+    .free = freeAST,
+};
 
 #endif
