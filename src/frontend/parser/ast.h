@@ -6,6 +6,7 @@
 #include <stdarg.h>
 #include <string.h>
 
+#include "../utils/util.h"
 
 // AST Node structure
 typedef struct ASTNode {
@@ -23,7 +24,7 @@ void freeAST(ASTNode *node);
 
 // Helper function to create an AST node with variable number of children
 ASTNode *createASTNode(char *type, int numChildren, ...) {
-    ASTNode *node = (ASTNode *)malloc(sizeof(ASTNode));
+    ASTNode *node = new(ASTNode);
     node->nodeType = strdup(type);
     node->text = NULL;
     node->numChildren = numChildren;
@@ -39,7 +40,7 @@ ASTNode *createASTNode(char *type, int numChildren, ...) {
 
 // Helper function to create an AST leaf node
 ASTNode *createASTLeaf(char *type, char *text) {
-    ASTNode *node = (ASTNode *)malloc(sizeof(ASTNode));
+    ASTNode *node = new(ASTNode);
     node->nodeType = strdup(type);
     node->text = text ? strdup(text) : NULL;
     node->numChildren = 0;
@@ -55,9 +56,7 @@ void printAST(ASTNode *node, int level) {
     if (node->text) printf(" (%s)", node->text);
     printf("\n");
     for (int i = 0; i < node->numChildren; i++) {
-        for (size_t i = 0; i < node->children->count; i++) {
-            printAST(node->children->buffer[i], level + 1);
-        }
+        printAST(alist_get(node->children, i), level + 1);
     }
 }
 
@@ -66,10 +65,7 @@ void freeAST(ASTNode *node) {
     if (!node) return;
     if (node->nodeType) free(node->nodeType);
     if (node->text) free(node->text);
-    for (size_t i = 0; i < node->children->count; i++) {
-        freeAST(node->children->buffer[i]);
-    }
-    if (node->children) free(node->children);
+    alist_free(node->children);
     free(node);
 }
 
