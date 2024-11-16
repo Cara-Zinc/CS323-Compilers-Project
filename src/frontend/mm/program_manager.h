@@ -7,7 +7,7 @@
 #include "../defs/scope_wrapper.h"
 #include "../defs/struct.h"
 #include "../defs/type.h"
-
+// A manager of the program. It manages all the scopes, structs, and functions
 typedef struct {
     type_id struct_def_cnt;
     typeid_structmap *struct_defs;
@@ -107,7 +107,7 @@ struct_def *program_manager_get_struct(program_manager *pm, char *name) {
 }
 
 struct_def *program_manager_get_struct_by_id(program_manager *pm, type_id id) {
-    return tsmap_get(pm->struct_defs, id);
+    return tsmap_get(pm->struct_defs, id); 
 }
 
 scope *program_manager_create_subscope(program_manager *pm) {
@@ -129,7 +129,7 @@ size_t program_manager_get_subscope_count(program_manager *pm) {
 scope_wrapper *program_manager_current(program_manager *pm) {
     return scwlist_back(pm->scope_wrapper_stack);
 }
-
+// 
 scope_wrapper *program_manager_pop(program_manager *pm) {
     if (sclist_count(pm->scope_stack) <= 0 || scwlist_count(pm->scope_wrapper_stack) <= 0) {
         return NULL;

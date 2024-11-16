@@ -10,7 +10,7 @@ typedef struct {
     structmap *struct_defs;
     varmap *fields;
     funcmap *funcs;
-    scopelist *subscopes;
+    scopelist *subscopes; // subscopes refer to the first-level subscopes within this scope, excluding the subscopes within the subscopes
 } scope;
 
 scope *scope_new() {

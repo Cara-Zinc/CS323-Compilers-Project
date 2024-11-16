@@ -8,7 +8,10 @@ typedef enum {
     STRUCT,
     FUNC,
 } scope_type;
-
+/*
+    * A wrapper for scope, struct_def, and func_def
+    * Its type tells you why is this scope created
+*/
 typedef struct {
     scope_type type;
     union {
@@ -103,7 +106,7 @@ bool scope_wrapper_str(FILE *file, scope_wrapper *sw) {
 #define PFX scwlist
 #define V scope_wrapper*
 #include <cmc/list.h>
-
+// @brief A list of scope_wrappers
 typedef struct scwrapperlist scwrapperlist;
 
 struct scwrapperlist_fval scwlist_fvals = {
