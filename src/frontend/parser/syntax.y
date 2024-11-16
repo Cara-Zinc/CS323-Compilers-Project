@@ -10,6 +10,9 @@
 #include "stmt.h"           // 各种语句的函数和声明
 #include "def.h"            // 定义相关的辅助函数和声明
 #include "exp.h"            // 表达式相关的辅助函数和声明
+#include "mm/program_mananger.h" // 程序管理器相关的函数和声明
+
+program_mananger *pm = program_mananger_new();
 
 void yyerror(const char *s) {
     fprintf(stderr, "Error: %s\n", s);
@@ -33,7 +36,7 @@ void yyerror(const char *s) {
 
 %%
 
-Program : ExtDefList
+Program : ExtDefList {}
         ;
 
 ExtDefList : ExtDef ExtDefList
@@ -57,8 +60,8 @@ StructSpecifier : STRUCT ID LC DefList RC
                 | STRUCT ID
                 ;
 
-VarDec : ID
-       | VarDec LB INT RB
+VarDec : ID 
+       | VarDec LB INT RB 
        ;
 
 FunDec : ID LP VarList RP
@@ -102,30 +105,30 @@ Dec : VarDec
     | VarDec ASSIGN Exp
     ;
 
-Exp : Exp ASSIGN Exp
-    | Exp AND Exp 
-    | Exp OR Exp 
-    | Exp LT Exp
-    | Exp LE Exp
-    | Exp GT Exp
-    | Exp GE Exp
-    | Exp NE Exp
-    | Exp EQ Exp
-    | Exp PLUS Exp 
-    | Exp MINUS Exp
-    | Exp MUL Exp
-    | Exp DIV Exp
-    | LP Exp RP
-    | MINUS Exp
-    | NOT Exp
-    | ID LP Args RP
-    | ID LP RP
-    | Exp LB Exp RB
-    | Exp DOT ID
-    | ID
-    | INT
-    | FLOAT
-    | CHAR
+Exp : Exp ASSIGN Exp { $$ = exp_assign_handler(pm, $1, $3); }
+    | Exp AND Exp { $$ = exp_bi_op_handler(pm, $1, $2, $3); }
+    | Exp OR Exp { $$ = exp_bi_op_handler(pm, $1, $2, $3); }
+    | Exp LT Exp { $$ = exp_bi_op_handler(pm, $1, $2, $3); }
+    | Exp LE Exp { $$ = exp_bi_op_handler(pm, $1, $2, $3); }
+    | Exp GT Exp { $$ = exp_bi_op_handler(pm, $1, $2, $3); }
+    | Exp GE Exp { $$ = exp_bi_op_handler(pm, $1, $2, $3); }
+    | Exp NE Exp { $$ = exp_bi_op_handler(pm, $1, $2, $3); }
+    | Exp EQ Exp { $$ = exp_bi_op_handler(pm, $1, $2, $3); }
+    | Exp PLUS Exp { $$ = exp_bi_op_handler(pm, $1, $2, $3); }
+    | Exp MINUS Exp { $$ = exp_bi_op_handler(pm, $1, $2, $3); }
+    | Exp MUL Exp { $$ = exp_bi_op_handler(pm, $1, $2, $3); }
+    | Exp DIV Exp { $$ = exp_bi_op_handler(pm, $1, $2, $3); }
+    | LP Exp RP { $$ = $2 }
+    | MINUS Exp { $$ = exp_unary_op_handler(pm, $1, $2); }
+    | NOT Exp { $$ = exp_unary_op_handler(pm, $1, $2); }
+    | ID LP Args RP { /* funtion call }*/ }
+    | ID LP RP { /* funtion call }*/ }
+    | Exp LB Exp RB { array_handler(pm, $1, $3); }
+    | Exp DOT ID { struct_member_handler(pm, $1, $3); }
+    | ID { exp_id_handler(pm, $1); }
+    | INT { $$ = exp_primitive_handler(pm, "INT", $1); }
+    | FLOAT { $$ = exp_primitive_handler(pm, "FLOAT", $1); }
+    | CHAR { $$ = exp_primitive_handler(pm, "CHAR", $1); }
     ;
 
 Args : Exp COMMA Args
