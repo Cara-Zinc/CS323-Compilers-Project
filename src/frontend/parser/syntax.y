@@ -60,8 +60,8 @@ StructSpecifier : STRUCT ID LC DefList RC
                 | STRUCT ID
                 ;
 
-VarDec : ID 
-       | VarDec LB INT RB 
+VarDec : ID { $$ = VarDec_ID_handler(pm, $1); }
+       | VarDec LB INT RB { $$ = VarDec_Array_handler(pm, $1, $3); }
        ;
 
 FunDec : ID LP VarList RP
