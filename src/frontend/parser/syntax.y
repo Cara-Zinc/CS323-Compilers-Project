@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "ast.h"            // 抽象语法树相关的函数和声明
 #include "declarations.h"   // 定义 %union 和 %token
 #include "program.h"        // 程序结构的辅助函数和声明
 #include "type_struct.h"    // 类型和结构体相关的函数和声明
@@ -25,6 +26,7 @@ void yyerror(const char *s) {
     float float_val;
     char char_val;
     char *str;
+    ASTNode *node;
 }
 
 %token <str> ID
@@ -33,15 +35,19 @@ void yyerror(const char *s) {
 %token <char_val> CHAR
 %token TYPE STRUCT IF ELSE WHILE RETURN DOT SEMI COMMA ASSIGN LT LE GT GE NE EQ PLUS MINUS MUL DIV AND OR NOT LP RP LB RB LC RC
 
+/* Declare non-terminals and their types */
+%type <node> Program ExtDefList ExtDef ExtDecList Specifier StructSpecifier VarDec FunDec VarList ParamDec CompSt StmtList Stmt DefList Def DecList Dec Exp Args
+%type <str> TYPE STRUCT PLUS MINUS MUL DIV AND OR NOT LT LE GT GE NE EQ
+
 %start Program
 
 %%
 
-Program : ExtDefList { $$ = $1; }
+Program : ExtDefList { $$ = program_handler(pm, $1); rprintAST($$, 0); }
         ;
 
 ExtDefList : ExtDef ExtDefList { $$ = ext_def_list_handler(pm, $1, $2); }
-           | /* empty */ { $$ = NULL; }
+           | /* empty */ { $$ = craeteASTLeaf("ExtDefList", NULL); }
            ;
 
 ExtDef : Specifier ExtDecList SEMI { $$ = ext_def_dec_handler(pm, $1, $2); }

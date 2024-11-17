@@ -17,7 +17,9 @@ ASTNode *VarDec_ID_handler(program_manager *pm, char *ID)
 // For VarDec -> VarDec LB INT RB
 ASTNode *VarDec_Array_handler(program_manager *pm, ASTNode *VarDec, int INT)
 {
-    return createASTNode("VarDec", 2, VarDec, createASTLeaf("INT", INT));
+    // convert INT to string
+    char *INT_str = malloc(12);
+    return createASTNode("VarDec", 3, VarDec, createASTLeaf("LB", "["), createASTLeaf("INT", INT_str), createASTLeaf("RB", "]"));
 }
 
 /*

@@ -25,4 +25,10 @@ ASTNode *ext_dec_list_handler(program_manager *pm, ASTNode *VarDec, ASTNode *Ext
     return createASTNode("ExtDecList", 2, VarDec, ExtDecList);
 }
 
+ASTNode *program_handler(program_manager *pm, ASTNode *ExtDefList) {
+    if(ExtDefList == NULL) {
+        return createASTLeaf("Program", NULL);
+    }
+    return createASTNode("Program", 1, ExtDefList);
+}
 
