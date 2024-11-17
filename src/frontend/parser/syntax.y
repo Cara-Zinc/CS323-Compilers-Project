@@ -11,7 +11,7 @@
 #include "stmt.h"           // 各种语句的函数和声明
 #include "def.h"            // 定义相关的辅助函数和声明
 #include "exp.h"            // 表达式相关的辅助函数和声明
-#include "ext.h"            
+#include "ext.h"
 #include "../mm/program_manager.h" // 程序管理器相关的函数和声明
 
 program_mananger *pm = program_manager_new();
@@ -114,8 +114,8 @@ Stmt : Exp SEMI { $$ = stmt_exp_handler(pm, $1); }
      | IF LP Exp Stmt ELSE Stmt error { yyerror("Missing closing parenthesis ')'"); }
      | ELSE Stmt error { yyerror("Missing if statement"); }
      | WHILE LP Exp RP Stmt { $$ = stmt_while_handler(pm, $3, $5); }
-     | WHILE LP Exp Stmt error { yyerror("Missing closing parenthesis ')'"); } 
-     | WHILE Exp RP Stmt error { yyerror("Missing opening parenthesis '('"); } 
+     | WHILE LP Exp Stmt error { yyerror("Missing closing parenthesis ')'"); }
+     | WHILE Exp RP Stmt error { yyerror("Missing opening parenthesis '('"); }
      ;
 
 DefList : Def DefList { $$ = deflist_def_deflist_handler(pm, $1, $2); }
@@ -156,6 +156,7 @@ Exp : Exp ASSIGN Exp { $$ = exp_assign_handler(pm, $1, $3); }
     | LP Exp RP { $$ = $2 }
     | LP Exp error { yyerror("Missing closing parenthesis ')'"); }
     | MINUS Exp { $$ = exp_unary_op_handler(pm, $1, $2); }
+    | PLUS Exp { $$ = exp_unary_op_handler(pm, $1, $2); }
     | NOT Exp { $$ = exp_unary_op_handler(pm, $1, $2); }
     | ID LP Args RP { exp_func_handler(pm, $1, $3); }
     | ID LP RP { exp_func_handler(pm, $1, NULL); }

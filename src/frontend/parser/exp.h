@@ -308,6 +308,10 @@ ASTNode *exp_unary_handler(program_manager *pm, char *op, ASTNode *child)
     {
         return exp_not_handler(pm, child);
     }
+    else if(strcmp(op, "+"))
+    {
+        return child;
+    }
     else
     {
         printf("Error: Invalid unary operator\n");
