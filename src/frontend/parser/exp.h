@@ -326,3 +326,13 @@ ASTNode *exp_primitive_handler(program_manager *pm, char *type, char *text)
     ASTNode *node = createASTLeaf(type, text);
     return node;
 }
+
+ASTNode *exp_func_handler(program_manager *pm, char *ID, ASTNode *Args)
+{
+    if(Args == NULL)
+    {
+        return createASTNode("Exp", 1, createASTLeaf("ID", ID));
+    }
+    ASTNode *node = createASTNode("Exp", 2, createASTLeaf("ID", ID), Args);
+    return node;
+}

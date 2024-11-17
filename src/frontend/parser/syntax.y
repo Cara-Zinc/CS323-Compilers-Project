@@ -41,7 +41,7 @@ Program : ExtDefList { $$ = $1; }
         ;
 
 ExtDefList : ExtDef ExtDefList { $$ = ext_def_list_handler(pm, $1, $2); }
-           | /* empty */
+           | /* empty */ { $$ = NULL; }
            ;
 
 ExtDef : Specifier ExtDecList SEMI { $$ = ext_def_dec_handler(pm, $1, $2); }
@@ -122,8 +122,8 @@ Exp : Exp ASSIGN Exp { $$ = exp_assign_handler(pm, $1, $3); }
     | LP Exp RP { $$ = $2 }
     | MINUS Exp { $$ = exp_unary_op_handler(pm, $1, $2); }
     | NOT Exp { $$ = exp_unary_op_handler(pm, $1, $2); }
-    | ID LP Args RP { /* funtion call }*/ }
-    | ID LP RP { /* funtion call }*/ }
+    | ID LP Args RP { exp_func_handler(pm, $1, $3); }
+    | ID LP RP { exp_func_handler(pm, $1, NULL); }
     | Exp LB Exp RB { array_handler(pm, $1, $3); }
     | Exp DOT ID { struct_member_handler(pm, $1, $3); }
     | ID { exp_id_handler(pm, $1); }
