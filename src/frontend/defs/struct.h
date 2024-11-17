@@ -7,85 +7,48 @@
 #include "type.h"
 #include "scope.h"
 
+typedef struct scope scope;
+typedef struct field_def field_def;
+typedef struct func_def func_def;
+
 // definition of a struct
-typedef struct {
+typedef struct struct_def {
     type_id id; // id of the struct
     char *name; // name of the struct
     scope *scope; // scope of the struct
 } struct_def;
 
 // create a new struct definition
-struct_def *struct_def_new(type_id id, char *name) {
-    struct_def *s = new(struct_def);
-    s->id = id;
-    s->name = name;
-    s->scope = scope_new();
-    return s;
-}
+struct_def *struct_def_new(type_id id, char *name);
 
 // free a struct definition
-void struct_def_free(struct_def *s) {
-    free(s->name);
-    scope_free(s->scope);
-    free(s);
-}
+void struct_def_free(struct_def *s);
 
-void struct_def_add_field(struct_def *s, field_def *f) {
-    scope_add_field(s->scope, f);
-}
+void struct_def_add_field(struct_def *s, field_def *f);
 
-field_def *struct_def_get_field(struct_def *s, char *name) {
-    return scope_get_field(s->scope, name);
-}
+field_def *struct_def_get_field(struct_def *s, char *name);
 
-void struct_def_add_func(struct_def *s, func_def *func) {
-    scope_add_func(s->scope, func);
-}
+void struct_def_add_func(struct_def *s, func_def *func);
 
-func_def *struct_def_get_func(struct_def *s, char *name) {
-    return scope_get_func(s->scope, name);
-}
+func_def *struct_def_get_func(struct_def *s, char *name);
 
-void struct_def_add_struct(struct_def *s, struct_def *struct_def) {
-    scope_add_struct(s->scope, struct_def);
-}
+void struct_def_add_struct(struct_def *s, struct_def *struct_def);
 
-struct_def *struct_def_get_struct(struct_def *s, char *name) {
-    return scope_get_struct(s->scope, name);
-}
+struct_def *struct_def_get_struct(struct_def *s, char *name);
 
-void struct_def_add_subscope(struct_def *s, scope *scope) {
-    scope_add_subscope(s->scope, scope);
-}
+void struct_def_add_subscope(struct_def *s, scope *scope);
 
-scope *struct_def_get_subscope(struct_def *s, size_t index) {
-    return scope_get_subscope(s->scope, index);
-}
+scope *struct_def_get_subscope(struct_def *s, size_t index);
 
-size_t struct_def_get_subscope_count(struct_def *s) {
-    return scope_get_subscope_count(s->scope);
-}
+size_t struct_def_get_subscope_count(struct_def *s);
 
-int struct_def_cmp(struct_def *s1, struct_def *s2) {
-    return cmc_size_cmp(s1->id, s2->id);
-}
+int struct_def_cmp(struct_def *s1, struct_def *s2);
 
-struct_def *struct_def_cpy(struct_def *s) {
-    struct_def *res = new(struct_def);
-    res->id = s->id;
-    res->name = str_copy(s->name);
-    res->scope = scope_cpy(s->scope);
-    return res;
-}
+struct_def *struct_def_cpy(struct_def *s);
 
-bool struct_def_str(FILE *file, struct_def *s) {
-    fprintf(file, "struct #%zu %s", s->id, s->name);
-    return true;
-}
+bool struct_def_str(FILE *file, struct_def *s);
 
-size_t struct_def_hash(struct_def *s) {
-    return cmc_size_hash(s->id);
-}
+size_t struct_def_hash(struct_def *s);
 
 #define SNAME structmap
 #define PFX smap
@@ -99,7 +62,7 @@ struct structmap_fkey smap_fkeys = {
     .cmp = cmc_str_cmp,
     .cpy = cmc_str_cpy,
     .str = cmc_str_str,
-    .free = free,
+    .free = str_free,
     .hash = cmc_str_hash_java,
     .pri = cmc_str_cmp,
 };

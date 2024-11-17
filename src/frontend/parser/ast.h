@@ -8,6 +8,8 @@
 
 #include "../utils/util.h"
 
+typedef struct ASTNodeList ASTNodeList;
+
 // AST Node structure
 typedef struct ASTNode {
     char *nodeType;          // Type of the node (e.g., "Program", "ExtDefList")
@@ -27,8 +29,6 @@ ASTNode *createASTNode(char *type, int numChildren, ...);
 ASTNode *createASTLeaf(char *type, char *text);
 void printAST(ASTNode *node, int level);
 void freeAST(ASTNode *node);
-
-typedef struct ASTNodeList ASTNodeList;
 
 struct ASTNodeList_fval alist_fvals = {
     .cmp = NULL,

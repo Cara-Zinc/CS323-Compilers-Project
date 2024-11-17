@@ -14,7 +14,7 @@
 #include "ext.h"
 #include "../mm/program_manager.h" // 程序管理器相关的函数和声明
 
-program_mananger *pm = program_manager_new();
+program_manager *pm = program_manager_new();
 
 void yyerror(const char *s) {
     fprintf(stderr, "Error type B at Line %d: %s\n", yylineno, s);
