@@ -1,6 +1,8 @@
 #ifndef __FIELD_H__
 #define __FIELD_H__
 
+#include <stdio.h>
+
 #include "type.h"
 #include "../utils/util.h"
 

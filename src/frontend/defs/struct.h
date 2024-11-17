@@ -3,6 +3,8 @@
 
 // Let's call it Structra! LGTM!
 
+#include <stdio.h>
+
 #include "../utils/util.h"
 #include "type.h"
 #include "scope.h"
@@ -49,6 +51,8 @@ struct_def *struct_def_cpy(struct_def *s);
 bool struct_def_str(FILE *file, struct_def *s);
 
 size_t struct_def_hash(struct_def *s);
+
+#include <cmc/utl/futils.h>
 
 #define SNAME structmap
 #define PFX smap

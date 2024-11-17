@@ -1,12 +1,16 @@
 #ifndef __FUNC_H__
 #define __FUNC_H__
 
+#include <stdio.h>
+
 #include "type.h"
 #include "field.h"
 #include "scope.h"
 #include "../utils/util.h"
 
 typedef struct scope scope;
+typedef struct field_def field_def;
+typedef struct struct_def struct_def;
 
 // definition of a function
 typedef struct func_def {

@@ -1,6 +1,8 @@
 #ifndef __SCOPE_H__
 #define __SCOPE_H__
 
+#include <stdio.h>
+
 #include "struct.h"
 #include "field.h"
 #include "func.h"

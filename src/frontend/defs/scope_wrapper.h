@@ -1,6 +1,8 @@
 #ifndef __SCOPE_WRAPPER_H__
 #define __SCOPE_WRAPPER_H__
 
+#include <stdio.h>
+
 #include "scope.h"
 
 typedef enum {
