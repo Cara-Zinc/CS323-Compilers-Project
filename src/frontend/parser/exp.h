@@ -117,7 +117,7 @@ ASTNode *exp_bi_op_handler(program_manager *pm, char *op, ASTNode *left, ASTNode
         }
     }
 
-    ASTNode *node = createASTNode("EXP", 3, left, createASTLeaf("OP", op), right);
+    ASTNode *node = createASTNode("Exp", 3, left, createASTLeaf("operator", op), right);
     // node.text = left->text + op + right->text; we try to merge the text of the children
     int len = strlen(left->text) + strlen(op) + strlen(right->text) + 1;
     node->text = (char *)malloc(len * sizeof(char));

@@ -10,6 +10,7 @@
 #include "stmt.h"           // 各种语句的函数和声明
 #include "def.h"            // 定义相关的辅助函数和声明
 #include "exp.h"            // 表达式相关的辅助函数和声明
+#include "ext.h"            
 #include "mm/program_mananger.h" // 程序管理器相关的函数和声明
 
 program_mananger *pm = program_mananger_new();
@@ -36,28 +37,28 @@ void yyerror(const char *s) {
 
 %%
 
-Program : ExtDefList {}
+Program : ExtDefList { $$ = $1; }
         ;
 
-ExtDefList : ExtDef ExtDefList
+ExtDefList : ExtDef ExtDefList { $$ = ext_def_list_handler(pm, $1, $2); }
            | /* empty */
            ;
 
-ExtDef : Specifier ExtDecList SEMI
-       | Specifier SEMI
-       | Specifier FunDec CompSt
+ExtDef : Specifier ExtDecList SEMI { $$ = ext_def_dec_handler(pm, $1, $2); }
+       | Specifier SEMI { $$ = ext_def_struct_handler(pm, $1); }
+       | Specifier FunDec CompSt { $$ = ext_def_func_handler(pm, $1, $2, $3); }
        ;
 
-ExtDecList : VarDec
-           | VarDec COMMA ExtDecList
+ExtDecList : VarDec { $$ = ext_dec_list_handler(pm, $1, NULL); }
+           | VarDec COMMA ExtDecList { $$ = ext_dec_list_handler(pm, $1, $3); }
            ;
 
-Specifier : TYPE
-          | StructSpecifier
+Specifier : TYPE { $$ = type_handler(pm, $1); }
+          | StructSpecifier { $$ = struct_spec_handler(pm, $1); }
           ;
 
-StructSpecifier : STRUCT ID LC DefList RC
-                | STRUCT ID
+StructSpecifier : STRUCT ID LC DefList RC { $$ = struct_def_handler(pm, $2, $4); }
+                | STRUCT ID { $$ = struct_dec_handler(pm, $2, NULL); }
                 ;
 
 VarDec : ID { $$ = VarDec_ID_handler(pm, $1); }
