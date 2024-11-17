@@ -6,7 +6,7 @@
 #include "program.h"        // 程序结构的辅助函数和声明
 #include "type_struct.h"    // 类型和结构体相关的函数和声明
 #include "declaration.h"    // 变量和函数声明相关的函数和声明
-#include "compound_stmt.h"  // 复合语句相关的函数和声明
+#include "compst.h"         // 复合语句相关的函数和声明
 #include "stmt.h"           // 各种语句的函数和声明
 #include "def.h"            // 定义相关的辅助函数和声明
 #include "exp.h"            // 表达式相关的辅助函数和声明
@@ -75,26 +75,26 @@ VarList : ParamDec COMMA VarList
 ParamDec : Specifier VarDec
          ;
 
-CompSt : LC DefList StmtList RC
+CompSt : LC DefList StmtList RC { $$ = compst_deflist_stmtlist_handler(pm, $2, $3); }
        ;
 
-StmtList : Stmt StmtList
-         | /* empty */
+StmtList : Stmt StmtList { $$ = stmtlist_stmt_stmtlist_handler(pm, $1, $2); }
+         | Stmt { $$ = stmtlist_stmt_handler(pm, $1); }
          ;
 
 Stmt : Exp SEMI { $$ = stmt_exp_handler(pm, $1); }
      | CompSt { $$ = stmt_compst_handler(pm, $1); }
-     | RETURN Exp SEMI { $$ = stmt_exp_handler(pm, $2); }
-     | IF LP Exp RP Stmt ELSE Stmt { $$ = stmt_if_else_handler(pm, $3, $5, $7); }
+     | RETURN Exp SEMI { $$ = stmt_return_handler(pm, $2); }
+     | ELSE Stmt { $$ = stmt_else_handler(pm, $3, $5, $7); }
      | IF LP Exp RP Stmt { $$ = stmt_if_handler(pm, $3, $5); }
      | WHILE LP Exp RP Stmt { $$ = stmt_while_handler(pm, $3, $5); }
      ;
 
-DefList : Def DefList
-        | /* empty */
+DefList : Def DefList { $$ = deflist_def_deflist_handler(pm, $1, $2); }
+        | Def { $$ = deflist_def_handler(pm, $1); }
         ;
 
-Def : Specifier DecList SEMI
+Def : Specifier DecList SEMI { $$ = def_specifier_declist_handler(pm, $1, $2)}
     ;
 
 DecList : Dec
