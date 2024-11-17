@@ -58,6 +58,30 @@ void printAST(ASTNode *node, int level) {
     alist_print(node->children, stdout, " ", " ", " ");
 }
 
+// Function to print the whole AST recursively
+void rprintAST(ASTNode *node, int level) {
+    if (!node) return;
+
+    // Print the current node with appropriate indentation
+    for (int i = 0; i < level; i++) {
+        printf("  ");
+    }
+    printf("%s", node->nodeType);
+    if (node->text) {
+        printf(" (%s)", node->text);
+    }
+    printf("\n");
+
+    // Recursively print each child node with increased indentation level
+    if (node->children) {
+        for (size_t i = 0; i < alist_count(node->children); i++) {
+            ASTNode *child = alist_get(node->children, i);
+            printAST(child, level + 1);
+        }
+    }
+}
+
+
 // Function to free the AST
 void freeAST(ASTNode *node) {
     if (!node) return;
