@@ -43,7 +43,7 @@ ExtDefList : ExtDef ExtDefList
            | /* empty */
            ;
 
-ExtDef : Specifier ExtDecList SEMI 
+ExtDef : Specifier ExtDecList SEMI
        | Specifier SEMI
        | Specifier FunDec CompSt
        ;
@@ -52,8 +52,8 @@ ExtDecList : VarDec
            | VarDec COMMA ExtDecList
            ;
 
-Specifier : TYPE 
-          | StructSpecifier 
+Specifier : TYPE
+          | StructSpecifier
           ;
 
 StructSpecifier : STRUCT ID LC DefList RC
@@ -82,12 +82,12 @@ StmtList : Stmt StmtList
          | /* empty */
          ;
 
-Stmt : Exp SEMI
-     | CompSt
-     | RETURN Exp SEMI
-     | IF LP Exp RP Stmt
-     | IF LP Exp RP Stmt ELSE Stmt
-     | WHILE LP Exp RP Stmt
+Stmt : Exp SEMI { $$ = stmt_exp_handler(pm, $1); }
+     | CompSt { $$ = stmt_compst_handler(pm, $1); }
+     | RETURN Exp SEMI { $$ = stmt_exp_handler(pm, $2); }
+     | IF LP Exp RP Stmt ELSE Stmt { $$ = stmt_if_else_handler(pm, $3, $5, $7); }
+     | IF LP Exp RP Stmt { $$ = stmt_if_handler(pm, $3, $5); }
+     | WHILE LP Exp RP Stmt { $$ = stmt_while_handler(pm, $3, $5); }
      ;
 
 DefList : Def DefList
