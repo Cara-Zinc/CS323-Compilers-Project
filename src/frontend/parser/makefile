@@ -7,6 +7,7 @@ YACC_DIR = parser
 LEX_FILE = lex.l
 YACC_FILE = syntax.y
 EXEC = structura_parser
+DEP_CMC = ../../../dep/cmc
 
 # Intermediate files
 LEX_C = lex.yy.c
@@ -26,7 +27,7 @@ $(LEX_C): $(LEX_FILE) $(YACC_H)
 
 # Compile and link everything together
 $(EXEC): $(LEX_C) $(YACC_C)
-	$(CC) $(LEX_C) $(YACC_C) -o $(EXEC) -lfl
+	$(CC) $(LEX_C) $(YACC_C) -o $(EXEC) -lfl -I $(DEP_CMC)
 
 # Clean up intermediate and generated files
 clean:

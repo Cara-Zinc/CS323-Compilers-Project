@@ -2,7 +2,7 @@
 #define __FIELD_H__
 
 #include "type.h"
-#include "util.h"
+#include "../utils/util.h"
 
 // field definition
 typedef struct {

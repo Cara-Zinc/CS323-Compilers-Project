@@ -16,11 +16,26 @@ typedef struct ASTNode {
     ASTNodeList *children;   // List of child nodes (ASTNode *)
 } ASTNode;
 
+#define SNAME ASTNodeList
+#define PFX alist
+#define V ASTNode*
+#define CMC_EXT_STR
+#include <cmc/list.h>
+
 // Function declarations
 ASTNode *createASTNode(char *type, int numChildren, ...);
 ASTNode *createASTLeaf(char *type, char *text);
 void printAST(ASTNode *node, int level);
 void freeAST(ASTNode *node);
+
+typedef struct ASTNodeList ASTNodeList;
+
+struct ASTNodeList_fval alist_fvals = {
+    .cmp = NULL,
+    .cpy = NULL,
+    .str = NULL,
+    .free = freeAST,
+};
 
 // Helper function to create an AST node with variable number of children
 ASTNode *createASTNode(char *type, int numChildren, ...) {
@@ -90,20 +105,5 @@ void freeAST(ASTNode *node) {
     alist_free(node->children);
     free(node);
 }
-
-#define SNAME ASTNodeList
-#define PFX alist
-#define V ASTNode*
-#define CMC_EXT_STR
-#include <cmc/list.h>
-
-typedef struct ASTNodeList ASTNodeList;
-
-struct ASTNodeList_fval alist_fvals = {
-    .cmp = NULL,
-    .cpy = NULL,
-    .str = printAST,
-    .free = freeAST,
-};
 
 #endif

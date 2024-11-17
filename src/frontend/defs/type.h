@@ -3,8 +3,8 @@
 
 #include <stddef.h>
 #include <stdbool.h>
-#include "util.h"
-#include "copy.h"
+#include "../utils/util.h"
+#include "../utils/copy.h"
 
 typedef size_t type_id;
 

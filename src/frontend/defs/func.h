@@ -4,7 +4,7 @@
 #include "type.h"
 #include "field.h"
 #include "scope.h"
-#include "util.h"
+#include "../utils/util.h"
 
 // definition of a function
 typedef struct {

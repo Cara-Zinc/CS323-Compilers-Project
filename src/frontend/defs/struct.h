@@ -3,7 +3,7 @@
 
 // Let's call it Structra! LGTM!
 
-#include "util.h"
+#include "../utils/util.h"
 #include "type.h"
 #include "scope.h"
 
