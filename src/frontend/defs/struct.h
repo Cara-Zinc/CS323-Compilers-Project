@@ -20,6 +20,7 @@ struct_def *struct_def_new(type_id id, char *name) {
     s->id = id;
     s->name = name;
     s->scope = scope_new();
+    return s;
 }
 
 // free a struct definition
@@ -78,7 +79,7 @@ struct_def *struct_def_cpy(struct_def *s) {
 }
 
 bool struct_def_str(FILE *file, struct_def *s) {
-    fprintf(file, "struct #%d %s", s->id, s->name);
+    fprintf(file, "struct #%zu %s", s->id, s->name);
     return true;
 }
 

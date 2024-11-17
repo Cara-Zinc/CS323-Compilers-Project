@@ -36,7 +36,7 @@ void field_def_free(field_def *f) {
 typedef struct varmap varmap;
 
 int field_def_cmp(field_def *f1, field_def *f2) {
-    return cmc_chr_cmp(f1->name, f2->name);
+    return cmc_str_cmp(f1->name, f2->name);
 }
 
 field_def *field_def_cpy(field_def *f) {

@@ -110,6 +110,7 @@ func_def *func_def_cpy(func_def *f) {
     res->return_type = type_def_cpy(f->return_type);
     res->args = vlist_copy_of(f->args);
     res->scope = scope_cpy(f->scope);
+    return res;
 }
 
 bool func_def_str(FILE *file, func_def *f) {

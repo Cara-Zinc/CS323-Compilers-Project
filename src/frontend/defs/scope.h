@@ -77,7 +77,7 @@ scope *scope_get_subscope(scope *s, size_t index) {
 }
 
 size_t scope_get_subscope_count(scope *s) {
-    return s->subscopes->count;
+    return sclist_count(s->subscopes);
 }
 
 #define SNAME scopelist
