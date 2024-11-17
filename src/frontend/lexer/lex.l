@@ -1,6 +1,12 @@
 %{
 #include "syntax.tab.h"
+
+void yyerror(const char *s) {
+    fprintf(stderr, "Error type A at Line %d: unknown lexeme %s\n", yylineno, s);
+}
 %}
+
+%option yylineno
 
 %%
 [ \t\n]+          ;                    // ignore whitespaces
@@ -51,5 +57,6 @@
 ";"                     { return SEMI; }
 ","                     { return COMMA; }
 "."                     { return DOT; }
-.                       { return yytext[0]; }
+
+.+                      { yyerror(yytext); return -1; }
 %%
