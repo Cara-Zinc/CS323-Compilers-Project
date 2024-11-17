@@ -2,3 +2,8 @@
 /.vscode
 /build
 .DS_Store
+
+# Ignore all generated files across all subfolders
+**/syntax.tab.c
+**/syntax.tab.h
+**/lex.yy.c
