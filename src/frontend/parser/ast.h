@@ -91,7 +91,7 @@ void rprintAST(ASTNode *node, int level) {
     if (node->children) {
         for (size_t i = 0; i < alist_count(node->children); i++) {
             ASTNode *child = alist_get(node->children, i);
-            printAST(child, level + 1);
+            rprintAST(child, level + 1);
         }
     }
 }
