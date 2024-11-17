@@ -162,9 +162,9 @@ Exp : Exp ASSIGN Exp { $$ = exp_assign_handler(pm, $1, $3); }
     | ID LP RP { exp_func_handler(pm, $1, NULL); }
     | ID LP Args error { yyerror("Missing closing parenthesis ')'"); }
     | ID LP error { yyerror("Missing closing parenthesis ')'"); }
-    | Exp LB Exp RB { array_handler(pm, $1, $3); }
+    | Exp LB Exp RB { exp_array_handler(pm, $1, $3); }
     | Exp LB Exp error { yyerror("Missing closing bracket ']'"); }
-    | Exp DOT ID { struct_member_handler(pm, $1, $3); }
+    | Exp DOT ID { exp_struct_handler(pm, $1, $3); }
     | Exp DOT error { yyerror("Missing struct member"); }
     | ID { exp_id_handler(pm, $1); }
     | INT { $$ = exp_primitive_handler(pm, "INT", $1); }

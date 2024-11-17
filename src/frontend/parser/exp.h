@@ -298,7 +298,7 @@ ASTNode *exp_not_handler(program_manager *pm, ASTNode *child)
     return node;
 }
 
-ASTNode *exp_unary_handler(program_manager *pm, char *op, ASTNode *child)
+ASTNode *exp_unary_op_handler(program_manager *pm, char *op, ASTNode *child)
 {
     if(strcmp(op, "-"))
     {
@@ -331,12 +331,34 @@ ASTNode *exp_primitive_handler(program_manager *pm, char *type, char *text)
     return node;
 }
 
-ASTNode *exp_func_handler(program_manager *pm, char *ID, ASTNode *Args)
+ASTNode *exp_func_handler(program_manager *pm, char *id, ASTNode *Args)
 {
     if(Args == NULL)
     {
-        return createASTNode("Exp", 1, createASTLeaf("ID", ID));
+        return createASTNode("Exp", 1, createASTLeaf("ID", id));
     }
-    ASTNode *node = createASTNode("Exp", 2, createASTLeaf("ID", ID), Args);
+    ASTNode *node = createASTNode("Exp", 2, createASTLeaf("ID", id), Args);
     return node;
 }
+
+ASTNode *exp_array_handler(program_manager *pm, ASTNode *Exp1, ASTNode *Exp2)
+{
+    if(Exp2 == NULL)
+    {
+        return createASTNode("Exp", 3, Exp1, createASTLeaf("LB", "["), createASTLeaf("RB", "]"));
+    }
+    ASTNode *node = createASTNode("Exp", 4, Exp1, createASTLeaf("LB", "["), Exp2, createASTLeaf("RB", "]"));
+    return node;
+}
+
+
+ASTNode *exp_struct_handler(program_manager *pm, ASTNode *Exp, char *id)
+{
+    if(Exp == NULL)
+    {
+        return createASTNode("Exp", 1, createASTLeaf("ID", id));
+    }
+    ASTNode *node = createASTNode("Exp", 2, Exp, createASTLeaf("ID", id));
+    return node;
+}
+
