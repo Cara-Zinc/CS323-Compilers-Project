@@ -1,6 +1,9 @@
 %{
 #include "syntax.tab.h"
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <string.h>
 void yyerror(const char *s) {
     fprintf(stderr, "Error type A at Line %d: unknown lexeme %s\n", yylineno, s);
 }
@@ -11,21 +14,21 @@ void yyerror(const char *s) {
 %%
 [ \t\n]+          ;                    // ignore whitespaces
 
-0|[1-9][0-9]*           { yylval = atoi(yytext); return INT; }
-0x[0-9a-fA-F]+          { yylval = strtol(yytext, NULL, 16); return INT; }
-[1-9][0-9]*\.[0-9]+     { yylval = atof(yytext); return FLOAT; }
-0\.[0-9]+               { yylval = atof(yytext); return FLOAT; }
-\'[ -~]\'               { yylval = yytext[1]; return CHAR; }
+0|[1-9][0-9]*           { yylval.int_val = atoi(yytext); return INT; }
+0x[0-9a-fA-F]+          { yylval.int_val = strtol(yytext, NULL, 16); return INT; }
+[1-9][0-9]*\.[0-9]+     { yylval.float_val = atof(yytext); return FLOAT; }
+0\.[0-9]+               { yylval.float_val = atof(yytext); return FLOAT; }
+\'[ -~]\'               { yylval.char_val = yytext[1]; return CHAR; }
 
 \'\\x[0-9a-fA-F]{2}\' { 
-    yylval = (char)strtol(&yytext[2], NULL, 16); 
+    yylval.char_val = (char)strtol(&yytext[2], NULL, 16); 
     return CHAR; 
 }
 \'\\x.*\' {
     printf("Error: illegal hex char '%s'\n", yytext);
     return -1;
 }
-[a-zA-Z_][a-zA-Z0-9_]*  { return ID; }
+[a-zA-Z_][a-zA-Z0-9_]*  { yylval.str = strdup(yytext); return ID; }
 "if"                    { return IF; }
 "else"                  { return ELSE; }
 "while"                 { return WHILE; } 
