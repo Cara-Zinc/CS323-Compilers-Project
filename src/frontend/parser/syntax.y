@@ -65,15 +65,15 @@ VarDec : ID { $$ = VarDec_ID_handler(pm, $1); }
        | VarDec LB INT RB { $$ = VarDec_Array_handler(pm, $1, $3); }
        ;
 
-FunDec : ID LP VarList RP
-       | ID LP RP
+FunDec : ID LP VarList RP { $$ = FunDec_handler(pm, $1, $3); }
+       | ID LP RP { $$ = FunDec_handler(pm, $1, NULL); }
        ;
 
-VarList : ParamDec COMMA VarList
-        | ParamDec
+VarList : ParamDec COMMA VarList { $$ = VarList_ParamDec_Comma_VarList_handler(pm, $1, $3); }
+        | ParamDec {$$ = VarList_ParamDec_handler(pm, $1); }
         ;
 
-ParamDec : Specifier VarDec
+ParamDec : Specifier VarDec { $$ = ParamDec_handler(pm, $1, $2); }
          ;
 
 CompSt : LC DefList StmtList RC { $$ = compst_deflist_stmtlist_handler(pm, $2, $3); }
@@ -98,12 +98,12 @@ DefList : Def DefList { $$ = deflist_def_deflist_handler(pm, $1, $2); }
 Def : Specifier DecList SEMI { $$ = def_specifier_declist_handler(pm, $1, $2)}
     ;
 
-DecList : Dec
-        | Dec COMMA DecList
+DecList : Dec { $$ = DecList_handler(pm, $1, NULL); }
+        | Dec COMMA DecList { $$ = DecList_handler(pm, $1, $3); }
         ;
 
-Dec : VarDec
-    | VarDec ASSIGN Exp
+Dec : VarDec { $$ = Dec_handler(pm, $1, NULL); }
+    | VarDec ASSIGN Exp { $$ = Dec_handler(pm, $1, $3); }
     ;
 
 Exp : Exp ASSIGN Exp { $$ = exp_assign_handler(pm, $1, $3); }
@@ -132,8 +132,8 @@ Exp : Exp ASSIGN Exp { $$ = exp_assign_handler(pm, $1, $3); }
     | CHAR { $$ = exp_primitive_handler(pm, "CHAR", $1); }
     ;
 
-Args : Exp COMMA Args
-     | Exp
+Args : Exp COMMA Args {$$ = args_handler(pm, $1, $3); }
+     | Exp { $$ = args_handler(pm, $1, NULL); }
      ;
 
 %%

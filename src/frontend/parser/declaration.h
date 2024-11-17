@@ -43,3 +43,39 @@ ASTNode *VarList_ParamDec_Comma_VarList_handler(program_manager *pm, ASTNode *Pa
 {
     return createASTNode("VarList", 2, ParamDec, VarList);
 }
+
+// For ParamDec -> Specifier VarDec
+ASTNode *ParamDec_handler(program_manager *pm, ASTNode *Specifier, ASTNode *VarDec)
+{
+    return createASTNode("ParamDec", 2, Specifier, VarDec);
+}
+
+// For FunDec -> ID LP VarList RP | ID LP RP
+ASTNode *FunDec_handler(program_manager *pm, char *ID, ASTNode *VarList)
+{
+    if (VarList == NULL)
+    {
+        return createASTNode("FunDec", 2, createASTLeaf("ID", ID), createASTLeaf("RP", "RP"));
+    }
+    return createASTNode("FunDec", 4, createASTLeaf("ID", ID), createASTLeaf("LP", "LP"), VarList, createASTLeaf("RP", "RP"));
+}
+
+// For DecList -> Dec | Dec COMMA DecList
+ASTNode *DecList_handler(program_manager *pm, ASTNode *Dec, ASTNode *DecList)
+{
+    if (DecList == NULL)
+    {
+        return createASTNode("DecList", 1, Dec);
+    }
+    return createASTNode("DecList", 2, Dec, DecList);
+}
+
+// For Dec -> VarDec | VarDec ASSIGN Exp
+ASTNode *Dec_handler(program_manager *pm, ASTNode *VarDec, ASTNode *Exp)
+{
+    if (Exp == NULL)
+    {
+        return createASTNode("Dec", 1, VarDec);
+    }
+    return createASTNode("Dec", 3, VarDec, createASTLeaf("ASSIGN", "="), Exp);
+}
