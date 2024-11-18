@@ -99,6 +99,8 @@ ParamDec : Specifier VarDec { $$ = ParamDec_handler(pm, $1, $2); }
          ;
 
 CompSt : LC DefList StmtList RC { $$ = compst_deflist_stmtlist_handler(pm, $2, $3); }
+       | LC DefList StmtList error { yyerror("Missing closing brace '}'"); }
+       | DefList StmtList RC error { yyerror("Missing opening brace '{'"); }
        ;
 
 StmtList : Stmt StmtList { $$ = stmtlist_stmt_stmtlist_handler(pm, $1, $2); }
@@ -121,6 +123,7 @@ Stmt : Exp SEMI { $$ = stmt_exp_handler(pm, $1); }
      | WHILE LP Exp RP Stmt { $$ = stmt_while_handler(pm, $3, $5); }
      | WHILE LP Exp Stmt error { yyerror("Missing closing parenthesis ')'"); }
      | WHILE Exp RP Stmt error { yyerror("Missing opening parenthesis '('"); }
+     | error { yyerror("Unknown statement"); }
      ;
 
 DefList : Def DefList { $$ = deflist_def_deflist_handler(pm, $1, $2); }
