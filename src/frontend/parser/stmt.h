@@ -10,19 +10,21 @@ ASTNode *stmt_comp_handler(program_manager *pm, ASTNode *CompSt) {
 }
 
 ASTNode *stmt_return_handler(program_manager *pm, ASTNode *Exp) {
-    return createASTNode("RETURN", 1, Exp);
+    return createASTNode("RETURN", 2, Exp, createASTLeaf("SEMI", ";"));
 }
 
 ASTNode *stmt_if_handler(program_manager *pm, ASTNode *Exp, ASTNode *Stmt) {
-    return createASTNode("IF", 2, Exp, Stmt);
+    return createASTNode("IF", 6, createASTLeaf("LP", "("), Exp, createASTLeaf("RP", ")"), createASTLeaf("LC", "{"), Stmt, createASTLeaf("RC", "}"));
 }
 
 ASTNode *stmt_if_else_handler(program_manager *pm, ASTNode *Exp, ASTNode *Stmt1, ASTNode *Stmt2) {
-    return createASTNode("ELSE", 1, Stmt2), createASTNode("IF", 2, Exp, Stmt1);
+    ASTNode *ifNode = createASTNode("IF", 6, createASTLeaf("LP", "("), Exp, createASTLeaf("RP", ")"), createASTLeaf("LC", "{"), Stmt1, createASTLeaf("RC", "}"));
+    ASTNode *elseNode = createASTNode("ELSE", 3, createASTLeaf("LC", "{"), Stmt2, createASTLeaf("RC", "}"));
+    return createASTNode("Stmt", 2, ifNode, elseNode);
 }
 
 ASTNode *stmt_while_handler(program_manager *pm, ASTNode *Exp, ASTNode *Stmt) {
-    return createASTNode("WHILE", 2, Exp, Stmt);
+    return createASTNode("WHILE", 6, createASTLeaf("LP", "("), Exp, createASTLeaf("RP", ")"), createASTLeaf("LC", "{"), Stmt, createASTLeaf("RC", "}"));
 }
 
 ASTNode *stmtlist_stmt_stmtlist_handler(program_manager *pm, ASTNode *Stmt, ASTNode *StmtList) {

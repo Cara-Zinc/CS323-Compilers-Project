@@ -5,14 +5,14 @@ void exp_id_handler(program_manager *pm, char *name)
 {
     if (!program_manager_get_field(pm, name))
     {
-        printf("Error: variable %s not declared\n", name);
+        //printf("Error: variable %s not declared\n", name);
         // exit(1);
     }
 }
 
 ASTNode *exp_bi_op_handler(program_manager *pm, ASTNode *left, char *op, ASTNode *right)
 {
-    char *node_type = NULL;
+    char *node_type = "EXP";
     if (left == NULL || right == NULL)
     {
         return NULL;
@@ -153,7 +153,7 @@ ASTNode *exp_assign_handler(program_manager *pm, ASTNode *left, ASTNode *right)
     {
         if (!program_manager_get_field(pm, left->text))
         {
-            printf("Error: variable %s not declared\n", left->text);
+            //printf("Error: variable %s not declared\n", left->text);
             // exit(1);
         }
     }
@@ -213,7 +213,7 @@ ASTNode *exp_neg_handler(program_manager *pm, ASTNode *child)
     {
         if (!program_manager_get_field(pm, child->text))
         {
-            printf("Error: variable %s not declared\n", child->text);
+            //printf("Error: variable %s not declared\n", child->text);
             // exit(1);
         }
     }
@@ -262,7 +262,7 @@ ASTNode *exp_not_handler(program_manager *pm, ASTNode *child)
     {
         if (!program_manager_get_field(pm, child->text))
         {
-            printf("Error: variable %s not declared\n", child->text);
+            //printf("Error: variable %s not declared\n", child->text);
             // exit(1);
         }
     }
