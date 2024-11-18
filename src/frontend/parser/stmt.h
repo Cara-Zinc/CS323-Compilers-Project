@@ -17,8 +17,8 @@ ASTNode *stmt_if_handler(program_manager *pm, ASTNode *Exp, ASTNode *Stmt) {
     return createASTNode("IF", 2, Exp, Stmt);
 }
 
-ASTNode *stmt_else_handler(program_manager *pm, ASTNode *Stmt) {
-    return createASTNode("ELSE", 1, Stmt);
+ASTNode *stmt_if_else_handler(program_manager *pm, ASTNode *Exp, ASTNode *Stmt1, ASTNode *Stmt2) {
+    return createASTNode("ELSE", 1, Stmt2), createASTNode("IF", 2, Exp, Stmt1);
 }
 
 ASTNode *stmt_while_handler(program_manager *pm, ASTNode *Exp, ASTNode *Stmt) {

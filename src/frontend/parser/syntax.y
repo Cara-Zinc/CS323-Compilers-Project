@@ -108,7 +108,7 @@ Stmt : Exp SEMI { $$ = stmt_exp_handler(pm, $1); }
      | IF LP RP Stmt error { yyerror("Missing Exp in if statement"); }
      | IF Exp RP Stmt error { yyerror("Missing opening parenthesis '('"); }
      | IF LP Exp Stmt error { yyerror("Missing closing parenthesis ')'"); }
-     | IF LP Exp RP Stmt ELSE Stmt { $$ = stmt_else_handler(pm, $3, $5, $7); }
+     | IF LP Exp RP Stmt ELSE Stmt { $$ = stmt_if_else_handler(pm, $3, $5, $7); }
      | IF LP RP Stmt ELSE Stmt error { yyerror("Missing Exp in if statement"); }
      | IF Exp RP Stmt ELSE Stmt error { yyerror("Missing opening parenthesis '('"); }
      | IF LP Exp Stmt ELSE Stmt error { yyerror("Missing closing parenthesis ')'"); }
