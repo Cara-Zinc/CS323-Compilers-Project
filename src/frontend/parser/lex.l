@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-void yyerror(const char *s) {
+void yyerrora(const char *s) {
     fprintf(stderr, "Error type A at Line %d: unknown lexeme %s\n", yylineno, s);
 }
 %}
@@ -62,5 +62,5 @@ void yyerror(const char *s) {
 ","                     { return COMMA; }
 "."                     { return DOT; }
 
-.+                      { yyerror(yytext); return -1; }
+.+                      { yyerrora(yytext); return -1; }
 %%

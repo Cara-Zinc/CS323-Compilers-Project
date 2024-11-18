@@ -72,7 +72,7 @@ struct_def *program_manager_create_struct(program_manager *pm, char *name) {
     tsmap_insert(pm->struct_defs, id, res);
     scope_add_struct(sclist_back(pm->scope_stack), res);
     sclist_push_back(pm->scope_stack, res->scope);
-    scwlist_push_back(pm->scope_wrapper_stack, scope_wrapper_new(STRUCT, res->scope));
+    scwlist_push_back(pm->scope_wrapper_stack, scope_wrapper_new(STRUCTURE, res->scope));
     return res;
 }
 
