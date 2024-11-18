@@ -127,7 +127,7 @@ DefList : Def DefList { $$ = deflist_def_deflist_handler(pm, $1, $2); }
         | Def { $$ = deflist_def_handler(pm, $1); }
         ;
 
-Def : Specifier DecList SEMI { $$ = def_specifier_declist_handler(pm, $1, $2)}
+Def : Specifier DecList SEMI { $$ = def_specifier_declist_handler(pm, $1, $2); }
     | Specifier DecList error { yyerror("Missing semicolon ';'"); }
     | DecList SEMI error { yyerror("Missing specifier"); }
     ;
@@ -158,7 +158,7 @@ Exp : Exp ASSIGN Exp { $$ = exp_assign_handler(pm, $1, $3); }
     | Exp MUL error { yyerror("Missing Exp after *"); }
     | Exp DIV Exp { $$ = exp_bi_op_handler(pm, $1, $2, $3); }
     | Exp DIV error { yyerror("Missing Exp after /"); }
-    | LP Exp RP { $$ = $2 }
+    | LP Exp RP { $$ = $2; }
     | LP Exp error { yyerror("Missing closing parenthesis ')'"); }
     | MINUS Exp { $$ = exp_unary_op_handler(pm, $1, $2); }
     | PLUS Exp { $$ = exp_unary_op_handler(pm, $1, $2); }
