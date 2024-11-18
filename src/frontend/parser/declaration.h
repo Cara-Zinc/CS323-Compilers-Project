@@ -9,16 +9,17 @@
  */
 
 // For VarDec -> ID
-ASTNode *VarDec_ID_handler(program_manager *pm, char *ID)
+ASTNode *VarDec_ID_handler(program_manager *pm, char *id)
 {
-    return createASTLeaf("ID", ID);
+    return createASTLeaf("ID", id);
 }
 
 // For VarDec -> VarDec LB INT RB
-ASTNode *VarDec_Array_handler(program_manager *pm, ASTNode *VarDec, int INT)
+ASTNode *VarDec_Array_handler(program_manager *pm, ASTNode *VarDec, int int_val)
 {
     // convert INT to string
     char *INT_str = malloc(12);
+    sprintf(INT_str, "%d", int_val);
     return createASTNode("VarDec", 3, VarDec, createASTLeaf("LB", "["), createASTLeaf("INT", INT_str), createASTLeaf("RB", "]"));
 }
 
@@ -53,13 +54,13 @@ ASTNode *ParamDec_handler(program_manager *pm, ASTNode *Specifier, ASTNode *VarD
 }
 
 // For FunDec -> ID LP VarList RP | ID LP RP
-ASTNode *FunDec_handler(program_manager *pm, char *ID, ASTNode *VarList)
+ASTNode *FunDec_handler(program_manager *pm, char *id, ASTNode *VarList)
 {
     if (VarList == NULL)
     {
-        return createASTNode("FunDec", 2, createASTLeaf("ID", ID), createASTLeaf("RP", "RP"));
+        return createASTNode("FunDec", 2, createASTLeaf("ID", id), createASTLeaf("RP", "RP"));
     }
-    return createASTNode("FunDec", 4, createASTLeaf("ID", ID), createASTLeaf("LP", "LP"), VarList, createASTLeaf("RP", "RP"));
+    return createASTNode("FunDec", 4, createASTLeaf("ID", id), createASTLeaf("LP", "LP"), VarList, createASTLeaf("RP", "RP"));
 }
 
 // For DecList -> Dec | Dec COMMA DecList

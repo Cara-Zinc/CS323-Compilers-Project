@@ -7,7 +7,7 @@ scope_wrapper *scope_wrapper_new(scope_type type, void *data) {
         case SCOPE:
             res->scope = data;
             break;
-        case STRUCT:
+        case STRUCTURE:
             res->struct_def = data;
             break;
         case FUNC:
@@ -25,7 +25,7 @@ void scope_wrapper_free(scope_wrapper *sw) {
         case SCOPE:
             scope_free(sw->scope);
             break;
-        case STRUCT:
+        case STRUCTURE:
             struct_def_free(sw->struct_def);
             break;
         case FUNC:
@@ -43,8 +43,8 @@ scope_wrapper *scope_wrapper_cpy(scope_wrapper *sw) {
     switch (sw->type) {
         case SCOPE:
             return scope_wrapper_new(SCOPE, scope_cpy(sw->scope));
-        case STRUCT:
-            return scope_wrapper_new(STRUCT, struct_def_cpy(sw->struct_def));
+        case STRUCTURE:
+            return scope_wrapper_new(STRUCTURE, struct_def_cpy(sw->struct_def));
         case FUNC:
             return scope_wrapper_new(FUNC, func_def_cpy(sw->func));
         default:
@@ -58,7 +58,7 @@ scope_wrapper *scope_wrapper_cpy_without_data(scope_wrapper *sw) {
     switch (sw->type) {
         case SCOPE:
             res->scope = sw->scope;
-        case STRUCT:
+        case STRUCTURE:
             res->struct_def = sw->struct_def;
         case FUNC:
             res->func = sw->func;
@@ -72,7 +72,7 @@ bool scope_wrapper_str(FILE *file, scope_wrapper *sw) {
     switch (sw->type) {
         case SCOPE:
             return scope_str(file, sw->scope);
-        case STRUCT:
+        case STRUCTURE:
             return struct_def_str(file, sw->struct_def);
         case FUNC:
             return func_def_str(file, sw->func);

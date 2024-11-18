@@ -10,7 +10,7 @@ void exp_id_handler(program_manager *pm, char *name)
     }
 }
 
-ASTNode *exp_bi_op_handler(program_manager *pm, char *op, ASTNode *left, ASTNode *right)
+ASTNode *exp_bi_op_handler(program_manager *pm, ASTNode *left, char *op, ASTNode *right)
 {
     char *node_type = NULL;
     if (left == NULL || right == NULL)

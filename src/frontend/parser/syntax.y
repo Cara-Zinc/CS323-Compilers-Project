@@ -3,7 +3,6 @@
 #include <stdlib.h>
 
 #include "ast.h"            // 抽象语法树相关的函数和声明
-#include "declaration.h"   // 定义 %union 和 %token
 //#include "program.h"        // 程序结构的辅助函数和声明
 //#include "type_struct.h"    // 类型和结构体相关的函数和声明
 #include "declaration.h"    // 变量和函数声明相关的函数和声明
@@ -12,6 +11,7 @@
 #include "def.h"            // 定义相关的辅助函数和声明
 #include "exp.h"            // 表达式相关的辅助函数和声明
 #include "ext.h"
+#include "spec.h"           // 基础类型和结构体相关的辅助函数和声明
 #include "../mm/program_manager.h" // 程序管理器相关的函数和声明
 
 program_manager *pm = program_manager_new();
@@ -68,7 +68,7 @@ Specifier : TYPE { $$ = type_handler(pm, $1); }
           ;
 
 StructSpecifier : STRUCT ID LC DefList RC { $$ = struct_def_handler(pm, $2, $4); }
-                | STRUCT ID { $$ = struct_dec_handler(pm, $2, NULL); }
+                | STRUCT ID { $$ = struct_def_handler(pm, $2, NULL); }
                 ;
 
 VarDec : ID { $$ = VarDec_ID_handler(pm, $1); }

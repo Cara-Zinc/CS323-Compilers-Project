@@ -7,7 +7,7 @@
 
 typedef enum {
     SCOPE,
-    STRUCT,
+    STRUCTURE,
     FUNC,
 } scope_type;
 /*
