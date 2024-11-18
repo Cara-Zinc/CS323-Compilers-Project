@@ -32,10 +32,7 @@ size_t field_def_hash(field_def *f);
 #define PFX vmap
 #define K char*
 #define V field_def*
-#include <cmc/cor/core.h>
-#include <cmc/cor/hashtable.h>
-#include <cmc/hashmap/struct.h>
-#include <cmc/hashmap/header.h>
+#include "../collections/hashmap_h.h"
 
 typedef struct varmap varmap;
 
@@ -43,20 +40,13 @@ extern struct varmap_fkey vmap_fkeys;
 
 extern struct varmap_fval vmap_fvals;
 
-#include <cmc/cor/undef.h>
-
 #define SNAME varlist
 #define PFX vlist
 #define V field_def*
-#include <cmc/cor/core.h>
-#include <cmc/cor/hashtable.h>
-#include <cmc/list/struct.h>
-#include <cmc/list/header.h>
+#include "../collections/list_h.h"
 
 typedef struct varlist varlist;
 
 extern struct varlist_fval vlist_fvals;
-
-#include <cmc/cor/undef.h>
 
 #endif

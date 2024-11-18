@@ -49,12 +49,8 @@ size_t scope_get_subscope_count(scope *s);
 #define SNAME scopelist
 #define PFX sclist
 #define V scope*
-#include <cmc/cor/core.h>
-#include <cmc/list/struct.h>
-#include <cmc/list/header.h>
+#include <../collections/list_h.h>
 
 extern struct scopelist_fval sclist_fvals;
-
-#include <cmc/cor/undef.h>
 
 #endif

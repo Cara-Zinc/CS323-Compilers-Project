@@ -58,10 +58,7 @@ size_t struct_def_hash(struct_def *s);
 #define PFX smap
 #define K char*
 #define V struct_def*
-#include <cmc/cor/core.h>
-#include <cmc/cor/hashtable.h>
-#include <cmc/hashmap/struct.h>
-#include <cmc/hashmap/header.h>
+#include "../collections/hashmap_h.h"
 
 typedef struct structmap structmap;
 
@@ -69,23 +66,16 @@ extern struct structmap_fkey smap_fkeys;
 
 extern struct structmap_fval smap_fvals;
 
-#include <cmc/cor/undef.h>
-
 #define SNAME typeid_structmap
 #define PFX tsmap
 #define K type_id
 #define V struct_def*
-#include <cmc/cor/core.h>
-#include <cmc/cor/hashtable.h>
-#include <cmc/hashmap/struct.h>
-#include <cmc/hashmap/header.h>
+#include "../collections/hashmap_h.h"
 
 typedef struct typeid_structmap typeid_structmap;
 
 extern struct typeid_structmap_fkey tsmap_fkeys;
 
 extern struct typeid_structmap_fval tsmap_fvals;
-
-#include <cmc/cor/undef.h>
 
 #endif

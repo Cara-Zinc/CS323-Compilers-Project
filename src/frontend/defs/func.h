@@ -62,17 +62,12 @@ size_t func_def_hash(func_def *f);
 #define PFX fmap
 #define K char*
 #define V func_def*
-#include <cmc/cor/core.h>
-#include <cmc/cor/hashtable.h>
-#include <cmc/hashmap/struct.h>
-#include <cmc/hashmap/header.h>
+#include "../collections/hashmap_h.h"
 
 typedef struct funcmap funcmap;
 
 extern struct funcmap_fkey fmap_fkeys;
 
 extern struct funcmap_fval fmap_fvals;
-
-#include <cmc/cor/undef.h>
 
 #endif

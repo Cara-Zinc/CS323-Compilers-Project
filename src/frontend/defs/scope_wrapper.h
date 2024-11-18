@@ -38,9 +38,7 @@ bool scope_wrapper_str(FILE *file, scope_wrapper *sw);
 #define SNAME scwrapperlist
 #define PFX scwlist
 #define V scope_wrapper*
-#include <cmc/cor/core.h>
-#include <cmc/list/struct.h>
-#include <cmc/list/header.h>
+#include <../collections/list_h.h>
 
 // @brief A list of scope_wrappers
 typedef struct scwrapperlist scwrapperlist;
@@ -48,7 +46,5 @@ typedef struct scwrapperlist scwrapperlist;
 extern struct scwrapperlist_fval scwlist_fvals;
 
 extern struct scwrapperlist_fval scwlist_without_data_fvals;
-
-#include <cmc/cor/undef.h>
 
 #endif

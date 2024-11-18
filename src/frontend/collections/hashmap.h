@@ -27,10 +27,6 @@
  */
 #define CMC_EXT_HASHMAP_PARTS INIT, ITER, STR
 /**/
-#include "cmc/hashmap/ext/struct.h"
-/**/
-#include "cmc/hashmap/ext/header.h"
-/**/
 #include "cmc/hashmap/ext/code.h"
 
 #include "cmc/cor/undef.h"
