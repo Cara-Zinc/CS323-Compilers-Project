@@ -7,3 +7,4 @@
 **/syntax.tab.c
 **/syntax.tab.h
 **/lex.yy.c
+**/lexer
