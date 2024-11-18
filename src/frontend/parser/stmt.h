@@ -25,10 +25,20 @@ ASTNode *stmt_while_handler(program_manager *pm, ASTNode *Exp, ASTNode *Stmt) {
     return createASTNode("WHILE", 2, Exp, Stmt);
 }
 
-ASTNode *stmtlist_stmt_handler(program_manager *pm, ASTNode *Stmt) {
-    return createASTNode("StmtList", 1, Stmt);
-}
-
 ASTNode *stmtlist_stmt_stmtlist_handler(program_manager *pm, ASTNode *Stmt, ASTNode *StmtList) {
-    return createASTNode("StmtList", 2, Stmt, StmtList);
+    if (StmtList == NULL && Stmt == NULL)
+    {
+        return createASTLeaf("StmtList", "EMPTY");
+    }
+    else if (StmtList == NULL)
+    {
+        return createASTNode("StmtList", 1, Stmt);
+    }
+    else if (Stmt == NULL)
+    {
+        return StmtList;
+    } else
+    {
+        return createASTNode("StmtList", 2, Stmt, StmtList);
+    }
 }

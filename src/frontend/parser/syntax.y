@@ -102,7 +102,7 @@ CompSt : LC DefList StmtList RC { $$ = compst_deflist_stmtlist_handler(pm, $2, $
        ;
 
 StmtList : Stmt StmtList { $$ = stmtlist_stmt_stmtlist_handler(pm, $1, $2); }
-         | Stmt { $$ = stmtlist_stmt_handler(pm, $1); }
+         |  { $$ = stmtlist_stmt_stmtlist_handler(pm, NULL, NULL); }
          ;
 
 Stmt : Exp SEMI { $$ = stmt_exp_handler(pm, $1); }
@@ -124,7 +124,7 @@ Stmt : Exp SEMI { $$ = stmt_exp_handler(pm, $1); }
      ;
 
 DefList : Def DefList { $$ = deflist_def_deflist_handler(pm, $1, $2); }
-        | Def { $$ = deflist_def_handler(pm, $1); }
+        |  { $$ = deflist_def_deflist_handler(pm, NULL, NULL); }
         ;
 
 Def : Specifier DecList SEMI { $$ = def_specifier_declist_handler(pm, $1, $2); }
