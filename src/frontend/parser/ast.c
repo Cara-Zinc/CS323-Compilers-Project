@@ -1,8 +1,9 @@
 #include "ast.h"
+#include "../utils/copy.h"
 
 ASTNode *createASTNode(char *type, int numChildren, ...) {
     ASTNode *node = new(ASTNode);
-    node->nodeType = strdup(type);
+    node->nodeType = str_copy(type);
     node->text = NULL;
     node->numChildren = numChildren;
     node->children = alist_new(2, &alist_fvals);
@@ -17,8 +18,8 @@ ASTNode *createASTNode(char *type, int numChildren, ...) {
 
 ASTNode *createASTLeaf(char *type, char *text) {
     ASTNode *node = new(ASTNode);
-    node->nodeType = strdup(type);
-    node->text = text ? strdup(text) : NULL;
+    node->nodeType = str_copy(type);
+    node->text = text ? str_copy(text) : NULL;
     node->numChildren = 0;
     node->children = NULL;
     return node;

@@ -8,6 +8,8 @@
 void yyerrora(const char *s) {
     fprintf(stderr, "Error type A at Line %d: unknown lexeme %s\n", yylineno, s);
 }
+
+#include "../utils/copy.h"
 %}
 
 %option yylineno
@@ -30,38 +32,38 @@ void yyerrora(const char *s) {
     return -1;
 }
 
-"if"                    { return IF; }
-"else"                  { return ELSE; }
-"while"                 { return WHILE; } 
-"return"                { return RETURN; }
-"struct"                { return STRUCT; }
-"int"                   { return TYPE; }
-"float"                 { return TYPE; }
-"char"                  { return TYPE; }
-[a-zA-Z_][a-zA-Z0-9_]*  { yylval.str = strdup(yytext); return ID; }
-"=="                    { return EQ; }
-"="                     { return ASSIGN; }
-"<"                     { return LT; }
-"<="                    { return LE; }
-">"                     { return GT; }
-">="                    { return GE; }
-"!="                    { return NE; }
-"+"                     { return PLUS; }
-"-"                     { return MINUS; }
-"*"                     { return MUL; }
-"/"                     { return DIV; }
-"&&"                    { return AND; }
-"||"                    { return OR; }
-"!"                     { return NOT; }
-"("                     { return LP; }
-")"                     { return RP; }
-"["                     { return LB; }
-"]"                     { return RB; }
-"{"                     { return LC; }
-"}"                     { return RC; }
-";"                     { return SEMI; }
-","                     { return COMMA; }
-"."                     { return DOT; }
+"if"                    { yylval.str = "IF"; return IF; }
+"else"                  { yylval.str = "ELSE"; return ELSE; }
+"while"                 { yylval.str = "WHILE"; return WHILE; } 
+"return"                { yylval.str = "RETURN"; return RETURN; }
+"struct"                { yylval.str = "STRUCT"; return STRUCT; }
+"int"                   { yylval.str = "int"; return TYPE; }
+"float"                 { yylval.str = "float"; return TYPE; }
+"char"                  { yylval.str = "char"; return TYPE; }
+[a-zA-Z_][a-zA-Z0-9_]*  { yylval.str = str_copy(yytext); return ID; }
+"=="                    { yylval.str = "EQ"; return EQ; }
+"="                     { yylval.str = "ASSIGN"; return ASSIGN; }
+"<"                     { yylval.str = "LT"; return LT; }
+"<="                    { yylval.str = "LE"; return LE; }
+">"                     { yylval.str = "GT"; return GT; }
+">="                    { yylval.str = "GE"; return GE; }
+"!="                    { yylval.str = "NE"; return NE; }
+"+"                     { yylval.str = "PLUS"; return PLUS; }
+"-"                     { yylval.str = "MINUS"; return MINUS; }
+"*"                     { yylval.str = "MUL"; return MUL; }
+"/"                     { yylval.str = "DIV"; return DIV; }
+"&&"                    { yylval.str = "AND"; return AND; }
+"||"                    { yylval.str = "OR"; return OR; }
+"!"                     { yylval.str = "NOT"; return NOT; }
+"("                     { yylval.str = "LP"; return LP; }
+")"                     { yylval.str = "RP"; return RP; }
+"["                     { yylval.str = "LB"; return LB; }
+"]"                     { yylval.str = "RB"; return RB; }
+"{"                     { yylval.str = "LC"; return LC; }
+"}"                     { yylval.str = "RC"; return RC; }
+";"                     { yylval.str = "SEMI"; return SEMI; }
+","                     { yylval.str = "COMMA"; return COMMA; }
+"."                     { yylval.str = "DOT"; return DOT; }
 
-.+                      { yyerrora(yytext); return -1; }
+.                      { yyerrora(yytext); return -1; }
 %%
