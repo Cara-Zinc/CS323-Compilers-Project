@@ -3,20 +3,23 @@
 
 void exp_id_handler(program_manager *pm, char *name)
 {
-    if (!program_manager_get_field(pm, name))
-    {
-        //printf("Error: variable %s not declared\n", name);
-        // exit(1);
-    }
+    // if (!program_manager_get_field(pm, name))
+    // {
+    //     //printf("Error: variable %s not declared\n", name);
+    //     // exit(1);
+    // }
+    ASTNode *leaf = createASTLeaf("ID", name);
+    ASTNode *node = createASTNode("Exp", 1, leaf);
+    return node;
 }
 
 ASTNode *exp_bi_op_handler(program_manager *pm, ASTNode *left, char *op, ASTNode *right)
 {
     char *node_type = "EXP";
-    if (left == NULL || right == NULL)
-    {
-        return NULL;
-    }
+    // if (left == NULL || right == NULL)
+    // {
+    //     return NULL;
+    // }
 
     // // check usage before declaration
     // if (!strcmp(left->nodeType, "ID"))
@@ -142,61 +145,61 @@ ASTNode *exp_bi_op_handler(program_manager *pm, ASTNode *left, char *op, ASTNode
 
 ASTNode *exp_assign_handler(program_manager *pm, ASTNode *left, ASTNode *right)
 {
-    if (left == NULL || right == NULL)
-    {
-        printf("Error: Invalid assignment, both sides are NULL\n");
-        return NULL;
-    }
+    // if (left == NULL || right == NULL)
+    // {
+    //     printf("Error: Invalid assignment, both sides are NULL\n");
+    //     return NULL;
+    // }
 
     // check usage before declaration
-    if (!strcmp(left->nodeType, "ID"))
-    {
-        if (!program_manager_get_field(pm, left->text))
-        {
-            //printf("Error: variable %s not declared\n", left->text);
-            // exit(1);
-        }
-    }
-    else
-    {
-        printf("Error: Invalid left expression in assignment, should be ID\n");
-        // exit(1);
-    }
+    // if (!strcmp(left->nodeType, "ID"))
+    // {
+    //     if (!program_manager_get_field(pm, left->text))
+    //     {
+    //         printf("Error: variable %s not declared\n", left->text);
+    //         // exit(1);
+    //     }
+    // }
+    // else
+    // {
+    //     printf("Error: Invalid left expression in assignment, should be ID\n");
+    //     // exit(1);
+    // }
 
-    if (!strcmp(right->nodeType, "EXP"))
-    {
-        // TODO: check if right expression is valid
-        // check if type of right expression is compatible with left expression
-        if (strcmp(left->nodeType, right->nodeType))
-        {
-            printf("Error: type mismatch\n");
-            // exit(1);
-        }
-    }
+    // if (!strcmp(right->nodeType, "EXP"))
+    // {
+    //     // TODO: check if right expression is valid
+    //     // check if type of right expression is compatible with left expression
+    //     if (strcmp(left->nodeType, right->nodeType))
+    //     {
+    //         printf("Error: type mismatch\n");
+    //         // exit(1);
+    //     }
+    // }
 
     ASTNode *node = createASTNode("ASSIGN", 2, left, right);
-    char *text = (char *)malloc(strlen(left->text) + strlen(right->text) + 2);
-    if (text != NULL)
-    {
-        if (left->text && right->text)
-        {
-            strcpy(text, left->text);
-            strcat(text, "=");
-            strcat(text, right->text);
-            node->text = text;
-        }
-        else
-        {
-            printf("Error: Invalid text in expression nodes\n");
-            free(text);
-            return NULL;
-        }
-    }
-    else
-    {
-        printf("Error: Memory allocation failed\n");
-        return NULL;
-    }
+    // char *text = (char *)malloc(strlen(left->text) + strlen(right->text) + 2);
+    // if (text != NULL)
+    // {
+    //     if (left->text && right->text)
+    //     {
+    //         strcpy(text, left->text);
+    //         strcat(text, "=");
+    //         strcat(text, right->text);
+    //         node->text = text;
+    //     }
+    //     else
+    //     {
+    //         printf("Error: Invalid text in expression nodes\n");
+    //         free(text);
+    //         return NULL;
+    //     }
+    // }
+    // else
+    // {
+    //     printf("Error: Memory allocation failed\n");
+    //     return NULL;
+    // 
     return node;
 }
 
@@ -262,7 +265,7 @@ ASTNode *exp_not_handler(program_manager *pm, ASTNode *child)
     {
         if (!program_manager_get_field(pm, child->text))
         {
-            //printf("Error: variable %s not declared\n", child->text);
+            printf("Error: variable %s not declared\n", child->text);
             // exit(1);
         }
     }
@@ -310,7 +313,7 @@ ASTNode *exp_unary_op_handler(program_manager *pm, char *op, ASTNode *child)
     }
     else if(strcmp(op, "+"))
     {
-        return child;
+        return createASTNode("Exp", 2, createASTLeaf("op","PLUS"), child);
     }
     else
     {
@@ -321,22 +324,12 @@ ASTNode *exp_unary_op_handler(program_manager *pm, char *op, ASTNode *child)
 
 ASTNode *exp_primitive_handler(program_manager *pm, char *type, char *text)
 {
-    if (strcmp(type, "INT") && strcmp(type, "FLOAT") && strcmp(type, "CHAR"))
-    {
-        printf("Error: Invalid primitive type\n");
-        return NULL;
-    }
-
     ASTNode *node = createASTLeaf(type, text);
     return node;
 }
 
 ASTNode *exp_func_handler(program_manager *pm, char *id, ASTNode *Args)
 {
-    if(Args == NULL)
-    {
-        return createASTNode("Exp", 1, createASTLeaf("ID", id));
-    }
     ASTNode *node = createASTNode("Exp", 2, createASTLeaf("ID", id), Args);
     return node;
 }
@@ -375,7 +368,9 @@ ASTNode *exp_int_handler(program_manager *pm, int text)
         printf("Error: Memory allocation failed\n");
         return NULL;
     }
-    return createASTLeaf("INT", str);
+    ASTNode *leaf = createASTLeaf("INT", str);
+    ASTNode *node = createASTNode("Exp", 1, leaf);
+    return node;
 }
 
 ASTNode *exp_float_handler(program_manager *pm, float text)
@@ -391,7 +386,9 @@ ASTNode *exp_float_handler(program_manager *pm, float text)
         printf("Error: Memory allocation failed\n");
         return NULL;
     }
-    return createASTLeaf("FLOAT", str);
+    ASTNode *leaf = createASTLeaf("FLOAT", str);
+    ASTNode *node = createASTNode("Exp", 1, leaf);
+    return node;
 }
 
 ASTNode *exp_char_handler(program_manager *pm, char text)
@@ -408,5 +405,7 @@ ASTNode *exp_char_handler(program_manager *pm, char text)
         printf("Error: Memory allocation failed\n");
         return NULL;
     }
-    return createASTLeaf("CHAR", str);
+    ASTNode *leaf = createASTLeaf("CHAR", str);
+    ASTNode *node = createASTNode("Exp", 1, leaf);
+    return node;
 }

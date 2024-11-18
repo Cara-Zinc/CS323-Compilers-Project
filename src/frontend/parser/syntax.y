@@ -38,17 +38,16 @@ void yyerror(const char *s) {
 %token <int_val> INT
 %token <float_val> FLOAT
 %token <char_val> CHAR
-%token TYPE STRUCT IF ELSE WHILE RETURN DOT SEMI COMMA ASSIGN LT LE GT GE NE EQ PLUS MINUS MUL DIV AND OR NOT LP RP LB RB LC RC
+%token <str> TYPE STRUCT IF ELSE WHILE RETURN DOT SEMI COMMA ASSIGN LT LE GT GE NE EQ PLUS MINUS MUL DIV AND OR NOT LP RP LB RB LC RC
 
 /* Declare non-terminals and their types */
 %type <node> Program ExtDefList ExtDef ExtDecList Specifier StructSpecifier VarDec FunDec VarList ParamDec CompSt StmtList Stmt DefList Def DecList Dec Exp Args
-%type <str> TYPE STRUCT PLUS MINUS MUL DIV AND OR NOT LT LE GT GE NE EQ
 
 %start Program
 
 %%
 
-Program : ExtDefList { $$ = program_handler(pm, $1); rprintAST($$, 0); }
+Program : ExtDefList { $$ = program_handler(pm, $1); }
         ;
 
 ExtDefList : ExtDef ExtDefList { $$ = ext_def_list_handler(pm, $1, $2); }
