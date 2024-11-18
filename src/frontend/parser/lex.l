@@ -29,7 +29,7 @@ void yyerrora(const char *s) {
     printf("Error: illegal hex char '%s'\n", yytext);
     return -1;
 }
-[a-zA-Z_][a-zA-Z0-9_]*  { yylval.str = strdup(yytext); return ID; }
+
 "if"                    { return IF; }
 "else"                  { return ELSE; }
 "while"                 { return WHILE; } 
@@ -38,6 +38,7 @@ void yyerrora(const char *s) {
 "int"                   { return TYPE; }
 "float"                 { return TYPE; }
 "char"                  { return TYPE; }
+[a-zA-Z_][a-zA-Z0-9_]*  { yylval.str = strdup(yytext); return ID; }
 "=="                    { return EQ; }
 "="                     { return ASSIGN; }
 "<"                     { return LT; }
