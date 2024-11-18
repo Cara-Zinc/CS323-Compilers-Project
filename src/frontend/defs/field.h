@@ -32,42 +32,31 @@ size_t field_def_hash(field_def *f);
 #define PFX vmap
 #define K char*
 #define V field_def*
-#include <cmc/hashmap.h>
+#include <cmc/cor/core.h>
+#include <cmc/cor/hashtable.h>
+#include <cmc/hashmap/struct.h>
+#include <cmc/hashmap/header.h>
 
 typedef struct varmap varmap;
 
-struct varmap_fkey vmap_fkeys = {
-    .cmp = cmc_str_cmp,
-    .cpy = cmc_str_cpy,
-    .str = cmc_str_str,
-    .free = str_free,
-    .hash = cmc_str_hash_java,
-    .pri = cmc_str_cmp,
-};
+extern struct varmap_fkey vmap_fkeys;
 
-struct varmap_fval vmap_fvals = {
-    .cmp = field_def_cmp,
-    .cpy = field_def_cpy,
-    .str = field_def_str,
-    .free = field_def_free,
-    .hash = field_def_hash,
-    .pri = field_def_cmp,
-};
+extern struct varmap_fval vmap_fvals;
+
+#include <cmc/cor/undef.h>
 
 #define SNAME varlist
 #define PFX vlist
 #define V field_def*
-#include <cmc/list.h>
+#include <cmc/cor/core.h>
+#include <cmc/cor/hashtable.h>
+#include <cmc/list/struct.h>
+#include <cmc/list/header.h>
 
 typedef struct varlist varlist;
 
-struct varlist_fval vlist_fvals = {
-    .cmp = field_def_cmp,
-    .cpy = field_def_cpy,
-    .str = field_def_str,
-    .free = field_def_free,
-    .hash = field_def_hash,
-    .pri = field_def_cmp,
-};
+extern struct varlist_fval vlist_fvals;
+
+#include <cmc/cor/undef.h>
 
 #endif

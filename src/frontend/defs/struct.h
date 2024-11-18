@@ -58,52 +58,34 @@ size_t struct_def_hash(struct_def *s);
 #define PFX smap
 #define K char*
 #define V struct_def*
-#include <cmc/hashmap.h>
+#include <cmc/cor/core.h>
+#include <cmc/cor/hashtable.h>
+#include <cmc/hashmap/struct.h>
+#include <cmc/hashmap/header.h>
 
 typedef struct structmap structmap;
 
-struct structmap_fkey smap_fkeys = {
-    .cmp = cmc_str_cmp,
-    .cpy = cmc_str_cpy,
-    .str = cmc_str_str,
-    .free = str_free,
-    .hash = cmc_str_hash_java,
-    .pri = cmc_str_cmp,
-};
+extern struct structmap_fkey smap_fkeys;
 
-struct structmap_fval smap_fvals = {
-    .cmp = struct_def_cmp,
-    .cpy = struct_def_cpy,
-    .str = struct_def_str,
-    .free = struct_def_free,
-    .hash = struct_def_hash,
-    .pri = struct_def_cmp,
-};
+extern struct structmap_fval smap_fvals;
+
+#include <cmc/cor/undef.h>
 
 #define SNAME typeid_structmap
 #define PFX tsmap
 #define K type_id
 #define V struct_def*
-#include <cmc/hashmap.h>
+#include <cmc/cor/core.h>
+#include <cmc/cor/hashtable.h>
+#include <cmc/hashmap/struct.h>
+#include <cmc/hashmap/header.h>
 
 typedef struct typeid_structmap typeid_structmap;
 
-struct typeid_structmap_fkey tsmap_fkeys = {
-    .cmp = cmc_size_cmp,
-    .cpy = NULL,
-    .str = cmc_size_str,
-    .free = NULL,
-    .hash = cmc_size_hash,
-    .pri = cmc_size_cmp,
-};
+extern struct typeid_structmap_fkey tsmap_fkeys;
 
-struct typeid_structmap_fval tsmap_fvals = {
-    .cmp = struct_def_cmp,
-    .cpy = struct_def_cpy,
-    .str = struct_def_str,
-    .free = struct_def_free,
-    .hash = struct_def_hash,
-    .pri = struct_def_cmp,
-};
+extern struct typeid_structmap_fval tsmap_fvals;
+
+#include <cmc/cor/undef.h>
 
 #endif

@@ -31,7 +31,7 @@ field_def *program_manager_create_field(program_manager *pm, char *name, type_de
 }
 
 field_def *program_manager_get_field(program_manager *pm, char *name) {
-    for (size_t i = pm->scope_stack->count - 1; i >= 0; i--) {
+    for (size_t i = sclist_count(pm->scope_stack) - 1; i >= 0; i--) {
         scope *s = sclist_get(pm->scope_stack, i);
         field_def *res = scope_get_field(s, name);
         if (res) {
@@ -53,7 +53,7 @@ func_def *program_manager_create_func(program_manager *pm, char *name, type_def 
 }
 
 func_def *program_manager_get_func(program_manager *pm, char *name) {
-    for (size_t i = pm->scope_stack->count - 1; i >= 0; i--) {
+    for (size_t i = sclist_count(pm->scope_stack) - 1; i >= 0; i--) {
         scope *s = sclist_get(pm->scope_stack, i);
         func_def *res = scope_get_func(s, name);
         if (res) {
@@ -77,7 +77,7 @@ struct_def *program_manager_create_struct(program_manager *pm, char *name) {
 }
 
 struct_def *program_manager_get_struct(program_manager *pm, char *name) {
-    for (size_t i = pm->scope_stack->count - 1; i >= 0; i--) {
+    for (size_t i = sclist_count(pm->scope_stack) - 1; i >= 0; i--) {
         scope *s = sclist_get(pm->scope_stack, i);
         struct_def *res = scope_get_struct(s, name);
         if (res) {

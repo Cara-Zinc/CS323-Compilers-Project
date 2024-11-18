@@ -49,15 +49,12 @@ size_t scope_get_subscope_count(scope *s);
 #define SNAME scopelist
 #define PFX sclist
 #define V scope*
-#include <cmc/list.h>
+#include <cmc/cor/core.h>
+#include <cmc/list/struct.h>
+#include <cmc/list/header.h>
 
-struct scopelist_fval sclist_fvals = {
-    .cmp = NULL,
-    .cpy = scope_cpy,
-    .str = scope_str,
-    .free = scope_free,
-    .hash = NULL,
-    .pri = NULL,
-};
+extern struct scopelist_fval sclist_fvals;
+
+#include <cmc/cor/undef.h>
 
 #endif

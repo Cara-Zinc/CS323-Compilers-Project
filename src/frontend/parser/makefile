@@ -28,7 +28,7 @@ $(LEX_C): $(LEX_FILE) $(YACC_H)
 
 # Compile and link everything together
 $(EXEC): $(LEX_C) $(YACC_C)
-	$(CC) ../defs/*.c ../mm/*.c $(LEX_C) $(YACC_C) -o $(EXEC) -lfl -I $(DEP_CMC) -I $(AST_DIR) -fcommon
+	$(CC) ../defs/*.c ../mm/*.c ../collections/*.c ../utils/*.c $(LEX_C) $(YACC_C) -o $(EXEC) -lfl -I $(DEP_CMC) -I $(AST_DIR) -fcommon
 
 # Clean up intermediate and generated files
 clean:

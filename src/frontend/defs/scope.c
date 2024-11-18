@@ -27,7 +27,7 @@ scope *scope_cpy(scope *s) {
 }
 
 bool scope_str(FILE *file, scope *s) {
-    fprintf(file, "scope with %zu struct defs, %zu fields, %zu funcs, %zu subscopes", s->struct_defs->count, s->fields->count, s->funcs->count, s->subscopes->count);
+    fprintf(file, "scope with %zu struct defs, %zu fields, %zu funcs, %zu subscopes", smap_count(s->struct_defs), vmap_count(s->fields), fmap_count(s->funcs), sclist_count(s->subscopes));
     return true;
 }
 

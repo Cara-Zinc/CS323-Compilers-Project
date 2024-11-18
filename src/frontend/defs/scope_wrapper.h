@@ -38,26 +38,17 @@ bool scope_wrapper_str(FILE *file, scope_wrapper *sw);
 #define SNAME scwrapperlist
 #define PFX scwlist
 #define V scope_wrapper*
-#include <cmc/list.h>
+#include <cmc/cor/core.h>
+#include <cmc/list/struct.h>
+#include <cmc/list/header.h>
+
 // @brief A list of scope_wrappers
 typedef struct scwrapperlist scwrapperlist;
 
-struct scwrapperlist_fval scwlist_fvals = {
-    .cmp = NULL,
-    .cpy = scope_wrapper_cpy,
-    .str = scope_wrapper_str,
-    .free = scope_wrapper_free,
-    .hash = NULL,
-    .pri = NULL,
-};
+extern struct scwrapperlist_fval scwlist_fvals;
 
-struct scwrapperlist_fval scwlist_without_data_fvals = {
-    .cmp = NULL,
-    .cpy = scope_wrapper_cpy_without_data,
-    .str = scope_wrapper_str,
-    .free = scope_wrapper_free_without_data,
-    .hash = NULL,
-    .pri = NULL,
-};
+extern struct scwrapperlist_fval scwlist_without_data_fvals;
+
+#include <cmc/cor/undef.h>
 
 #endif
