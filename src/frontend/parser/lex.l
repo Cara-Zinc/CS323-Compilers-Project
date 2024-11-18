@@ -16,7 +16,7 @@ void yyerrora(const char *s) {
 [ \t\n]+          ;                    // ignore whitespaces
 
 0|[1-9][0-9]*           { yylval.int_val = atoi(yytext); return INT; }
-0x[0-9a-fA-F]+          { yylval.int_val = strtol(yytext, NULL, 16); return INT; }
+0x0|0x[1-9a-zA-Z][0-9a-fA-F]*          { yylval.int_val = strtol(yytext, NULL, 16); return INT; }
 [1-9][0-9]*\.[0-9]+     { yylval.float_val = atof(yytext); return FLOAT; }
 0\.[0-9]+               { yylval.float_val = atof(yytext); return FLOAT; }
 \'[ -~]\'               { yylval.char_val = yytext[1]; return CHAR; }

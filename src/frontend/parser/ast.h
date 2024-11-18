@@ -104,9 +104,19 @@ void rprintAST(ASTNode *node, int level) {
 // Function to free the AST
 void freeAST(ASTNode *node) {
     if (!node) return;
-    if (node->nodeType) free(node->nodeType);
-    if (node->text) free(node->text);
-    alist_free(node->children);
+    if (node->nodeType)
+    {
+        printf("freeing %s\n", node->nodeType);
+        free(node->nodeType);
+        node->nodeType = NULL;
+    } 
+    if (node->text){
+        free(node->text);
+        node->text = NULL;
+    } 
+    if(node->children) {
+       alist_free(node->children);
+    }
     free(node);
 }
 
