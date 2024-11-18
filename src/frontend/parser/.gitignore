@@ -1,3 +1,4 @@
 syntax.tab.c
 lex.yy.c
 syntax.tab.h
+structura_parser
