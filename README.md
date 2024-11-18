@@ -5,7 +5,7 @@ An extended version of SPL with object-oriented elements, featuring structs that
 This project uses some submodules. To initialize these submodules:
 ```sh
 git submodule init
-git summodule update --recursive
+git submodule update --recursive
 ```
 
 ## Project overview
