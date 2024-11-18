@@ -362,3 +362,51 @@ ASTNode *exp_struct_handler(program_manager *pm, ASTNode *Exp, char *id)
     return node;
 }
 
+ASTNode *exp_int_handler(program_manager *pm, int text)
+{
+    // convert int to string
+    char *str = (char *)malloc(12 * sizeof(char));
+    if (str != NULL)
+    {
+        sprintf(str, "%d", text);
+    }
+    else
+    {
+        printf("Error: Memory allocation failed\n");
+        return NULL;
+    }
+    return createASTLeaf("INT", str);
+}
+
+ASTNode *exp_float_handler(program_manager *pm, float text)
+{
+    // convert float to string
+    char *str = (char *)malloc(12 * sizeof(char));
+    if (str != NULL)
+    {
+        sprintf(str, "%f", text);
+    }
+    else
+    {
+        printf("Error: Memory allocation failed\n");
+        return NULL;
+    }
+    return createASTLeaf("FLOAT", str);
+}
+
+ASTNode *exp_char_handler(program_manager *pm, char text)
+{
+    // convert char to string
+    char *str = (char *)malloc(2 * sizeof(char));
+    if (str != NULL)
+    {
+        str[0] = text;
+        str[1] = '\0';
+    }
+    else
+    {
+        printf("Error: Memory allocation failed\n");
+        return NULL;
+    }
+    return createASTLeaf("CHAR", str);
+}

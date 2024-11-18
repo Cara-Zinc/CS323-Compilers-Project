@@ -2,12 +2,13 @@
 LEX = flex
 YACC = bison
 CC = gcc
-LEX_DIR = lexer
-YACC_DIR = parser
-LEX_FILE = lex.l
-YACC_FILE = syntax.y
+LEX_DIR = .
+YACC_DIR = .
+LEX_FILE = $(LEX_DIR)/lex.l
+YACC_FILE = $(YACC_DIR)/syntax.y
 EXEC = structura_parser
 DEP_CMC = ../../../dep/cmc
+AST_DIR = .
 
 # Intermediate files
 LEX_C = lex.yy.c
@@ -27,7 +28,7 @@ $(LEX_C): $(LEX_FILE) $(YACC_H)
 
 # Compile and link everything together
 $(EXEC): $(LEX_C) $(YACC_C)
-	$(CC) $(LEX_C) $(YACC_C) ../defs/*.c -o $(EXEC) -Wall -lfl -I $(DEP_CMC)
+	$(CC) $(LEX_C) $(YACC_C) -o $(EXEC) -lfl -I $(DEP_CMC) -I $(AST_DIR)
 
 # Clean up intermediate and generated files
 clean:

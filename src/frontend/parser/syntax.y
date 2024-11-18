@@ -3,6 +3,8 @@
 #include <stdlib.h>
 
 #include "ast.h"            // 抽象语法树相关的函数和声明
+#include "syntax.tab.h"
+#include "args.h"           // 函数参数相关的函数和声明
 //#include "program.h"        // 程序结构的辅助函数和声明
 //#include "type_struct.h"    // 类型和结构体相关的函数和声明
 #include "declaration.h"    // 变量和函数声明相关的函数和声明
@@ -14,7 +16,10 @@
 #include "spec.h"           // 基础类型和结构体相关的辅助函数和声明
 #include "../mm/program_manager.h" // 程序管理器相关的函数和声明
 
-program_manager *pm = program_manager_new();
+
+int yylex(void);
+extern int yylineno;
+program_manager *pm;
 
 void yyerror(const char *s) {
     fprintf(stderr, "Error type B at Line %d: %s\n", yylineno, s);
@@ -101,7 +106,7 @@ StmtList : Stmt StmtList { $$ = stmtlist_stmt_stmtlist_handler(pm, $1, $2); }
          ;
 
 Stmt : Exp SEMI { $$ = stmt_exp_handler(pm, $1); }
-     | CompSt { $$ = stmt_compst_handler(pm, $1); }
+     | CompSt { $$ = stmt_comp_handler(pm, $1); }
      | RETURN Exp SEMI { $$ = stmt_return_handler(pm, $2); }
      | RETURN Exp error { yyerror("Missing semicolon ';'"); }
      | IF LP Exp RP Stmt { $$ = stmt_if_handler(pm, $3, $5); }
@@ -167,9 +172,9 @@ Exp : Exp ASSIGN Exp { $$ = exp_assign_handler(pm, $1, $3); }
     | Exp DOT ID { exp_struct_handler(pm, $1, $3); }
     | Exp DOT error { yyerror("Missing struct member"); }
     | ID { exp_id_handler(pm, $1); }
-    | INT { $$ = exp_primitive_handler(pm, "INT", $1); }
-    | FLOAT { $$ = exp_primitive_handler(pm, "FLOAT", $1); }
-    | CHAR { $$ = exp_primitive_handler(pm, "CHAR", $1); }
+    | INT { $$ = exp_int_handler(pm, $1); }
+    | FLOAT { $$ = exp_float_handler(pm, $1); }
+    | CHAR { $$ = exp_char_handler(pm, $1); }
     ;
 
 Args : Exp COMMA Args {$$ = args_handler(pm, $1, $3); }
@@ -180,5 +185,6 @@ Args : Exp COMMA Args {$$ = args_handler(pm, $1, $3); }
 %%
 
 int main() {
+    pm = program_manager_new();
     return yyparse();
 }

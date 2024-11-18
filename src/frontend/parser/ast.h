@@ -82,6 +82,10 @@ void rprintAST(ASTNode *node, int level) {
         printf("  ");
     }
     printf("%s", node->nodeType);
+    if(strcmp(node->nodeType, "ID") == 0 || strcmp(node->nodeType, "INT") == 0 || strcmp(node->nodeType, "FLOAT") == 0 || strcmp(node->nodeType, "CHAR") == 0) {
+        printf(":");
+    }
+    
     if (node->text) {
         printf(" (%s)", node->text);
     }
