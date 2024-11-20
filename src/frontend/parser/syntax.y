@@ -47,7 +47,7 @@ void yyerror(const char *s) {
 
 %%
 
-Program : ExtDefList { $$ = program_handler(pm, $1); }
+Program : ExtDefList { $$ = program_handler(pm, $1); rprintAST($$,0);}
         ;
 
 ExtDefList : ExtDef ExtDefList { $$ = ext_def_list_handler(pm, $1, $2); }
@@ -173,7 +173,7 @@ Exp : Exp ASSIGN Exp { $$ = exp_assign_handler(pm, $1, $3); }
     | Exp LB Exp error { yyerror("Missing closing bracket ']'"); }
     | Exp DOT ID { exp_struct_handler(pm, $1, $3); }
     | Exp DOT error { yyerror("Missing struct member"); }
-    | ID { exp_id_handler(pm, $1); }
+    | ID { $$ = exp_id_handler(pm, $1); }
     | INT { $$ = exp_int_handler(pm, $1); }
     | FLOAT { $$ = exp_float_handler(pm, $1); }
     | CHAR { $$ = exp_char_handler(pm, $1); }

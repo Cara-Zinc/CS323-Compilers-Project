@@ -1,7 +1,7 @@
 #include "../mm/program_manager.h"
 #include "ast.h"
 
-void exp_id_handler(program_manager *pm, char *name)
+ASTNode *exp_id_handler(program_manager *pm, char *name)
 {
     // if (!program_manager_get_field(pm, name))
     // {
@@ -15,7 +15,7 @@ void exp_id_handler(program_manager *pm, char *name)
 
 ASTNode *exp_bi_op_handler(program_manager *pm, ASTNode *left, char *op, ASTNode *right)
 {
-    char *node_type = "EXP";
+    // char *node_type = "EXP";
     // if (left == NULL || right == NULL)
     // {
     //     return NULL;
@@ -177,7 +177,7 @@ ASTNode *exp_assign_handler(program_manager *pm, ASTNode *left, ASTNode *right)
     //     }
     // }
 
-    ASTNode *node = createASTNode("ASSIGN", 2, left, right);
+    ASTNode *node = createASTNode("Exp", 3, left, createASTLeaf("op", "="), right);
     // char *text = (char *)malloc(strlen(left->text) + strlen(right->text) + 2);
     // if (text != NULL)
     // {
@@ -205,99 +205,99 @@ ASTNode *exp_assign_handler(program_manager *pm, ASTNode *left, ASTNode *right)
 
 ASTNode *exp_neg_handler(program_manager *pm, ASTNode *child)
 {
-    if (child == NULL)
-    {
-        printf("Error: Invalid negation, child is NULL\n");
-        return NULL;
-    }
+    // if (child == NULL)
+    // {
+    //     printf("Error: Invalid negation, child is NULL\n");
+    //     return NULL;
+    // }
 
-    // check usage before declaration
-    if (!strcmp(child->nodeType, "ID"))
-    {
-        if (!program_manager_get_field(pm, child->text))
-        {
-            //printf("Error: variable %s not declared\n", child->text);
-            // exit(1);
-        }
-    }
+    // // check usage before declaration
+    // if (!strcmp(child->nodeType, "ID"))
+    // {
+    //     if (!program_manager_get_field(pm, child->text))
+    //     {
+    //         //printf("Error: variable %s not declared\n", child->text);
+    //         // exit(1);
+    //     }
+    // }
 
-    if (strcmp(child->nodeType, "INT") && strcmp(child->nodeType, "FLOAT"))
-    {
-        printf("Error: type mismatch, should be INT or FLOAT\n");
-        // exit(1);
-    }
+    // if (strcmp(child->nodeType, "INT") && strcmp(child->nodeType, "FLOAT"))
+    // {
+    //     printf("Error: type mismatch, should be INT or FLOAT\n");
+    //     // exit(1);
+    // }
 
-    ASTNode *node = createASTNode("NEG", 1, child);
-    char *text = (char *)malloc(strlen(child->text) + 2);
-    if (text != NULL)
-    {
-        if (child->text)
-        {
-            strcpy(text, "-");
-            strcat(text, child->text);
-            node->text = text;
-        }
-        else
-        {
-            printf("Error: Invalid text in expression nodes\n");
-            free(text);
-            return NULL;
-        }
-    }
-    else
-    {
-        printf("Error: Memory allocation failed\n");
-        return NULL;
-    }
+    ASTNode *node = createASTNode("Exp", 2, createASTLeaf("op", "-"), child);
+    // char *text = (char *)malloc(strlen(child->text) + 2);
+    // if (text != NULL)
+    // {
+    //     if (child->text)
+    //     {
+    //         strcpy(text, "-");
+    //         strcat(text, child->text);
+    //         node->text = text;
+    //     }
+    //     else
+    //     {
+    //         printf("Error: Invalid text in expression nodes\n");
+    //         free(text);
+    //         return NULL;
+    //     }
+    // }
+    // else
+    // {
+    //     printf("Error: Memory allocation failed\n");
+    //     return NULL;
+    // }
     return node;
 }
 
 ASTNode *exp_not_handler(program_manager *pm, ASTNode *child)
 {
-    if (child == NULL)
-    {
-        printf("Error: Invalid negation, child is NULL\n");
-        return NULL;
-    }
+    // if (child == NULL)
+    // {
+    //     printf("Error: Invalid negation, child is NULL\n");
+    //     return NULL;
+    // }
 
-    // check usage before declaration
-    if (!strcmp(child->nodeType, "ID"))
-    {
-        if (!program_manager_get_field(pm, child->text))
-        {
-            printf("Error: variable %s not declared\n", child->text);
-            // exit(1);
-        }
-    }
+    // // check usage before declaration
+    // if (!strcmp(child->nodeType, "ID"))
+    // {
+    //     if (!program_manager_get_field(pm, child->text))
+    //     {
+    //         printf("Error: variable %s not declared\n", child->text);
+    //         // exit(1);
+    //     }
+    // }
 
-    if (strcmp(child->nodeType, "BOOL"))
-    {
-        printf("Error: type mismatch, should be BOOL\n");
-        // exit(1);
-    }
+    // if (strcmp(child->nodeType, "BOOL"))
+    // {
+    //     printf("Error: type mismatch, should be BOOL\n");
+    //     // exit(1);
+    // }
 
-    ASTNode *node = createASTNode("NOT", 1, child);
-    char *text = (char *)malloc(strlen(child->text) + 2);
-    if (text != NULL)
-    {
-        if (child->text)
-        {
-            strcpy(text, "!");
-            strcat(text, child->text);
-            node->text = text;
-        }
-        else
-        {
-            printf("Error: Invalid text in expression nodes\n");
-            free(text);
-            return NULL;
-        }
-    }
-    else
-    {
-        printf("Error: Memory allocation failed\n");
-        return NULL;
-    }
+    ASTNode *node = createASTNode("Exp", 2, createASTLeaf("op", "!"), child);
+    // char *text = (char *)malloc(strlen(child->text) + 2);
+    // if (text != NULL)
+    // {
+    //     if (child->text)
+    //     {
+    //         strcpy(text, "!");
+    //         strcat(text, child->text);
+    //         node->text = text;
+    //     }
+    //     else
+    //     {
+    //         printf("Error: Invalid text in expression nodes\n");
+    //         free(text);
+    //         return NULL;
+    //     }
+    // }
+    // else
+    // {
+    //     printf("Error: Memory allocation failed\n");
+    //     return NULL;
+    // }
     return node;
 }
 
@@ -347,10 +347,10 @@ ASTNode *exp_array_handler(program_manager *pm, ASTNode *Exp1, ASTNode *Exp2)
 
 ASTNode *exp_struct_handler(program_manager *pm, ASTNode *Exp, char *id)
 {
-    if(Exp == NULL)
-    {
-        return createASTNode("Exp", 1, createASTLeaf("ID", id));
-    }
+    // if(Exp == NULL)
+    // {
+    //     return createASTNode("Exp", 1, createASTLeaf("ID", id));
+    // }
     ASTNode *node = createASTNode("Exp", 2, Exp, createASTLeaf("ID", id));
     return node;
 }
