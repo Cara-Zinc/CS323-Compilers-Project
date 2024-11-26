@@ -199,7 +199,7 @@ ASTNode *exp_assign_handler(program_manager *pm, ASTNode *left, ASTNode *right)
     // {
     //     printf("Error: Memory allocation failed\n");
     //     return NULL;
-    // 
+    //
     return node;
 }
 
@@ -303,15 +303,15 @@ ASTNode *exp_not_handler(program_manager *pm, ASTNode *child)
 
 ASTNode *exp_unary_op_handler(program_manager *pm, char *op, ASTNode *child)
 {
-    if(strcmp(op, "-"))
+    if(!strcmp(op, "MINUS"))
     {
         return exp_neg_handler(pm, child);
     }
-    else if(strcmp(op, "!"))
+    else if(!strcmp(op, "NOT"))
     {
         return exp_not_handler(pm, child);
     }
-    else if(strcmp(op, "+"))
+    else if(!strcmp(op, "PLUS"))
     {
         return createASTNode("Exp", 2, createASTLeaf("op","PLUS"), child);
     }

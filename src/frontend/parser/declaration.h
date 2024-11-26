@@ -1,7 +1,7 @@
 #include "../mm/program_manager.h"
 #include "ast.h"
 
-/* 
+/*
  * Handles the following rules:
  * VarDec : ID
  *        | VarDec LB INT RB
@@ -20,11 +20,11 @@ ASTNode *VarDec_Array_handler(program_manager *pm, ASTNode *VarDec, int int_val)
     // convert INT to string
     char *INT_str = malloc(12);
     sprintf(INT_str, "%d", int_val);
-    return createASTNode("VarDec", 3, VarDec, createASTLeaf("LB", "["), createASTLeaf("INT", INT_str), createASTLeaf("RB", "]"));
+    return createASTNode("VarDec", 4, VarDec, createASTLeaf("LB", "["), createASTLeaf("INT", INT_str), createASTLeaf("RB", "]"));
 }
 
 /*
- * Handles the following rules when declaring a function: 
+ * Handles the following rules when declaring a function:
  * VarList : ParamDec COMMA VarList
  *         | ParamDec
  *         ;
@@ -58,7 +58,7 @@ ASTNode *FunDec_handler(program_manager *pm, char *id, ASTNode *VarList)
 {
     if (VarList == NULL)
     {
-        return createASTNode("FunDec", 2, createASTLeaf("ID", id), createASTLeaf("RP", "RP"));
+        return createASTNode("FunDec", 3, createASTLeaf("LP", "LP"), createASTLeaf("ID", id), createASTLeaf("RP", "RP"));
     }
     return createASTNode("FunDec", 4, createASTLeaf("ID", id), createASTLeaf("LP", "LP"), VarList, createASTLeaf("RP", "RP"));
 }
