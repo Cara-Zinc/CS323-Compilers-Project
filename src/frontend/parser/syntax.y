@@ -47,7 +47,7 @@ void yyerror(const char *s) {
 
 %%
 
-Program : ExtDefList { $$ = program_handler(pm, $1); rprintAST($$,0);}
+Program : ExtDefList { $$ = program_handler(pm, $1); rprintAST($$, 0); }
         ;
 
 ExtDefList : ExtDef ExtDefList { $$ = ext_def_list_handler(pm, $1, $2); }

@@ -28,7 +28,27 @@
                 }
             ],
             "preLaunchTask": "parser"
-        }
+        },
+        {
+            "name": "debug parser (LLDB)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/frontend/parser/structura_parser",
+            "args": ["<", "${workspaceFolder}/src/frontend/parser/test.spl"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/src/frontend/parser",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "setupCommands": [
+                {
+                    "description": "Enable LLDB pretty printing",
+                    "text": "settings set target.max-string-summary-length 1000",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "parser"
+        }        
         
     ]
 }
