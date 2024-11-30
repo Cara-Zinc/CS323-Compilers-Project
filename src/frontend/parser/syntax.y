@@ -142,6 +142,26 @@ Exp : Exp ASSIGN Exp { $$ = exp_assign_handler(pm, $1, $3); }
     | INT { $$ = exp_int_handler(pm, $1); }
     | FLOAT { $$ = exp_float_handler(pm, $1); }
     | CHAR { $$ = exp_char_handler(pm, $1); }
+    | Exp AND error { yyerror("Invalid expression after '&&' operator"); $$ = createASTLeaf("Error", NULL); }
+    | Exp OR error { yyerror("Invalid expression after '||' operator"); $$ = createASTLeaf("Error", NULL); }
+    | Exp LT error { yyerror("Invalid expression after '<' operator"); $$ = createASTLeaf("Error", NULL); }
+    | Exp LE error { yyerror("Invalid expression after '<=' operator"); $$ = createASTLeaf("Error", NULL); }
+    | Exp GT error { yyerror("Invalid expression after '>' operator"); $$ = createASTLeaf("Error", NULL); }
+    | Exp GE error { yyerror("Invalid expression after '>=' operator"); $$ = createASTLeaf("Error", NULL); }
+    | Exp NE error { yyerror("Invalid expression after '!=' operator"); $$ = createASTLeaf("Error", NULL); }
+    | Exp EQ error { yyerror("Invalid expression after '==' operator"); $$ = createASTLeaf("Error", NULL); }
+    | Exp PLUS error { yyerror("Invalid expression after '+' operator"); $$ = createASTLeaf("Error", NULL); }
+    | Exp MINUS error { yyerror("Invalid expression after '-' operator"); $$ = createASTLeaf("Error", NULL); }
+    | Exp MUL error { yyerror("Invalid expression after '*' operator"); $$ = createASTLeaf("Error", NULL); }
+    | Exp DIV error { yyerror("Invalid expression after '/' operator"); $$ = createASTLeaf("Error", NULL); }
+    | MINUS error { yyerror("Invalid expression after unary operator '-'"); $$ = createASTLeaf("Error", NULL); }
+    | PLUS error { yyerror("Invalid expression after unary operator '+'"); $$ = createASTLeaf("Error", NULL); }
+    | NOT error { yyerror("Invalid expression after unary operator '!'"); $$ = createASTLeaf("Error", NULL); }
+    | ID LP error RP { yyerror("Invalid arguments in function call"); $$ = createASTLeaf("Error", NULL); }
+    | Exp LB error RB { yyerror("Invalid or missing array index"); $$ = createASTLeaf("Error", NULL); }
+    | Exp DOT error { yyerror("Invalid member name after '.' operator"); $$ = createASTLeaf("Error", NULL); }
+    | Exp error Exp error { yyerror("Multiple errors in expression"); $$ = createASTLeaf("Error", NULL); }
+    | LP Exp error { yyerror("Unbalanced parentheses: Missing closing parenthesis"); $$ = createASTLeaf("Error", NULL); }
     ;
 
 Args : Exp COMMA Args {$$ = args_handler(pm, $1, $3); }
