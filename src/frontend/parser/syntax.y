@@ -107,6 +107,7 @@ Stmt : Exp SEMI { $$ = stmt_exp_handler(pm, $1); }
      | IF LP error RP Stmt { yyerror("Invalid or missing expression in if condition"); $$ = createASTLeaf("Error", NULL); }
      | IF LP Exp RP Stmt ELSE error { yyerror("Invalid or missing statement after else"); $$ = createASTLeaf("Error", NULL); }
      | IF error { yyerror("Invalid if statement syntax"); $$ = createASTLeaf("Error", NULL); }
+     | ELSE error { yyerror("Invalid else statement syntax. Did you forget an if statement?"); $$ = createASTLeaf("Error", NULL); }
      | WHILE LP Exp error SEMI { yyerror("Missing closing parenthesis after while condition. Type I"); $$ = createASTLeaf("Error", NULL); }
      | WHILE LP Exp error Stmt { yyerror("Missing closing parenthesis after while condition"); $$ = createASTLeaf("Error", NULL); }
      | WHILE LP error RP Stmt { yyerror("Invalid or missing expression in while condition"); $$ = createASTLeaf("Error", NULL); }

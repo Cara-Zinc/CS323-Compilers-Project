@@ -1,7 +1,14 @@
 int test_2_r03()
 {
+    @@@@@@$
+    @@@
     int res = 1;
-    int n = 5/;         
+    int n = 5/;   
+
+    else {              
+        res = 0;        
+    }
+
     if (b != c) {         
         a = 0;             
     }
