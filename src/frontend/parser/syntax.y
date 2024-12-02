@@ -57,6 +57,8 @@ ExtDefList : ExtDef ExtDefList { $$ = ext_def_list_handler(pm, $1, $2); }
 ExtDef : Specifier ExtDecList SEMI { $$ = ext_def_dec_handler(pm, $1, $2); }
        | Specifier SEMI { $$ = ext_def_struct_handler(pm, $1); }
        | Specifier FunDec CompSt { $$ = ext_def_func_handler(pm, $1, $2, $3); }
+       | error ExtDecList SEMI { yyerror("Missing type specifier in declaration"); $$ = createASTLeaf("Error", NULL); }
+       | Specifier error SEMI { yyerror("Missing or invalid ExtDecList in declaration"); $$ = createASTLeaf("Error", NULL); }
        ;
 
 ExtDecList : VarDec { $$ = ext_dec_list_handler(pm, $1, NULL); }
@@ -73,17 +75,28 @@ StructSpecifier : STRUCT ID LC DefList RC { $$ = struct_def_handler(pm, $2, $4);
 
 VarDec : ID { $$ = VarDec_ID_handler(pm, $1); }
        | VarDec LB INT RB { $$ = VarDec_Array_handler(pm, $1, $3); }
+       | VarDec LB error RB { yyerror("Invalid or missing array size"); $$ = createASTLeaf("Error", NULL); }
+       | VarDec LB RB { yyerror("Missing array size"); $$ = createASTLeaf("Error", NULL); }
+       | VarDec INT RB { yyerror("Missing left bracket in array declaration"); $$ = createASTLeaf("Error", NULL); }
+       | VarDec LB INT error { yyerror("Missing right bracket in array declaration"); $$ = createASTLeaf("Error", NULL); }
        ;
 
 FunDec : ID LP VarList RP { $$ = FunDec_handler(pm, $1, $3); }
        | ID LP RP { $$ = FunDec_handler(pm, $1, NULL); }
+       | ID LP VarList error { yyerror("Missing right parenthesis in function declaration"); $$ = createASTLeaf("Error", NULL); }
+       | ID RP { yyerror("Missing left parenthesis in function declaration"); $$ = createASTLeaf("Error", NULL); }
+       | ID LP error { yyerror("Missing right parenthesis in function declaration"); $$ = createASTLeaf("Error", NULL); }
        ;
 
 VarList : ParamDec COMMA VarList { $$ = VarList_ParamDec_Comma_VarList_handler(pm, $1, $3); }
         | ParamDec { $$ = VarList_ParamDec_handler(pm, $1); }
+        | error COMMA VarList { yyerror("Invalid or missing parameter declaration"); $$ = createASTLeaf("Error", NULL); }
+        | ParamDec COMMA error { yyerror("Extra comma in parameter list"); $$ = createASTLeaf("Error", NULL); }
         ;
 
 ParamDec : Specifier VarDec { $$ = ParamDec_handler(pm, $1, $2); }
+         | Specifier error { yyerror("Missing variable declaration in parameter list"); $$ = createASTLeaf("Error", NULL); }
+         | VarDec { yyerror("Missing type specifier in parameter list"); $$ = createASTLeaf("Error", NULL); }
          ;
 
 CompSt : LC DefList StmtList RC { $$ = compst_deflist_stmtlist_handler(pm, $2, $3); }
@@ -113,6 +126,7 @@ Stmt : Exp SEMI { $$ = stmt_exp_handler(pm, $1); }
      | WHILE LP error RP Stmt { yyerror("Invalid or missing expression in while condition"); $$ = createASTLeaf("Error", NULL); }
      | WHILE error { yyerror("Invalid while statement syntax"); $$ = createASTLeaf("Error", NULL); }
      | LC DefList StmtList error { yyerror("Missing closing brace in compound statement"); $$ = createASTLeaf("Error", NULL); }
+     | error DefList StmtList RC { yyerror("Missing opening brace in compound statement"); $$ = createASTLeaf("Error", NULL); }
      | LC DefList StmtList RC error { yyerror("Invalid or missing statement after compound statement"); $$ = createASTLeaf("Error", NULL); }
      ;
 
@@ -180,6 +194,9 @@ Exp : Exp ASSIGN Exp { $$ = exp_assign_handler(pm, $1, $3); }
 
 Args : Exp COMMA Args {$$ = args_handler(pm, $1, $3); }
      | Exp { $$ = args_handler(pm, $1, NULL); }
+     | error COMMA Args { yyerror("Invalid or missing argument in argument list"); $$ = createASTLeaf("Error", NULL); }
+     | Exp COMMA error { yyerror("Invalid or missing argument in argument list"); $$ = createASTLeaf("Error", NULL); }
+     | Exp COMMA { yyerror("Extra comma in argument list"); $$ = createASTLeaf("Error", NULL); }
      ;
 
 %%

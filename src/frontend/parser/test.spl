@@ -1,9 +1,7 @@
 int test_2_r03()
-{
-    @@@@@@$
-    @@@
+{ // ssss
     int res = 1;
-    int n = 5/;   
+    int n = 5/;   // sdss
 
     else {              
         res = 0;        
@@ -15,6 +13,9 @@ int test_2_r03()
     else {
         5 >;          
         res = 10;          
+    }
+    else {              
+        res = 0;        
     }
     x = ;                
 
