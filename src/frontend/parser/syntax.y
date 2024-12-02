@@ -4,16 +4,7 @@
 
 #include "ast.h"            // 抽象语法树相关的函数和声明
 #include "syntax.tab.h"
-#include "args.h"           // 函数参数相关的函数和声明
-//#include "program.h"        // 程序结构的辅助函数和声明
-//#include "type_struct.h"    // 类型和结构体相关的函数和声明
-#include "declaration.h"    // 变量和函数声明相关的函数和声明
-#include "compst.h"         // 复合语句相关的函数和声明
-#include "stmt.h"           // 各种语句的函数和声明
-#include "def.h"            // 定义相关的辅助函数和声明
-#include "exp.h"            // 表达式相关的辅助函数和声明
-#include "ext.h"
-#include "spec.h"           // 基础类型和结构体相关的辅助函数和声明
+#include "syntax/syntax_analysis.h" // 语法分析相关的函数和声明
 #include "../mm/program_manager.h" // 程序管理器相关的函数和声明
 
 
@@ -41,7 +32,8 @@ void yyerror(const char *s) {
 %token <str> TYPE STRUCT IF ELSE WHILE RETURN DOT SEMI COMMA ASSIGN LT LE GT GE NE EQ PLUS MINUS MUL DIV AND OR NOT LP RP LB RB LC RC
 
 /* Declare non-terminals and their types */
-%type <node> Program ExtDefList ExtDef ExtDecList Specifier StructSpecifier VarDec FunDec VarList ParamDec CompSt StmtList Stmt DefList Def DecList Dec Exp Args
+%type <node> Program ExtDefList ExtDef ExtDecList Specifier StructSpecifier VarDec FunDec VarList ParamDec CompSt StmtList Stmt DefList Def DecList Dec Exp Args StructDefList StructDef
+
 
 %start Program
 
@@ -67,9 +59,17 @@ Specifier : TYPE { $$ = type_handler(pm, $1); }
           | StructSpecifier { $$ = struct_spec_handler(pm, $1); }
           ;
 
-StructSpecifier : STRUCT ID LC DefList RC { $$ = struct_def_handler(pm, $2, $4); }
+StructSpecifier : STRUCT ID LC StructDefList RC { $$ = struct_def_handler(pm, $2, $4); }
                 | STRUCT ID { $$ = struct_def_handler(pm, $2, NULL); }
                 ;
+
+StructDefList : StructDef StructDefList { $$ = struct_member_list_handler(pm, $1, $2); }
+              | /* empty */ { $$ = struct_member_list_handler(pm, NULL, NULL); }
+              ;
+
+StructDef : Specifier DecList SEMI { $$ = struct_member_handler(pm, $1, $2, NULL); }
+          | Specifier FunDec SEMI { $$ = struct_member_handler(pm, $1, $2, NULL); }
+          | Specifier FunDec CompSt { $$ = struct_member_handler(pm, $1, $2, $3); }
 
 VarDec : ID { $$ = VarDec_ID_handler(pm, $1); }
        | VarDec LB INT RB { $$ = VarDec_Array_handler(pm, $1, $3); }
@@ -138,6 +138,8 @@ Exp : Exp ASSIGN Exp { $$ = exp_assign_handler(pm, $1, $3); }
     | ID LP RP { $$ = exp_func_handler(pm, $1, NULL); }
     | Exp LB Exp RB { $$ = exp_array_handler(pm, $1, $3); }
     | Exp DOT ID { $$ = exp_struct_handler(pm, $1, $3); }
+    | Exp DOT ID LP Args RP { $$ = exp_struct_func_handler(pm, $1, $3, $5); }
+    | Exp DOT ID LP RP { $$ = exp_struct_func_handler(pm, $1, $3, NULL); }
     | ID { $$ = exp_id_handler(pm, $1); }
     | INT { $$ = exp_int_handler(pm, $1); }
     | FLOAT { $$ = exp_float_handler(pm, $1); }
