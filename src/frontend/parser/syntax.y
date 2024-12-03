@@ -58,7 +58,6 @@ ExtDef : Specifier ExtDecList SEMI { $$ = ext_def_dec_handler(pm, $1, $2); }
        | Specifier SEMI { $$ = ext_def_struct_handler(pm, $1); }
        | Specifier FunDec CompSt { $$ = ext_def_func_handler(pm, $1, $2, $3); }
        | error ExtDecList SEMI { yyerror("Missing type specifier in declaration"); $$ = createASTLeaf("Error", NULL); }
-       | Specifier error SEMI { yyerror("Missing or invalid ExtDecList in declaration"); $$ = createASTLeaf("Error", NULL); }
        ;
 
 ExtDecList : VarDec { $$ = ext_dec_list_handler(pm, $1, NULL); }
