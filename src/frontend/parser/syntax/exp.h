@@ -355,6 +355,12 @@ ASTNode *exp_struct_handler(program_manager *pm, ASTNode *Exp, char *id)
     return node;
 }
 
+ASTNode *exp_struct_func_handler(program_manager *pm, ASTNode *Exp, char *id, ASTNode *Args)
+{
+    ASTNode *node = createASTNode("Exp", 3, Exp, createASTLeaf("ID", id), Args);
+    return node;
+}
+
 ASTNode *exp_int_handler(program_manager *pm, int text)
 {
     // convert int to string
