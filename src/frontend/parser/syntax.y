@@ -49,6 +49,7 @@ ExtDefList : ExtDef ExtDefList { $$ = ext_def_list_handler(pm, $1, $2); }
 ExtDef : Specifier ExtDecList SEMI { $$ = ext_def_dec_handler(pm, $1, $2); }
        | Specifier SEMI { $$ = ext_def_struct_handler(pm, $1); }
        | Specifier FunDec CompSt { $$ = ext_def_func_handler(pm, $1, $2, $3); }
+       | error ExtDecList SEMI { yyerror("Missing type specifier in declaration"); $$ = createASTLeaf("Error", NULL); }
        ;
 
 ExtDecList : VarDec { $$ = ext_dec_list_handler(pm, $1, NULL); }
@@ -73,17 +74,28 @@ StructDef : Specifier DecList SEMI { $$ = struct_member_handler(pm, $1, $2, NULL
 
 VarDec : ID { $$ = VarDec_ID_handler(pm, $1); }
        | VarDec LB INT RB { $$ = VarDec_Array_handler(pm, $1, $3); }
+       | VarDec LB error RB { yyerror("Invalid or missing array size"); $$ = createASTLeaf("Error", NULL); }
+       | VarDec LB RB { yyerror("Missing array size"); $$ = createASTLeaf("Error", NULL); }
+       | VarDec INT RB { yyerror("Missing left bracket in array declaration"); $$ = createASTLeaf("Error", NULL); }
+       | VarDec LB INT error { yyerror("Missing right bracket in array declaration"); $$ = createASTLeaf("Error", NULL); }
        ;
 
 FunDec : ID LP VarList RP { $$ = FunDec_handler(pm, $1, $3); }
        | ID LP RP { $$ = FunDec_handler(pm, $1, NULL); }
+       | ID LP VarList error { yyerror("Missing right parenthesis in function declaration"); $$ = createASTLeaf("Error", NULL); }
+       | ID RP { yyerror("Missing left parenthesis in function declaration"); $$ = createASTLeaf("Error", NULL); }
+       | ID LP error { yyerror("Missing right parenthesis in function declaration"); $$ = createASTLeaf("Error", NULL); }
        ;
 
 VarList : ParamDec COMMA VarList { $$ = VarList_ParamDec_Comma_VarList_handler(pm, $1, $3); }
         | ParamDec { $$ = VarList_ParamDec_handler(pm, $1); }
+        | error COMMA VarList { yyerror("Invalid or missing parameter declaration"); $$ = createASTLeaf("Error", NULL); }
+        | ParamDec COMMA error { yyerror("Extra comma in parameter list"); $$ = createASTLeaf("Error", NULL); }
         ;
 
 ParamDec : Specifier VarDec { $$ = ParamDec_handler(pm, $1, $2); }
+         | Specifier error { yyerror("Missing variable declaration in parameter list"); $$ = createASTLeaf("Error", NULL); }
+         | VarDec { yyerror("Missing type specifier in parameter list"); $$ = createASTLeaf("Error", NULL); }
          ;
 
 CompSt : LC DefList StmtList RC { $$ = compst_deflist_stmtlist_handler(pm, $2, $3); }
@@ -99,7 +111,22 @@ Stmt : Exp SEMI { $$ = stmt_exp_handler(pm, $1); }
      | IF LP Exp RP Stmt { $$ = stmt_if_handler(pm, $3, $5); }
      | IF LP Exp RP Stmt ELSE Stmt { $$ = stmt_if_else_handler(pm, $3, $5, $7); }
      | WHILE LP Exp RP Stmt { $$ = stmt_while_handler(pm, $3, $5); }
-     | error { yyerror("Unknown statement"); }
+     | Exp error { yyerror("Missing semicolon after expression"); $$ = createASTLeaf("Error", NULL); }
+     | RETURN Exp error { yyerror("Missing semicolon after return statement"); $$ = createASTLeaf("Error", NULL); }
+     | IF LP Exp error SEMI { yyerror("Missing closing parenthesis after if condition. Type I"); $$ = createASTLeaf("Error", NULL); }
+     | IF LP Exp error Stmt { yyerror("Missing closing parenthesis after if condition"); $$ = createASTLeaf("Error", NULL); }
+     | IF LP Exp RP error Stmt { yyerror("Missing statement after if condition"); $$ = createASTLeaf("Error", NULL); }
+     | IF LP error RP Stmt { yyerror("Invalid or missing expression in if condition"); $$ = createASTLeaf("Error", NULL); }
+     | IF LP Exp RP Stmt ELSE error { yyerror("Invalid or missing statement after else"); $$ = createASTLeaf("Error", NULL); }
+     | IF error { yyerror("Invalid if statement syntax"); $$ = createASTLeaf("Error", NULL); }
+     | ELSE error { yyerror("Invalid else statement syntax. Did you forget an if statement?"); $$ = createASTLeaf("Error", NULL); }
+     | WHILE LP Exp error SEMI { yyerror("Missing closing parenthesis after while condition. Type I"); $$ = createASTLeaf("Error", NULL); }
+     | WHILE LP Exp error Stmt { yyerror("Missing closing parenthesis after while condition"); $$ = createASTLeaf("Error", NULL); }
+     | WHILE LP error RP Stmt { yyerror("Invalid or missing expression in while condition"); $$ = createASTLeaf("Error", NULL); }
+     | WHILE error { yyerror("Invalid while statement syntax"); $$ = createASTLeaf("Error", NULL); }
+     | LC DefList StmtList error { yyerror("Missing closing brace in compound statement"); $$ = createASTLeaf("Error", NULL); }
+     | error DefList StmtList RC { yyerror("Missing opening brace in compound statement"); $$ = createASTLeaf("Error", NULL); }
+     | LC DefList StmtList RC error { yyerror("Invalid or missing statement after compound statement"); $$ = createASTLeaf("Error", NULL); }
      ;
 
 DefList : Def DefList { $$ = deflist_def_deflist_handler(pm, $1, $2); }
@@ -144,10 +171,33 @@ Exp : Exp ASSIGN Exp { $$ = exp_assign_handler(pm, $1, $3); }
     | INT { $$ = exp_int_handler(pm, $1); }
     | FLOAT { $$ = exp_float_handler(pm, $1); }
     | CHAR { $$ = exp_char_handler(pm, $1); }
+    | Exp ASSIGN error { yyerror("Invalid expression after '=' operator"); $$ = createASTLeaf("Error", NULL); }
+    | Exp AND error { yyerror("Invalid expression after '&&' operator"); $$ = createASTLeaf("Error", NULL); }
+    | Exp OR error { yyerror("Invalid expression after '||' operator"); $$ = createASTLeaf("Error", NULL); }
+    | Exp LT error { yyerror("Invalid expression after '<' operator"); $$ = createASTLeaf("Error", NULL); }
+    | Exp LE error { yyerror("Invalid expression after '<=' operator"); $$ = createASTLeaf("Error", NULL); }
+    | Exp GT error { yyerror("Invalid expression after '>' operator"); $$ = createASTLeaf("Error", NULL); }
+    | Exp GE error { yyerror("Invalid expression after '>=' operator"); $$ = createASTLeaf("Error", NULL); }
+    | Exp NE error { yyerror("Invalid expression after '!=' operator"); $$ = createASTLeaf("Error", NULL); }
+    | Exp EQ error { yyerror("Invalid expression after '==' operator"); $$ = createASTLeaf("Error", NULL); }
+    | Exp PLUS error { yyerror("Invalid expression after '+' operator"); $$ = createASTLeaf("Error", NULL); }
+    | Exp MINUS error { yyerror("Invalid expression after '-' operator"); $$ = createASTLeaf("Error", NULL); }
+    | Exp MUL error { yyerror("Invalid expression after '*' operator"); $$ = createASTLeaf("Error", NULL); }
+    | Exp DIV error { yyerror("Invalid expression after '/' operator"); $$ = createASTLeaf("Error", NULL); }
+    | MINUS error { yyerror("Invalid expression after unary operator '-'"); $$ = createASTLeaf("Error", NULL); }
+    | PLUS error { yyerror("Invalid expression after unary operator '+'"); $$ = createASTLeaf("Error", NULL); }
+    | NOT error { yyerror("Invalid expression after unary operator '!'"); $$ = createASTLeaf("Error", NULL); }
+    | ID LP error RP { yyerror("Invalid arguments in function call"); $$ = createASTLeaf("Error", NULL); }
+    | Exp LB error RB { yyerror("Invalid or missing array index"); $$ = createASTLeaf("Error", NULL); }
+    | Exp DOT error { yyerror("Invalid member name after '.' operator"); $$ = createASTLeaf("Error", NULL); }
+    | LP Exp error { yyerror("Unbalanced parentheses: Missing closing parenthesis"); $$ = createASTLeaf("Error", NULL); }
     ;
 
 Args : Exp COMMA Args {$$ = args_handler(pm, $1, $3); }
      | Exp { $$ = args_handler(pm, $1, NULL); }
+     | error COMMA Args { yyerror("Invalid or missing argument in argument list"); $$ = createASTLeaf("Error", NULL); }
+     | Exp COMMA error { yyerror("Invalid or missing argument in argument list"); $$ = createASTLeaf("Error", NULL); }
+     | Exp COMMA { yyerror("Extra comma in argument list"); $$ = createASTLeaf("Error", NULL); }
      ;
 
 %%

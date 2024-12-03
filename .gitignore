@@ -1,6 +1,8 @@
 .vscode/c_cpp_properties.json
 /build
 .DS_Store
+/src/frontend/parser/results
+/src/frontend/parser/test.spl
 
 # Ignore all generated files across all subfolders
 **/syntax.tab.c
