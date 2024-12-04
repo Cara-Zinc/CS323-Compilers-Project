@@ -15,12 +15,12 @@ typedef size_t type_id;
 #define TYPE_CHAR 3 // character type
 
 // specification for type
-typedef struct {
+typedef struct type_def {
     type_id type_id; // type id of the type
     bool is_struct; // whether the type is a struct
     bool is_array; // whether the type is an array
     size_t array_size; // size of the array
-    type_def *array_type; // type of the array
+    struct type_def *array_type; // type of the array
 } type_def;
 
 // create a new type specification
