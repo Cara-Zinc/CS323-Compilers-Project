@@ -1,0 +1,19 @@
+void print_info(char name[50], int a);
+struct Person {
+    char name[50];
+    int age;
+
+    void setAge(int newAge) {
+        age = newAge;
+    }
+
+    void introduce() {
+        print_info(name, age);
+    }
+};
+
+void main() {
+    struct Person p;
+    p.setAge(28);
+    p.introduce();
+}

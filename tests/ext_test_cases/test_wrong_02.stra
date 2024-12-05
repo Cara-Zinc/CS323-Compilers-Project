@@ -1,0 +1,23 @@
+struct Student {
+    char name[50];
+    int age;
+
+    void setAge(int newAge);
+
+    void setAge(int newAge) {
+        age = newAge;
+    }
+    void display() {
+        void innerFunction() {
+            print("This is an inner function.\n");
+        }
+        innerFunction();
+    }
+};
+
+void main() {
+    struct Student s;
+    s.setID('B');  
+    s.setAge(20);      
+    s.display();       
+}

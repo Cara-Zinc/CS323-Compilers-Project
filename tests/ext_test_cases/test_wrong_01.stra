@@ -1,0 +1,18 @@
+struct Book {
+    char title[100];
+    char author[50];
+
+    int pageCount = 250;
+
+    void printInfo {
+        print(title); 
+        print(author);
+        print(pageCount);
+    }
+};
+
+void main() {
+    struct Book b;
+    b.printInfo();  
+}
+
