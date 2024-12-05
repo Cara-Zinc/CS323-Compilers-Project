@@ -40,4 +40,7 @@ type_def *type_def_new_array(type_def *array_type, size_t array_size);
 // free a type specification
 void type_def_free(type_def *t);
 
+// compare two type specifications
+int type_def_cmp(type_def *t1, type_def *t2);
+
 #endif

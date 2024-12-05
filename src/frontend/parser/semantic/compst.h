@@ -4,6 +4,8 @@
 #include "../../mm/program_manager.h"
 #include "../ast.h"
 
-void compst_semantic(program_manager *pm, ASTNode *node, func_def *func);
+// returns the predicted return type of the function
+// in case we can't predict the return type, returns NULL
+type_def *compst_func_semantic(program_manager *pm, ASTNode *node, func_def *func);
 
 #endif
