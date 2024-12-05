@@ -36,6 +36,10 @@ type_def *type_def_new_array(type_def *array_type, size_t array_size) {
 
 // free a type specification
 void type_def_free(type_def *t) {
+    if (t == NULL) {
+        return;
+    }
+
     if (t->array_type != NULL) {
         type_def_free(t->array_type);
     }

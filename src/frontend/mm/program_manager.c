@@ -44,6 +44,10 @@ field_def *program_manager_get_field(program_manager *pm, char *name) {
     return NULL;
 }
 
+field_def *program_manager_get_field_local(program_manager *pm, char *name) {
+    return scope_get_field(sclist_back(pm->scope_stack), name);
+}
+
 func_def *program_manager_create_func(program_manager *pm, char *name, type_def *return_type) {
     func_def *res = func_def_new(name, return_type);
     scope_add_func(sclist_back(pm->scope_stack), res);
@@ -64,6 +68,10 @@ func_def *program_manager_get_func(program_manager *pm, char *name) {
         }
     }
     return NULL;
+}
+
+func_def *program_manager_get_func_local(program_manager *pm, char *name) {
+    return scope_get_func(sclist_back(pm->scope_stack), name);
 }
 
 struct_def *program_manager_create_struct(program_manager *pm, char *name) {
@@ -88,6 +96,10 @@ struct_def *program_manager_get_struct(program_manager *pm, char *name) {
         }
     }
     return NULL;
+}
+
+struct_def *program_manager_get_struct_local(program_manager *pm, char *name) {
+    return scope_get_struct(sclist_back(pm->scope_stack), name);
 }
 
 struct_def *program_manager_get_struct_by_id(program_manager *pm, type_id id) {

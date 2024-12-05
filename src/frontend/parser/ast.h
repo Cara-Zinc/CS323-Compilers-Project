@@ -14,6 +14,7 @@ typedef struct ASTNodeList ASTNodeList;
 typedef struct ASTNode {
     char *nodeType;          // Type of the node (e.g., "Program", "ExtDefList")
     char *text;              // Token text, if any (for leaves)
+    size_t line;             // Line number of the node
     int numChildren;         // Number of child nodes
     ASTNodeList *children;   // List of child nodes (ASTNode *)
 } ASTNode;
