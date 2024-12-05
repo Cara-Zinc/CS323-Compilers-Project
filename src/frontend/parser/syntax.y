@@ -69,7 +69,6 @@ StructDefList : StructDef StructDefList { $$ = struct_member_list_handler(pm, $1
               ;
 
 StructDef : Specifier DecList SEMI { $$ = struct_member_handler(pm, $1, $2, NULL); }
-          | Specifier FunDec SEMI { $$ = struct_member_handler(pm, $1, $2, NULL); }
           | Specifier FunDec CompSt { $$ = struct_member_handler(pm, $1, $2, $3); }
 
 VarDec : ID { $$ = VarDec_ID_handler(pm, $1); }

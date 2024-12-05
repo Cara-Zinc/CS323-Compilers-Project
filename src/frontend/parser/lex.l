@@ -38,6 +38,7 @@ void yyerrora(const char *s) {
 "int"                   { yylval.str = "int"; return TYPE; }
 "float"                 { yylval.str = "float"; return TYPE; }
 "char"                  { yylval.str = "char"; return TYPE; }
+"void"                  { yylval.str = "void"; return TYPE; }
 [a-zA-Z_][a-zA-Z0-9_]*  { yylval.str = str_copy(yytext); return ID; }
 "=="                    { yylval.str = "EQ"; return EQ; }
 "="                     { yylval.str = "ASSIGN"; return ASSIGN; }
