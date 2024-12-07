@@ -20,6 +20,8 @@ typedef struct func_def {
     scope *scope; // scope of the function
 } func_def;
 
+#define INVALID_FUNC_NAME "<invalid_function>"
+
 // create a new function definition
 func_def *func_def_new(char *name, type_def *return_type);
 

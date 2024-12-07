@@ -51,18 +51,25 @@ func_def *fundef_semantic(program_manager *pm, ASTNode *node) {
         type_def_free(predicted_return_type);
     }
 
-    scope_wrapper_free_without_data(program_manager_pop(pm));
+    scope_wrapper *wrapper = program_manager_pop(pm);
+    if (strcmp(wrapper->func->name, INVALID_FUNC_NAME) == 0) {
+        scope_wrapper_free(wrapper);
+        return NULL;
+    }
+    
+    scope_wrapper_free_without_data(wrapper);
     return func;
 }
 
 func_def *fundec_semantic(program_manager *pm, ASTNode *node, type_def *type) {
+    func_def *func = NULL;
     char *func_name = alist_get(node->children, 0)->text;
     if (program_manager_get_func_local(pm, func_name) != NULL) {
         fprintf(stderr, "Error at line %zu: redeclaration of function %s.\n", node->line, func_name);
-        return NULL;
+        func = program_manager_create_func_invalid(pm, type);
+    } else {
+        func = program_manager_create_func(pm, str_copy(func_name), type);
     }
-
-    func_def *func = program_manager_create_func(pm, str_copy(func_name), type);
 
     if (node->numChildren == 4) {
         varlist *list = varlist_semantic(pm, alist_get(node->children, 2));
@@ -86,7 +93,7 @@ varlist *varlist_semantic(program_manager *pm, ASTNode *node) {
     }
     field_def *param = paramdec_semantic(pm, alist_get(node->children, 0));
     for (size_t i = 0; i < vlist_count(list); i++) {
-        if (field_def_cmp(vlist_get(list, i)->name, param->name) == 0) {
+        if (strcmp(vlist_get(list, i)->name, param->name) == 0) {
             fprintf(stderr, "Error at line %zu: redeclaration of variable %s.\n", node->line, param->name);
             field_def_free(param);
             return list;

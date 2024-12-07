@@ -56,6 +56,13 @@ func_def *program_manager_create_func(program_manager *pm, char *name, type_def 
     return res;
 }
 
+func_def *program_manager_create_func_invalid(program_manager *pm, type_def *return_type) {
+    func_def *res = func_def_new(INVALID_FUNC_NAME, return_type);
+    sclist_push_back(pm->scope_stack, res->scope);
+    scwlist_push_back(pm->scope_wrapper_stack, scope_wrapper_new(FUNC, res->scope));
+    return res;
+}
+
 func_def *program_manager_get_func(program_manager *pm, char *name) {
     for (size_t i = sclist_count(pm->scope_stack) - 1; i >= 0; i--) {
         scope *s = sclist_get(pm->scope_stack, i);
@@ -79,6 +86,14 @@ struct_def *program_manager_create_struct(program_manager *pm, char *name) {
     struct_def *res = struct_def_new(id, name);
     tsmap_insert(pm->struct_defs, id, res);
     scope_add_struct(sclist_back(pm->scope_stack), res);
+    sclist_push_back(pm->scope_stack, res->scope);
+    scwlist_push_back(pm->scope_wrapper_stack, scope_wrapper_new(STRUCTURE, res->scope));
+    return res;
+}
+
+struct_def *program_manager_create_struct_invalid(program_manager *pm) {
+    type_id id = pm->struct_def_cnt++;
+    struct_def *res = struct_def_new(id, INVALID_STRUCT_NAME);
     sclist_push_back(pm->scope_stack, res->scope);
     scwlist_push_back(pm->scope_wrapper_stack, scope_wrapper_new(STRUCTURE, res->scope));
     return res;

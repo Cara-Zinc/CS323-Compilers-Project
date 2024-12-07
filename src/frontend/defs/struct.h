@@ -20,6 +20,8 @@ typedef struct struct_def {
     scope *scope; // scope of the struct
 } struct_def;
 
+#define INVALID_STRUCT_NAME "<invalid_struct>"
+
 // create a new struct definition
 struct_def *struct_def_new(type_id id, char *name);
 
