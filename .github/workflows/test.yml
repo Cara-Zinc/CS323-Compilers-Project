@@ -18,7 +18,9 @@ jobs:
       
       - name: Test Parser
         run: |
-          sudo -S apt-get install -y flex bison
+          sudo -S apt-get install -y flex bison libfl-dev
+          flex --version
+          bison --version
           git submodule init
           git submodule update --recursive
           git clone https://github.com/sqlab-sustech/CS323-2024F
