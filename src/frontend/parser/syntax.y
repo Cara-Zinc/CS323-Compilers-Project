@@ -80,6 +80,9 @@ VarDec : ID { $$ = VarDec_ID_handler(pm, $1); }
        | VarDec LB INT error { yyerror("Missing right bracket in array declaration"); $$ = createASTLeaf("Error", NULL); }
        ;
 
+FunDef : Specifier FunDec CompSt { $$ = struct_member_handler(pm, $1, $2, $3); }
+       ;
+
 FunDec : ID LP VarList RP { $$ = FunDec_handler(pm, $1, $3); }
        | ID LP RP { $$ = FunDec_handler(pm, $1, NULL); }
        | ID RP { yyerror("Missing left parenthesis in function declaration"); $$ = createASTLeaf("Error", NULL); }
@@ -200,7 +203,7 @@ Args : Exp COMMA Args {$$ = args_handler(pm, $1, $3); }
      | Exp { $$ = args_handler(pm, $1, NULL); }
      | error COMMA Args { yyerror("Invalid or missing argument in argument list"); $$ = createASTLeaf("Error", NULL); }
      | Exp COMMA error { yyerror("Invalid or missing argument in argument list"); $$ = createASTLeaf("Error", NULL); }
-     | Exp COMMA { yyerror("Extra comma in argument list"); $$ = createASTLeaf("Error", NULL); }
+     | Exp COMMA { $$ = createASTLeaf("Error", NULL); }
      ;
 
 %%
