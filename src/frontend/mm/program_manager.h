@@ -52,6 +52,12 @@ size_t program_manager_get_subscope_count(program_manager *pm);
 
 scope_wrapper *program_manager_current(program_manager *pm);
 
+scope *program_manager_current_scope(program_manager *pm);
+
+func_def *program_manager_current_func(program_manager *pm);
+
+struct_def *program_manager_current_struct(program_manager *pm);
+
 scope_wrapper *program_manager_pop(program_manager *pm);
 
 #endif

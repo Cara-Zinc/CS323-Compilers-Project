@@ -41,15 +41,7 @@ func_def *fundef_semantic(program_manager *pm, ASTNode *node) {
     type_def *return_type = specifier_semantic(pm, alist_get(node->children, 0));
     func_def *func = fundec_semantic(pm, alist_get(node->children, 1), return_type);
 
-    type_def *predicted_return_type = compst_func_semantic(pm, alist_get(node->children, 2), func);
-    if (predicted_return_type == NULL) {
-        fprintf(stderr, "Error at line %zu: cannot predict the return type of function %s.\n", node->line, func->name);
-    } else if (type_def_cmp(predicted_return_type, return_type) != 0) {
-        fprintf(stderr, "Error at line %zu: function %s return type mismatch.\n", node->line, func->name);
-    }
-    if (predicted_return_type != NULL) {
-        type_def_free(predicted_return_type);
-    }
+    compst_func_semantic(pm, alist_get(node->children, 2), func);
 
     scope_wrapper *wrapper = program_manager_pop(pm);
     if (strcmp(wrapper->func->name, INVALID_FUNC_NAME) == 0) {

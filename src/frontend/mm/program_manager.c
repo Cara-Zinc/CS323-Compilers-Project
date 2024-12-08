@@ -140,7 +140,40 @@ size_t program_manager_get_subscope_count(program_manager *pm) {
 scope_wrapper *program_manager_current(program_manager *pm) {
     return scwlist_back(pm->scope_wrapper_stack);
 }
-// 
+
+// returns the current scope the manager is in
+scope *program_manager_current_scope(program_manager *pm) {
+    return sclist_back(pm->scope_stack);
+}
+
+// returns the current function the manager is in
+func_def *program_manager_current_func(program_manager *pm) {
+    for (size_t i = scwlist_count(pm->scope_wrapper_stack) - 1; i >= 0; i--) {
+        scope_wrapper *sw = scwlist_get(pm->scope_wrapper_stack, i);
+        if (sw->type == FUNC) {
+            return sw->func;
+        }
+        if (i == 0) {
+            break;
+        }
+    }
+    return NULL;
+}
+
+// returns the current struct the manager is in
+struct_def *program_manager_current_struct(program_manager *pm) {
+    for (size_t i = scwlist_count(pm->scope_wrapper_stack) - 1; i >= 0; i--) {
+        scope_wrapper *sw = scwlist_get(pm->scope_wrapper_stack, i);
+        if (sw->type == STRUCTURE) {
+            return sw->struct_def;
+        }
+        if (i == 0) {
+            break;
+        }
+    }
+    return NULL;
+}
+ 
 scope_wrapper *program_manager_pop(program_manager *pm) {
     if (sclist_count(pm->scope_stack) <= 0 || scwlist_count(pm->scope_wrapper_stack) <= 0) {
         return NULL;
