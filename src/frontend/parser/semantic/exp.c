@@ -6,33 +6,45 @@ type_def *exp_semantic(program_manager *pm, ASTNode *node);
 
 type_def *exp_id_semantic(program_manager *pm, ASTNode *node)
 {
+    // the node come in is the ID leaf node
     // check usage before declaration
     if (!program_manager_get_field(pm, node->text))
     {
         fprintf(stderr, "Error at line %zu: variable %s not declared\n", node->line, node->text);
     }
+    type_id id_type = program_manager_get_field(pm, node->text)->type_spec->type_id;
+    bool is_struct = program_manager_get_field(pm, node->text)->type_spec->is_struct;
+    return type_def_new(id_type, is_struct);
 }
 
 type_def *exp_bi_op_semantic(program_manager *pm, ASTNode *left, char *op, ASTNode *right)
 {
+    if (!left || !right)
+    {
+        fprintf(stderr, "Error: Invalid binary operation, left operand or right operand contains error\n");
+        return NULL;
+    }
+    // first, check if left and right are EXP node with ID leaf node
     // check usage before declaration
-    if (!strcmp(left->nodeType, "ID"))
+    if (alist_get(left->children, 0) && !strcmp(alist_get(left->children, 0)->nodeType, "ID"))
     {
         if (!program_manager_get_field(pm, left->text))
         {
             fprintf(stderr, "Error at line %zu: variable %s not declared\n", left->line, left->text);
+            return NULL;
         }
     }
-    if (!strcmp(right->nodeType, "ID"))
+    if (alist_get(right->children, 0) && !strcmp(alist_get(right->children, 0)->nodeType, "ID"))
     {
         if (!program_manager_get_field(pm, right->text))
         {
             fprintf(stderr, "Error at line %zu: variable %s not declared\n", right->line, right->text);
+            return NULL;
         }
     }
 
     // check type compatibility for binary operations
-    if (strcmp(op, "="))
+    if (!strcmp(op, "="))
     {
         type_def *left_type = exp_semantic(pm, left);
         type_def *right_type = exp_semantic(pm, right);
@@ -42,59 +54,145 @@ type_def *exp_bi_op_semantic(program_manager *pm, ASTNode *left, char *op, ASTNo
             if (left_type->is_array || left_type->is_struct || right_type->is_array || right_type->is_struct)
             {
                 fprintf(stderr, "Error at line %zu: type mismatch, arrays and structs can neither be assigned to or assigned from\n", left->line);
+                return NULL;
             }
 
             if (left_type->type_id != right_type->type_id)
             {
                 fprintf(stderr, "Error at line %zu: type mismatch, try to assign type '%s' to type '%s'\n", left->line, right->nodeType, left->nodeType);
+                return NULL;
             }
+            return type_def_new(right_type->type_id, false);
+        }
+        else
+        {
+            fprintf(stderr, "Error: Invalid binary operation, left operand or right operand contains error\n");
+            return NULL;
         }
     }
-    else if (strcmp(op, "+") || strcmp(op, "-") || strcmp(op, "*"))
+    else if (!strcmp(op, "+") || !strcmp(op, "-") || !strcmp(op, "*"))
     {
         type_def *left_type = exp_semantic(pm, left);
         type_def *right_type = exp_semantic(pm, right);
         if (left_type->type_id != TYPE_INT && left_type->type_id != TYPE_FLOAT && left_type->type_id != TYPE_CHAR)
         {
             fprintf(stderr, "Error at line %zu: invalid type for operation %s on left expression\n", left->line, op);
+            return NULL;
         }
         if (right_type->type_id != TYPE_INT && right_type->type_id != TYPE_FLOAT && right_type->type_id, TYPE_CHAR)
         {
             fprintf(stderr, "Error at line %zu: invalid type for operation %s on right expression\n", right->line, op);
+            return NULL;
         }
         // CHAR + INT = CHAR, CHAR + FLOAT = FLOAT, CHAR + CHAR = CHAR, INT + CHAR = CHAR,INT + INT = INT, INT + FLOAT = FLOAT, FLOAT + FLOAT = FLOAT
-        // TODO: Type promotion
+        // TODO: Type promotion and return type
+
+        // if one of the operands is a float, the result is a float
+        if (left_type->type_id == TYPE_FLOAT || right_type->type_id == TYPE_FLOAT)
+        {
+            return type_def_new(TYPE_FLOAT, false);
+        }
+        // if one of the operands is a int, the result is a int
+        else if (left_type->type_id == TYPE_INT || right_type->type_id == TYPE_INT)
+        {
+            return type_def_new(TYPE_INT, false);
+        }
+        // if both operands are char, the result is a char
+        else if (left_type->type_id == TYPE_CHAR && right_type->type_id == TYPE_CHAR)
+        {
+            return type_def_new(TYPE_CHAR, false);
+        }
     }
-    else if (strcmp(op, "/"))
+    else if (!strcmp(op, "/"))
     {
         type_def *left_type = exp_semantic(pm, left);
         type_def *right_type = exp_semantic(pm, right);
-        if (left_type->type_id!= TYPE_INT && left_type->type_id!=TYPE_FLOAT && left_type->type_id != TYPE_CHAR)
+        if (left_type->type_id != TYPE_INT && left_type->type_id != TYPE_FLOAT && left_type->type_id != TYPE_CHAR)
         {
             fprintf(stderr, "Error at line %zu: invalid type for operation %s on left expression\n", left->line, op);
+            return NULL;
         }
-        if (right_type->type_id!=TYPE_INT && right_type->type_id!=TYPE_FLOAT && right_type->type_id!= TYPE_CHAR)
+        if (right_type->type_id != TYPE_INT && right_type->type_id != TYPE_FLOAT && right_type->type_id != TYPE_CHAR)
         {
             fprintf(stderr, "Error at line %zu: invalid type for operation %s on right expression\n", right->line, op);
+            return NULL;    
         }
         // check divide-by-zero, such as 0, 0.0f, .0f, 0.0, .0, 0x0
-        if (strcmp(right->text, "0") && strcmp(right->text, "0.0f") && strcmp(right->text, ".0f") && strcmp(right->text, "0.0") && strcmp(right->text, ".0") && strcmp(right->text, "0x0"))
+        if (!strcmp(right->text, "0") && !strcmp(right->text, "0.0f") && !strcmp(right->text, ".0f") && !strcmp(right->text, "0.0") && !strcmp(right->text, ".0") && !strcmp(right->text, "0x0"))
         {
             fprintf(stderr, "Error at line %zu: divide by zero\n", right->line);
+            return NULL;
         }
         // CHAR / INT = CHAR, CHAR / FLOAT = FLOAT, CHAR / CHAR = CHAR, INT / CHAR = CHAR,INT / INT = INT, INT / FLOAT = FLOAT, FLOAT / FLOAT = FLOAT
+        // TODO: Type promotion and return type
+
+        // if one of the operands is a float, the result is a float
+        if (left_type->type_id == TYPE_FLOAT || right_type->type_id == TYPE_FLOAT)
+        {
+            return type_def_new(TYPE_FLOAT, false);
+        }
+        // if one of the operands is a int, the result is a int
+        else if (left_type->type_id == TYPE_INT || right_type->type_id == TYPE_INT)
+        {
+            return type_def_new(TYPE_INT, false);
+        }
+        // if both operands are char, the result is a char
+        else if (left_type->type_id == TYPE_CHAR && right_type->type_id == TYPE_CHAR)
+        {
+            return type_def_new(TYPE_CHAR, false);
+        }
+
     }
+    else if (!strcmp(op, "<") || !strcmp(op, ">") || !strcmp(op, "<=") || !strcmp(op, ">=") || !strcmp(op, "==") || !strcmp(op, "!="))
+    {
+        type_def *left_type = exp_semantic(pm, left);
+        type_def *right_type = exp_semantic(pm, right);
+        if (left_type->type_id != TYPE_INT && left_type->type_id != TYPE_FLOAT && left_type->type_id != TYPE_CHAR)
+        {
+            fprintf(stderr, "Error at line %zu: invalid type for operation %s on left expression\n", left->line, op);
+            return NULL;
+        }
+        if (right_type->type_id != TYPE_INT && right_type->type_id != TYPE_FLOAT && right_type->type_id != TYPE_CHAR)
+        {
+            fprintf(stderr, "Error at line %zu: invalid type for operation %s on right expression\n", right->line, op);
+            return NULL;
+        }
+        if (left_type->type_id != right_type->type_id)
+        {
+            fprintf(stderr, "Error at line %zu: type mismatch, try to compare type '%s' with type '%s'\n", left->line, right->nodeType, left->nodeType);
+            return NULL;
+        }
+        return type_def_new(TYPE_INT, false);
+    }
+    else if (!strcmp(op, "&&") || !strcmp(op, "||"))
+    {
+        type_def *left_type = exp_semantic(pm, left);
+        type_def *right_type = exp_semantic(pm, right);
+        if (left_type->type_id != TYPE_INT)
+        {
+            fprintf(stderr, "Error at line %zu: invalid type for operation %s on left expression\n", left->line, op);
+            return NULL;
+        }
+        if (right_type->type_id != TYPE_INT)
+        {
+            fprintf(stderr, "Error at line %zu: invalid type for operation %s on right expression\n", right->line, op);
+            return NULL;
+        }
+        return type_def_new(TYPE_INT, false);
+    }
+    return type_def_new(TYPE_VOID, false);
+}
 
-    type_def *exp_unary_op_semantic(program_manager * pm, char *op, ASTNode *child);
+type_def *exp_unary_op_semantic(program_manager *pm, char *op, ASTNode *child);
 
-    type_def *exp_assign_semantic(program_manager * pm, ASTNode * left, ASTNode * right);
+type_def *exp_assign_semantic(program_manager *pm, ASTNode *left, ASTNode *right);
 
-    type_def *exp_func_semantic(program_manager * pm, ASTNode * func_id, ASTNode * args);
+type_def *exp_func_semantic(program_manager *pm, ASTNode *func_id, ASTNode *args);
 
-    type_def *exp_array_semantic(program_manager * pm, ASTNode * exp1, ASTNode * exp2);
+type_def *exp_array_semantic(program_manager *pm, ASTNode *exp1, ASTNode *exp2);
 
-    type_def *exp_struct_semantic(program_manager * pm, ASTNode * exp, char *id);
+type_def *exp_struct_semantic(program_manager *pm, ASTNode *exp, char *id);
 
-    type_def *exp_struct_func_semantic(program_manager * pm, ASTNode * exp, char *id, ASTNode *args);
+type_def *exp_struct_func_semantic(program_manager *pm, ASTNode *exp, char *id, ASTNode *args);
 
-    type_def *exp_primitive_semantic(program_manager * pm, char *type, char *text);
+type_def *exp_primitive_semantic(program_manager *pm, char *type, char *text);
