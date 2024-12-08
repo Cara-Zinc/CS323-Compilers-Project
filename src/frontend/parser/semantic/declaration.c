@@ -31,7 +31,7 @@ id_name_and_sizes *vardec_semantic(program_manager *pm, ASTNode *node) {
     if (strcmp(node->nodeType, "ID")) {
         return id_name_and_sizes_new(str_copy(node->text));
     }
-
+    
     id_name_and_sizes *ins = vardec_semantic(pm, alist_get(node->children, 0));
     id_name_and_sizes_push_size(ins, atoi(alist_get(node->children, 2)->text));
     return ins;
