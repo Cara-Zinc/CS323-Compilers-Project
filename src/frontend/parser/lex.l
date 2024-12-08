@@ -17,8 +17,9 @@ void yyerrora(const char *s) {
 %option yylineno
 
 %%
+\r\n                    { lineno++; }
 \n                      { lineno++; }
-[ \t]+                  {}                    // ignore whitespaces
+[ \t\s\f\v]+            {}                    // ignore whitespaces
 0[0-9]+                 { yyerrora(yytext); yylval.str = str_copy(yytext); return INVALID; }
 0[0-9]+\.[0-9]+         { yyerrora(yytext); yylval.str = str_copy(yytext); return INVALID; }
 0|[1-9][0-9]*           { yylval.int_val = atoi(yytext); return INT; }

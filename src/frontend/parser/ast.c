@@ -1,10 +1,11 @@
 #include "ast.h"
 #include "../utils/copy.h"
 
-ASTNode *createASTNode(char *type, int numChildren, ...) {
+ASTNode *createASTNode(char *type, int line, int numChildren, ...) {
     ASTNode *node = new(ASTNode);
     node->nodeType = str_copy(type);
     node->text = NULL;
+    node->line = line;
     node->numChildren = numChildren;
     node->children = alist_new(2, &alist_fvals);
     va_list args;
@@ -16,10 +17,11 @@ ASTNode *createASTNode(char *type, int numChildren, ...) {
     return node;
 }
 
-ASTNode *createASTLeaf(char *type, char *text) {
+ASTNode *createASTLeaf(char *type, int line, char *text) {
     ASTNode *node = new(ASTNode);
     node->nodeType = str_copy(type);
     node->text = text ? str_copy(text) : NULL;
+    node->line = line;
     node->numChildren = 0;
     node->children = NULL;
     return node;
@@ -29,7 +31,7 @@ void printAST(ASTNode *node, int level) {
     if (!node) return;
     for (int i = 0; i < level; i++) printf("  ");
     printf("%s", node->nodeType);
-    if (node->text) printf(" (%s)", node->text);
+    if (node->text) printf("%s (%ld)", node->text, node->line);
     printf("\n");
     alist_print(node->children, stdout, " ", " ", " ");
 }
@@ -45,9 +47,13 @@ void rprintAST(ASTNode *node, int level) {
     if(strcmp(node->nodeType, "ID") == 0 || strcmp(node->nodeType, "INT") == 0 || strcmp(node->nodeType, "FLOAT") == 0 || strcmp(node->nodeType, "CHAR") == 0) {
         printf(":");
     }
-    
+
     if (node->text) {
-        printf(" (%s)", node->text);
+        printf(" %s", node->text);
+    }
+
+    if (node->line) {
+        printf(" (%ld)", node->line);
     }
     printf("\n");
 
@@ -67,11 +73,11 @@ void freeAST(ASTNode *node) {
         printf("freeing %s\n", node->nodeType);
         free(node->nodeType);
         node->nodeType = NULL;
-    } 
+    }
     if (node->text){
         free(node->text);
         node->text = NULL;
-    } 
+    }
     if(node->children) {
        alist_free(node->children);
     }

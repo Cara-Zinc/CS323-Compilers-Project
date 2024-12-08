@@ -1,15 +1,15 @@
 #include "../mm/program_manager.h"
 #include "ast.h"
 
-ASTNode *exp_id_handler(program_manager *pm, char *name)
+ASTNode *exp_id_handler(program_manager *pm, char *name, size_t line)
 {
-    
-    ASTNode *leaf = createASTLeaf("ID", name);
-    ASTNode *node = createASTNode("Exp", 1, leaf);
+
+    ASTNode *leaf = createASTLeaf("ID", line, name);
+    ASTNode *node = createASTNode("Exp", line, 1, leaf);
     return node;
 }
 
-ASTNode *exp_bi_op_handler(program_manager *pm, ASTNode *left, char *op, ASTNode *right)
+ASTNode *exp_bi_op_handler(program_manager *pm, ASTNode *left, char *op, ASTNode *right, size_t line)
 {
     // char *node_type = "EXP";
     // if (left == NULL || right == NULL)
@@ -17,7 +17,7 @@ ASTNode *exp_bi_op_handler(program_manager *pm, ASTNode *left, char *op, ASTNode
     //     return NULL;
     // }
 
-   
+
     // else if (strcmp(op, "+") || strcmp(op, "-") || strcmp(op, "*"))
     // {
     //     // check if both operands are INT or FLOAT
@@ -87,7 +87,7 @@ ASTNode *exp_bi_op_handler(program_manager *pm, ASTNode *left, char *op, ASTNode
     //     }
     // }
 
-    ASTNode *node = createASTNode("Exp", 3, left, createASTLeaf("operator", op), right);
+    ASTNode *node = createASTNode("Exp", line, 3, left, createASTLeaf("operator", line, op), right);
     // node.text = left->text + op + right->text; we try to merge the text of the children
     // int len = strlen(left->text) + strlen(op) + strlen(right->text) + 1;
     // node->text = (char *)malloc(len * sizeof(char));
@@ -110,7 +110,7 @@ ASTNode *exp_bi_op_handler(program_manager *pm, ASTNode *left, char *op, ASTNode
     return node;
 }
 
-ASTNode *exp_assign_handler(program_manager *pm, ASTNode *left, ASTNode *right)
+ASTNode *exp_assign_handler(program_manager *pm, ASTNode *left, ASTNode *right, size_t line)
 {
     // if (left == NULL || right == NULL)
     // {
@@ -144,7 +144,7 @@ ASTNode *exp_assign_handler(program_manager *pm, ASTNode *left, ASTNode *right)
     //     }
     // }
 
-    ASTNode *node = createASTNode("Exp", 3, left, createASTLeaf("op", "="), right);
+    ASTNode *node = createASTNode("Exp", line, 3, left, createASTLeaf("op", line, "="), right);
     // char *text = (char *)malloc(strlen(left->text) + strlen(right->text) + 2);
     // if (text != NULL)
     // {
@@ -170,7 +170,7 @@ ASTNode *exp_assign_handler(program_manager *pm, ASTNode *left, ASTNode *right)
     return node;
 }
 
-ASTNode *exp_neg_handler(program_manager *pm, ASTNode *child)
+ASTNode *exp_neg_handler(program_manager *pm, ASTNode *child, size_t line)
 {
     // if (child == NULL)
     // {
@@ -194,7 +194,7 @@ ASTNode *exp_neg_handler(program_manager *pm, ASTNode *child)
     //     // exit(1);
     // }
 
-    ASTNode *node = createASTNode("Exp", 2, createASTLeaf("op", "-"), child);
+    ASTNode *node = createASTNode("Exp", line, 2, createASTLeaf("op", line, "-"), child);
     // char *text = (char *)malloc(strlen(child->text) + 2);
     // if (text != NULL)
     // {
@@ -219,7 +219,7 @@ ASTNode *exp_neg_handler(program_manager *pm, ASTNode *child)
     return node;
 }
 
-ASTNode *exp_not_handler(program_manager *pm, ASTNode *child)
+ASTNode *exp_not_handler(program_manager *pm, ASTNode *child, size_t line)
 {
     // if (child == NULL)
     // {
@@ -243,7 +243,7 @@ ASTNode *exp_not_handler(program_manager *pm, ASTNode *child)
     //     // exit(1);
     // }
 
-    ASTNode *node = createASTNode("Exp", 2, createASTLeaf("op", "!"), child);
+    ASTNode *node = createASTNode("Exp", line, 2, createASTLeaf("op", line, "!"), child);
     // char *text = (char *)malloc(strlen(child->text) + 2);
     // if (text != NULL)
     // {
@@ -268,19 +268,19 @@ ASTNode *exp_not_handler(program_manager *pm, ASTNode *child)
     return node;
 }
 
-ASTNode *exp_unary_op_handler(program_manager *pm, char *op, ASTNode *child)
+ASTNode *exp_unary_op_handler(program_manager *pm, char *op, ASTNode *child, size_t line)
 {
     if(!strcmp(op, "MINUS")==0)
     {
-        return exp_neg_handler(pm, child);
+        return exp_neg_handler(pm, child, line);
     }
     else if(!strcmp(op, "NOT")==0)
     {
-        return exp_not_handler(pm, child);
+        return exp_not_handler(pm, child, line);
     }
     else if(!strcmp(op, "PLUS")==0)
     {
-        return createASTNode("Exp", 2, createASTLeaf("op","PLUS"), child);
+        return createASTNode("Exp", line, 2, createASTLeaf("op", line, "PLUS"), child);
     }
     else
     {
@@ -289,50 +289,55 @@ ASTNode *exp_unary_op_handler(program_manager *pm, char *op, ASTNode *child)
     }
 }
 
-ASTNode *exp_primitive_handler(program_manager *pm, char *type, char *text)
+/*ASTNode *exp_primitive_handler(program_manager *pm, char *type, char *text)
 {
     ASTNode *node = createASTLeaf(type, text);
     return node;
-}
+}*/
 
-ASTNode *exp_func_handler(program_manager *pm, char *name, ASTNode *args)
+ASTNode *exp_func_handler(program_manager *pm, char *name, ASTNode *args, size_t line)
 {
     if(args == NULL)
     {
-        return createASTNode("Exp", 1, createASTLeaf("ID", name));
+        return createASTNode("Exp", line, 1, createASTLeaf("ID", line, name));
     }
-    ASTNode *node = createASTNode("Exp", 2, createASTLeaf("ID", name), args);
+    ASTNode *node = createASTNode("Exp", line, 2, createASTLeaf("ID", line, name), args);
     return node;
 }
 
-ASTNode *exp_array_handler(program_manager *pm, ASTNode *Exp1, ASTNode *Exp2)
+ASTNode *exp_array_handler(program_manager *pm, ASTNode *Exp1, ASTNode *Exp2, size_t line)
 {
     if(Exp2 == NULL)
     {
-        return createASTNode("Exp", 3, Exp1, createASTLeaf("LB", "["), createASTLeaf("RB", "]"));
+        return createASTNode("Exp", line, 3, Exp1, createASTLeaf("LB", line, "["), createASTLeaf("RB", line, "]"));
     }
-    ASTNode *node = createASTNode("Exp", 4, Exp1, createASTLeaf("LB", "["), Exp2, createASTLeaf("RB", "]"));
+    ASTNode *node = createASTNode("Exp", line, 4, Exp1, createASTLeaf("LB", line, "["), Exp2, createASTLeaf("RB", line, "]"));
     return node;
 }
 
 
-ASTNode *exp_struct_handler(program_manager *pm, ASTNode *Exp, char *id)
+ASTNode *exp_struct_handler(program_manager *pm, ASTNode *Exp, char *id, size_t line)
 {
     // if(Exp == NULL)
     // {
     //     return createASTNode("Exp", 1, createASTLeaf("ID", id));
     // }
-    ASTNode *node = createASTNode("Exp", 2, Exp, createASTLeaf("ID", id));
+    ASTNode *node = createASTNode("Exp", line, 2, Exp, createASTLeaf("ID", line, id));
     return node;
 }
 
-ASTNode *exp_struct_func_handler(program_manager *pm, ASTNode *Exp, char *id, ASTNode *Args)
+ASTNode *exp_struct_func_handler(program_manager *pm, ASTNode *Exp, char *id, ASTNode *Args, size_t line)
 {
-    ASTNode *node = createASTNode("Exp", 3, Exp, createASTLeaf("ID", id), Args);
+    // if(Exp == NULL)
+    // {
+    //     return createASTNode("Exp", 2, createASTLeaf("ID", id), Args);
+    // }
+    ASTNode *node = createASTNode("Exp", line, 3, Exp, createASTLeaf("ID", line, id), Args);
     return node;
 }
 
-ASTNode *exp_int_handler(program_manager *pm, int text)
+ASTNode *exp_int_handler(program_manager *pm, int text, size_t line)
+
 {
     // convert int to string
     char *str = (char *)malloc(12 * sizeof(char));
@@ -345,12 +350,13 @@ ASTNode *exp_int_handler(program_manager *pm, int text)
         printf("Error: Memory allocation failed\n");
         return NULL;
     }
-    ASTNode *leaf = createASTLeaf("INT", str);
-    ASTNode *node = createASTNode("Exp", 1, leaf);
+    ASTNode *leaf = createASTLeaf("INT", line, str);
+    ASTNode *node = createASTNode("Exp", line, 1, leaf);
     return node;
 }
 
-ASTNode *exp_float_handler(program_manager *pm, float text)
+ASTNode *exp_float_handler(program_manager *pm, float text, size_t line)
+
 {
     // convert float to string
     char *str = (char *)malloc(12 * sizeof(char));
@@ -363,12 +369,12 @@ ASTNode *exp_float_handler(program_manager *pm, float text)
         printf("Error: Memory allocation failed\n");
         return NULL;
     }
-    ASTNode *leaf = createASTLeaf("FLOAT", str);
-    ASTNode *node = createASTNode("Exp", 1, leaf);
+    ASTNode *leaf = createASTLeaf("FLOAT", line, str);
+    ASTNode *node = createASTNode("Exp", line, 1, leaf);
     return node;
 }
 
-ASTNode *exp_char_handler(program_manager *pm, char text)
+ASTNode *exp_char_handler(program_manager *pm, char text, size_t line)
 {
     // convert char to string
     char *str = (char *)malloc(2 * sizeof(char));
@@ -382,7 +388,7 @@ ASTNode *exp_char_handler(program_manager *pm, char text)
         printf("Error: Memory allocation failed\n");
         return NULL;
     }
-    ASTNode *leaf = createASTLeaf("CHAR", str);
-    ASTNode *node = createASTNode("Exp", 1, leaf);
+    ASTNode *leaf = createASTLeaf("CHAR", line, str);
+    ASTNode *node = createASTNode("Exp", line, 1, leaf);
     return node;
 }
