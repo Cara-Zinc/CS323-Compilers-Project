@@ -24,9 +24,14 @@ def run_parser_on_all_tests():
             run_parser_on_test(test_name)
             print(f"=========== Done running parser on {test_name} ===========")
             # os.system(f"cat results/my_{test_name}.out")
-            print("Expected output:")
+            print('\n')
+            print("=========== Expected output: ===========")
             os.system(f"cat {tests_dir}{test_name}.out")
             print("=====================================================")
+            flag = input("Print AST? (y/n): ")
+            if flag == "y":
+                print("=========== AST: ===========")
+                os.system(f"cat results/my_{test_name}.out")
             input("Press Enter to continue...")
 
 run_parser_on_all_tests()

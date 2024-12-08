@@ -80,14 +80,12 @@ VarDec : ID { $$ = VarDec_ID_handler(pm, $1); }
        | VarDec LB INT error { yyerror("Missing right bracket in array declaration"); $$ = createASTLeaf("Error", NULL); }
        ;
 
-FunDef : Specifier FunDec CompSt { $$ = struct_member_handler(pm, $1, $2, $3); }
-       ;
-
 FunDec : ID LP VarList RP { $$ = FunDec_handler(pm, $1, $3); }
        | ID LP RP { $$ = FunDec_handler(pm, $1, NULL); }
-       | ID LP VarList error { yyerror("Missing right parenthesis in function declaration"); $$ = createASTLeaf("Error", NULL); }
        | ID RP { yyerror("Missing left parenthesis in function declaration"); $$ = createASTLeaf("Error", NULL); }
-       | ID LP error { yyerror("Missing right parenthesis in function declaration"); $$ = createASTLeaf("Error", NULL); }
+       | ID LP error { yyerror("Missing closing parenthesis in function declaration. I"); $$ = createASTLeaf("Error", NULL); }
+       | ID LP VarList SEMI { yyerror("Missing closing parenthesis in function declaration. II"); $$ = createASTLeaf("Error", NULL); }
+       | ID LP VarList error { yyerror("Missing closing parenthesis in function declaration. III"); $$ = createASTLeaf("Error", NULL); }
        ;
 
 VarList : ParamDec COMMA VarList { $$ = VarList_ParamDec_Comma_VarList_handler(pm, $1, $3); }
@@ -194,6 +192,8 @@ Exp : Exp ASSIGN Exp { $$ = exp_assign_handler(pm, $1, $3); }
     | Exp LB error RB { yyerror("Invalid or missing array index"); $$ = createASTLeaf("Error", NULL); }
     | Exp DOT error { yyerror("Invalid member name after '.' operator"); $$ = createASTLeaf("Error", NULL); }
     | LP Exp error { yyerror("Unbalanced parentheses: Missing closing parenthesis"); $$ = createASTLeaf("Error", NULL); }
+    | ID LP Args error { yyerror("Missing closing parenthesis in function call"); $$ = createASTLeaf("Error", NULL); }
+    | INVALID { yyerror("Unrecognized token"); $$ = createASTLeaf("Error", NULL); }
     ;
 
 Args : Exp COMMA Args {$$ = args_handler(pm, $1, $3); }

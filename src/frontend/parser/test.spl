@@ -1,30 +1,14 @@
-int test_2_r03()
-{ // ssss
-    int res = 1;
-    int n = 5/;   // sdss
-
-    else {              
-        res = 0;        
-    }
-
-    if (b != c) {         
-        a = 0;             
-    }
-    else {
-        5 >;          
-        res = 10;          
-    }
-    else {              
-        res = 0;        
-    }
-    x = ;                
-
-    while (x < y         
-        y = y - x;      
-    x = x + 1;      
-
-    if (x >       
-        x = x - 1;
-
-    return x 
-}                         
+int func_1(int a)
+{
+  return 3 * a;
+}
+int func_2(int x, int y)
+{
+  return x + y;
+}
+int test_1_r04(
+{
+  int a, b, c;
+  c = func_2(func_1(func_1(a+b*func_1(b)), 1.7);
+  return c;
+}
