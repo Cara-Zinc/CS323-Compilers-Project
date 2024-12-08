@@ -22,10 +22,10 @@ typedef struct ASTNode {
 // Function declarations
 
 // Helper function to create an AST node with variable number of children
-ASTNode *createASTNode(char *type, int numChildren, ...);
+ASTNode *createASTNode(char *type, int line, int numChildren, ...);
 
 // Helper function to create an AST leaf node
-ASTNode *createASTLeaf(char *type, char *text);
+ASTNode *createASTLeaf(char *type, int line, char *text);
 
 // Function to print the AST
 void printAST(ASTNode *node, int level);

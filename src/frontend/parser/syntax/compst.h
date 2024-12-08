@@ -1,16 +1,16 @@
 #include "../mm/program_manager.h"
 #include "ast.h"
 
-ASTNode *compst_deflist_stmtlist_handler(program_manager *pm, ASTNode *DefList, ASTNode *StmtList) {
+ASTNode *compst_deflist_stmtlist_handler(program_manager *pm, ASTNode *DefList, ASTNode *StmtList, size_t line) {
     // return createASTNode("CompSt", 2, DefList, StmtList);
     if (DefList == NULL && StmtList == NULL) {
-        return createASTNode("CompSt", 2, createASTLeaf("LC", "{"), createASTLeaf("RC", "}"));
+        return createASTNode("CompSt", line, 0);
     } else if (DefList == NULL) {
-        return createASTNode("CompSt", 3, createASTLeaf("LC", "{"), StmtList, createASTLeaf("RC", "}"));
+        return createASTNode("CompSt", line, 1, StmtList);
     } else if (StmtList == NULL) {
-        return createASTNode("CompSt", 3, createASTLeaf("LC", "{"), DefList, createASTLeaf("RC", "}"));
+        return createASTNode("CompSt", line, 1, DefList);
     } else {
-        return createASTNode("CompSt", 4, createASTLeaf("LC", "{"), DefList, StmtList, createASTLeaf("RC", "}"));
+        return createASTNode("CompSt", line, 2, DefList, StmtList);
     }
 
 }
