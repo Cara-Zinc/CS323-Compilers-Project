@@ -33,6 +33,7 @@ void yyerrora(const char *s) {
         return INVALID;  
     }
 }
+[0-9][0-9_a-zA-Z]+            { yyerrora(yytext); yylval.str = str_copy(yytext); return INVALID; }
 [1-9][0-9]*\.[0-9]+     { yylval.float_val = atof(yytext); return FLOAT; }
 0\.[0-9]+               { yylval.float_val = atof(yytext); return FLOAT; }
 \'[ -~]\'               { yylval.char_val = yytext[1]; return CHAR; }
