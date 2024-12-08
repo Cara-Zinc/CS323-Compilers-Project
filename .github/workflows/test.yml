@@ -1,0 +1,24 @@
+name: Test
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'src/**'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'src/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Test Parser
+        run: |
+          make clean
+          make
+          ./structura_parser < test.spl
+        working-directory: src/frontend/parser
