@@ -1,7 +1,11 @@
 import os 
+import argparse
 
 run_parser_cmd_base = "./structura_parser < "
-tests_dir = "~/CS323-2024F/project/phase1/"
+argparser = argparse.ArgumentParser()
+argparser.add_argument("--tests_dir", default="~/CS323-2024F/project/phase1/", help="Directory containing test files")
+args = argparser.parse_args()
+tests_dir = args.tests_dir
 tests_dir = os.path.expanduser(tests_dir)
 
 def run_parser_on_test(test_name):

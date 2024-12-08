@@ -20,8 +20,10 @@ jobs:
         run: |
           git submodule init
           git submodule update --recursive
+          git pull https://github.com/sqlab-sustech/CS323-2024F
           cd src/frontend/parser
           make clean
           make
           ./structura_parser < test.spl
+          python3 compare.py --tests_dir ../../../CS323-2024F/project/phase1/
         working-directory: .
