@@ -36,6 +36,6 @@ def run_parser_on_all_tests():
             if flag == "y":
                 print("=========== AST: ===========")
                 os.system(f"cat results/my_{test_name}.out")
-            # input("Press Enter to continue...")
+            # input("Press Enter to continue...") 
 
 run_parser_on_all_tests()
