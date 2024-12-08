@@ -9,6 +9,8 @@ tests_dir = args.tests_dir
 tests_dir = os.path.expanduser(tests_dir)
 
 def run_parser_on_test(test_name):
+    if not os.path.exists("results"):
+        os.system("mkdir results")
     run_parser_cmd = f"{run_parser_cmd_base}{tests_dir}{test_name}.spl > results/my_{test_name}.out"
     os.system(run_parser_cmd)
 
