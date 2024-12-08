@@ -11,7 +11,9 @@
 // For VarDec -> ID
 ASTNode *VarDec_ID_handler(program_manager *pm, char *id)
 {
-    return createASTLeaf("ID", id);
+    ASTNode *leaf = createASTLeaf("ID", id);
+    ASTNode *node = createASTNode("Vardec", 1, leaf);
+    return node;
 }
 
 // For VarDec -> VarDec LB INT RB
@@ -74,11 +76,11 @@ ASTNode *DecList_handler(program_manager *pm, ASTNode *Dec, ASTNode *DecList)
 }
 
 // For Dec -> VarDec | VarDec ASSIGN Exp
-ASTNode *Dec_handler(program_manager *pm, ASTNode *VarDec, ASTNode *Exp)
+ASTNode *Dec_handler(program_manager *pm, ASTNode *varDec, ASTNode *exp)
 {
-    if (Exp == NULL)
+    if (exp == NULL)
     {
-        return createASTNode("Dec", 1, VarDec);
+        return createASTNode("Dec", 1, varDec);
     }
-    return createASTNode("Dec", 3, VarDec, createASTLeaf("ASSIGN", "="), Exp);
+    return createASTNode("Dec", 3, varDec, createASTLeaf("ASSIGN", "="), exp);
 }

@@ -303,15 +303,15 @@ ASTNode *exp_not_handler(program_manager *pm, ASTNode *child)
 
 ASTNode *exp_unary_op_handler(program_manager *pm, char *op, ASTNode *child)
 {
-    if(!strcmp(op, "MINUS"))
+    if(!strcmp(op, "MINUS")==0)
     {
         return exp_neg_handler(pm, child);
     }
-    else if(!strcmp(op, "NOT"))
+    else if(!strcmp(op, "NOT")==0)
     {
         return exp_not_handler(pm, child);
     }
-    else if(!strcmp(op, "PLUS"))
+    else if(!strcmp(op, "PLUS")==0)
     {
         return createASTNode("Exp", 2, createASTLeaf("op","PLUS"), child);
     }
@@ -328,9 +328,13 @@ ASTNode *exp_primitive_handler(program_manager *pm, char *type, char *text)
     return node;
 }
 
-ASTNode *exp_func_handler(program_manager *pm, char *id, ASTNode *Args)
+ASTNode *exp_func_handler(program_manager *pm, char *name, ASTNode *args)
 {
-    ASTNode *node = createASTNode("Exp", 2, createASTLeaf("ID", id), Args);
+    if(args == NULL)
+    {
+        return createASTNode("Exp", 1, createASTLeaf("ID", name));
+    }
+    ASTNode *node = createASTNode("Exp", 2, createASTLeaf("ID", name), args);
     return node;
 }
 

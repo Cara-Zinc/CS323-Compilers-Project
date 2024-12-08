@@ -18,7 +18,9 @@ void yyerrora(const char *s) {
 
 %%
 \n                      { lineno++; }
-[ \t]+          {}                    // ignore whitespaces
+[ \t]+                  {}                    // ignore whitespaces
+0[0-9]+                 { yyerrora(yytext); yylval.str = str_copy(yytext); return INVALID; }
+0[0-9]+\.[0-9]+         { yyerrora(yytext); yylval.str = str_copy(yytext); return INVALID; }
 0|[1-9][0-9]*           { yylval.int_val = atoi(yytext); return INT; }
 0[xX][0-9a-zA-Z]+       {
     // check if the hex number match regex 0[xX][0-9a-fA-F]+
