@@ -24,13 +24,23 @@ field_def *program_manager_create_field(program_manager *pm, char *name, type_de
 
 field_def *program_manager_get_field(program_manager *pm, char *name);
 
+field_def *program_manager_get_field_local(program_manager *pm, char *name);
+
 func_def *program_manager_create_func(program_manager *pm, char *name, type_def *return_type);
+
+func_def *program_manager_create_func_invalid(program_manager *pm, type_def *return_type);
 
 func_def *program_manager_get_func(program_manager *pm, char *name);
 
+func_def *program_manager_get_func_local(program_manager *pm, char *name);
+
 struct_def *program_manager_create_struct(program_manager *pm, char *name);
 
+struct_def *program_manager_create_struct_invalid(program_manager *pm);
+
 struct_def *program_manager_get_struct(program_manager *pm, char *name);
+
+struct_def *program_manager_get_struct_local(program_manager *pm, char *name);
 
 struct_def *program_manager_get_struct_by_id(program_manager *pm, type_id id);
 

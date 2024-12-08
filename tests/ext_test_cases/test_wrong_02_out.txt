@@ -1,0 +1,5 @@
+error: declaration and definition of setAge are separated at line 7
+error: function display contains nested function definition at line 13
+error: no matching function for call to 'setID' at line 20
+error: no matching function for call to 'setAge' at line 21
+error: no matching function for call to 'display' at line 22

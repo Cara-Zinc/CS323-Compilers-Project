@@ -29,10 +29,10 @@ void yyerror(const char *s) {
 %token <int_val> INT
 %token <float_val> FLOAT
 %token <char_val> CHAR
-%token <str> TYPE STRUCT IF ELSE WHILE RETURN DOT SEMI COMMA ASSIGN LT LE GT GE NE EQ PLUS MINUS MUL DIV AND OR NOT LP RP LB RB LC RC
+%token <str> INVALID TYPE STRUCT IF ELSE WHILE RETURN DOT SEMI COMMA ASSIGN LT LE GT GE NE EQ PLUS MINUS MUL DIV AND OR NOT LP RP LB RB LC RC
 
 /* Declare non-terminals and their types */
-%type <node> Program ExtDefList ExtDef ExtDecList Specifier StructSpecifier VarDec FunDec VarList ParamDec CompSt StmtList Stmt DefList Def DecList Dec Exp Args StructDefList StructDef
+%type <node> Program ExtDefList ExtDef ExtDecList Specifier StructSpecifier VarDec FunDec FunDef VarList ParamDec CompSt StmtList Stmt DefList Def DecList Dec Exp Args StructDefList StructDef
 
 
 %start Program
@@ -69,8 +69,8 @@ StructDefList : StructDef StructDefList { $$ = struct_member_list_handler(pm, $1
               ;
 
 StructDef : Specifier DecList SEMI { $$ = struct_member_handler(pm, $1, $2, NULL); }
-          | Specifier FunDec SEMI { $$ = struct_member_handler(pm, $1, $2, NULL); }
-          | Specifier FunDec CompSt { $$ = struct_member_handler(pm, $1, $2, $3); }
+          | FunDef { $$ = $1; }
+          ;
 
 VarDec : ID { $$ = VarDec_ID_handler(pm, $1); }
        | VarDec LB INT RB { $$ = VarDec_Array_handler(pm, $1, $3); }

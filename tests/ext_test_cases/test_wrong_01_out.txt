@@ -1,0 +1,5 @@
+error: missing parameter list for method 'printInfo' at line 7
+error: no matching function for call to 'print' at line 8
+error: no matching function for call to 'print' at line 9
+error: no matching function for call to 'print' at line 10
+error: struct b has no matching function for call to 'printInfo' at line 16

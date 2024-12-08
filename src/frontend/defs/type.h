@@ -15,11 +15,12 @@ typedef size_t type_id;
 #define TYPE_CHAR 3 // character type
 
 // specification for type
-typedef struct {
+typedef struct type_def {
     type_id type_id; // type id of the type
     bool is_struct; // whether the type is a struct
     bool is_array; // whether the type is an array
     size_t array_size; // size of the array
+    struct type_def *array_type; // type of the array
 } type_def;
 
 // create a new type specification
@@ -33,13 +34,13 @@ type_def *type_def_new_primitive(type_id type_id);
 // create a new struct type specification
 type_def *type_def_new_struct(type_id type_id);
 
-// create a new primitive array type specification
-type_def *type_def_new_primitive_array(type_id type_id, size_t array_size);
-
-// create a new struct array type specification
-type_def *type_def_new_struct_array(type_id type_id, size_t array_size);
+// create a new array type specification
+type_def *type_def_new_array(type_def *array_type, size_t array_size);
 
 // free a type specification
 void type_def_free(type_def *t);
+
+// compare two type specifications
+int type_def_cmp(type_def *t1, type_def *t2);
 
 #endif
