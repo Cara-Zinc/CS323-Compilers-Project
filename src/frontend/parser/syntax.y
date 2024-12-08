@@ -54,6 +54,7 @@ ExtDef : Specifier ExtDecList SEMI { $$ = ext_def_dec_handler(pm, $1, $2); }
 
 ExtDecList : VarDec { $$ = ext_dec_list_handler(pm, $1, NULL); }
            | VarDec COMMA ExtDecList { $$ = ext_dec_list_handler(pm, $1, $3); }
+           | VarDec COMMA error { yyerror("Missing variable after comma in variable declaration"); $$ = createASTLeaf("Error", NULL); }
            ;
 
 Specifier : TYPE { $$ = type_handler(pm, $1); }
@@ -94,11 +95,12 @@ FunDec : ID LP VarList RP { $$ = FunDec_handler(pm, $1, $3); }
 VarList : ParamDec COMMA VarList { $$ = VarList_ParamDec_Comma_VarList_handler(pm, $1, $3); }
         | ParamDec { $$ = VarList_ParamDec_handler(pm, $1); }
         | error COMMA VarList { yyerror("Invalid or missing parameter declaration"); $$ = createASTLeaf("Error", NULL); }
-        | ParamDec COMMA error { yyerror("Extra comma in parameter list"); $$ = createASTLeaf("Error", NULL); }
+        | ParamDec COMMA error { yyerror("Extra comma in parameter list. Did you forget a parameter?"); $$ = createASTLeaf("Error", NULL); }
         ;
 
 ParamDec : Specifier VarDec { $$ = ParamDec_handler(pm, $1, $2); }
          | Specifier error { yyerror("Missing variable declaration in parameter list"); $$ = createASTLeaf("Error", NULL); }
+         | error VarDec { yyerror("Missing type specifier in parameter list"); $$ = createASTLeaf("Error", NULL); }
          | VarDec { yyerror("Missing type specifier in parameter list"); $$ = createASTLeaf("Error", NULL); }
          ;
 
@@ -196,14 +198,14 @@ Exp : Exp ASSIGN Exp { $$ = exp_assign_handler(pm, $1, $3); }
     | Exp DOT error { yyerror("Invalid member name after '.' operator"); $$ = createASTLeaf("Error", NULL); }
     | LP Exp error { yyerror("Unbalanced parentheses: Missing closing parenthesis"); $$ = createASTLeaf("Error", NULL); }
     | ID LP Args error { yyerror("Missing closing parenthesis in function call"); $$ = createASTLeaf("Error", NULL); }
-    | INVALID { yyerror("Unrecognized token"); $$ = createASTLeaf("Error", NULL); }
+    | INVALID { $$ = createASTLeaf("Error", NULL); }
     ;
 
 Args : Exp COMMA Args {$$ = args_handler(pm, $1, $3); }
      | Exp { $$ = args_handler(pm, $1, NULL); }
-     | error COMMA Args { yyerror("Invalid or missing argument in argument list"); $$ = createASTLeaf("Error", NULL); }
-     | Exp COMMA error { yyerror("Invalid or missing argument in argument list"); $$ = createASTLeaf("Error", NULL); }
-     | Exp COMMA { $$ = createASTLeaf("Error", NULL); }
+     | error COMMA Args { yyerror("Invalid or missing argument in argument list. I"); $$ = createASTLeaf("Error", NULL); }
+     | Exp COMMA error { yyerror("Invalid or missing argument in argument list. II"); $$ = createASTLeaf("Error", NULL); }
+     | Exp COMMA { yyerror("Extra comma in argument list. Did you forget an argument?"); $$ = createASTLeaf("Error", NULL); }
      ;
 
 %%

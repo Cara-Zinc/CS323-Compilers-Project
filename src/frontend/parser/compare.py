@@ -12,6 +12,22 @@ def run_parser_on_test(test_name):
     run_parser_cmd = f"{run_parser_cmd_base}{tests_dir}{test_name}.spl > results/my_{test_name}.out"
     os.system(run_parser_cmd)
 
+def is_the_same_ast(my_lines, expected_lines):
+    if len(my_lines) != len(expected_lines):
+        print("Different number of lines")
+        print(f"Expected: {len(expected_lines)}")
+        print(f"Got: {len(my_lines)}")
+        return False
+    i = 0
+    for my_line, expected_line in zip(my_lines, expected_lines):
+        i += 1
+        if my_line != expected_line:
+            print(f"Line {i} of AST is different:")
+            print(f"Expected: {expected_line}")
+            print(f"Got: {my_line}")
+            return False
+    return True
+
 def run_parser_on_all_tests():
     for file in os.listdir(tests_dir):
         if file.endswith(".spl"):
@@ -35,10 +51,20 @@ def run_parser_on_all_tests():
             try:
                 flag = input("Print AST? (y/n): ")
             except EOFError:
-                flag = "n"
+                flag = "y"
             if flag == "y":
                 print("=========== AST: ===========")
                 os.system(f"cat results/my_{test_name}.out")
+            print("========= Comparing ASTs =========")
+            with open(f"results/my_{test_name}.out", "r") as my_out, open(f"{tests_dir}{test_name}.out", "r") as expected_out:
+                my_lines = my_out.readlines()
+                expected_lines = expected_out.readlines()
+                if expected_lines[0].strip().startswith("Error"):
+                    print("Aborting comparison because expected output is an error message")
+                elif is_the_same_ast(my_lines, expected_lines):
+                    print("ASTs are the same!")
+                else:
+                    print("ASTs are different. However, this does not necessarily mean that your parser is incorrect. Please check the ASTs manually.")
             try:
                 input("Press Enter to continue...")
             except EOFError:
