@@ -82,9 +82,10 @@ VarDec : ID { $$ = VarDec_ID_handler(pm, $1); }
 
 FunDec : ID LP VarList RP { $$ = FunDec_handler(pm, $1, $3); }
        | ID LP RP { $$ = FunDec_handler(pm, $1, NULL); }
-       | ID LP VarList error { yyerror("Missing right parenthesis in function declaration"); $$ = createASTLeaf("Error", NULL); }
        | ID RP { yyerror("Missing left parenthesis in function declaration"); $$ = createASTLeaf("Error", NULL); }
-       | ID LP error { yyerror("Missing right parenthesis in function declaration"); $$ = createASTLeaf("Error", NULL); }
+       | ID LP error { yyerror("Missing closing parenthesis in function declaration. I"); $$ = createASTLeaf("Error", NULL); }
+       | ID LP VarList SEMI { yyerror("Missing closing parenthesis in function declaration. II"); $$ = createASTLeaf("Error", NULL); }
+       | ID LP VarList error { yyerror("Missing closing parenthesis in function declaration. III"); $$ = createASTLeaf("Error", NULL); }
        ;
 
 VarList : ParamDec COMMA VarList { $$ = VarList_ParamDec_Comma_VarList_handler(pm, $1, $3); }
