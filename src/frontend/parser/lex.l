@@ -5,8 +5,10 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+
+int lineno = 1;
 void yyerrora(const char *s) {
-    fprintf(stderr, "Error type A at Line %d: unknown lexeme %s\n", yylineno, s);
+    fprintf(stderr, "Error type A at Line %d: unknown lexeme %s\n", lineno, s);
 }
 
 #include "../utils/copy.h"
@@ -15,13 +17,38 @@ void yyerrora(const char *s) {
 %option yylineno
 
 %%
-[ \t\n]+          {}                    // ignore whitespaces
+\n                      { lineno++; }
+[ \t]+          {}                    // ignore whitespaces
 0|[1-9][0-9]*           { yylval.int_val = atoi(yytext); return INT; }
-0x0|0x[1-9a-zA-Z][0-9a-fA-F]*          { yylval.int_val = strtol(yytext, NULL, 16); return INT; }
+0[xX][0-9a-zA-Z]+       {
+    // check if the hex number match regex 0[xX][0-9a-fA-F]+
+    if (strspn(yytext, "0123456789abcdefABCDEFxX") == strlen(yytext)) {
+        yylval.int_val = strtol(yytext, NULL, 16);
+        return INT;
+    } else {
+        yyerrora(yytext);
+        yylval.str = str_copy(yytext);
+        return INVALID;  
+    }
+}
 [1-9][0-9]*\.[0-9]+     { yylval.float_val = atof(yytext); return FLOAT; }
 0\.[0-9]+               { yylval.float_val = atof(yytext); return FLOAT; }
 \'[ -~]\'               { yylval.char_val = yytext[1]; return CHAR; }
-\'\\x[0-9a-fA-F]{2}\' { 
+\'\\x[0-9a-zA-Z]+\' { 
+    if (strlen(yytext) != 6) {
+        yyerrora(yytext);
+        yylval.str = str_copy(yytext);
+        return INVALID;  // Return INVALID for bad hex char
+    }
+    char str[3];
+    str[0] = yytext[3];
+    str[1] = yytext[4];
+    str[2] = '\0';
+    if (strspn(str, "0123456789abcdefABCDEF") != 2) {
+        yyerrora(yytext);
+        yylval.str = str_copy(yytext);
+        return INVALID;  // Return INVALID for bad hex char
+    }
     yylval.char_val = (char)strtol(&yytext[2], NULL, 16); 
     return CHAR; 
 }
@@ -64,5 +91,5 @@ void yyerrora(const char *s) {
 ","                     { yylval.str = "COMMA"; return COMMA; }
 "."                     { yylval.str = "DOT"; return DOT; }
 
-.                      { yyerrora(yytext); return -1; }
+.                      { yyerrora(yytext); return INVALID; }
 %%

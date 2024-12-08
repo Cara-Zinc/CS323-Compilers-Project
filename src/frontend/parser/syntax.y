@@ -29,7 +29,7 @@ void yyerror(const char *s) {
 %token <int_val> INT
 %token <float_val> FLOAT
 %token <char_val> CHAR
-%token <str> TYPE STRUCT IF ELSE WHILE RETURN DOT SEMI COMMA ASSIGN LT LE GT GE NE EQ PLUS MINUS MUL DIV AND OR NOT LP RP LB RB LC RC
+%token <str> INVALID TYPE STRUCT IF ELSE WHILE RETURN DOT SEMI COMMA ASSIGN LT LE GT GE NE EQ PLUS MINUS MUL DIV AND OR NOT LP RP LB RB LC RC
 
 /* Declare non-terminals and their types */
 %type <node> Program ExtDefList ExtDef ExtDecList Specifier StructSpecifier VarDec FunDec FunDef VarList ParamDec CompSt StmtList Stmt DefList Def DecList Dec Exp Args StructDefList StructDef
