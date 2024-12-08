@@ -32,10 +32,16 @@ def run_parser_on_all_tests():
             print("=========== Expected output: ===========")
             os.system(f"cat {tests_dir}{test_name}.out")
             print("=====================================================")
-            # flag = input("Print AST? (y/n): ")
+            try:
+                flag = input("Print AST? (y/n): ")
+            except EOFError:
+                flag = "n"
             if flag == "y":
                 print("=========== AST: ===========")
                 os.system(f"cat results/my_{test_name}.out")
-            # input("Press Enter to continue...")
+            try:
+                input("Press Enter to continue...")
+            except EOFError:
+                pass
 
 run_parser_on_all_tests()
