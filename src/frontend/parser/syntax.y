@@ -192,6 +192,7 @@ Exp : Exp ASSIGN Exp { $$ = exp_assign_handler(pm, $1, $3); }
     | Exp LB error RB { yyerror("Invalid or missing array index"); $$ = createASTLeaf("Error", NULL); }
     | Exp DOT error { yyerror("Invalid member name after '.' operator"); $$ = createASTLeaf("Error", NULL); }
     | LP Exp error { yyerror("Unbalanced parentheses: Missing closing parenthesis"); $$ = createASTLeaf("Error", NULL); }
+    | ID LP Args error { yyerror("Missing closing parenthesis in function call"); $$ = createASTLeaf("Error", NULL); }
     ;
 
 Args : Exp COMMA Args {$$ = args_handler(pm, $1, $3); }
