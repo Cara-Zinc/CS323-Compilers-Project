@@ -58,7 +58,8 @@ def run_parser_on_all_tests():
                 print("=========== AST: ===========")
                 os.system(f"cat results/my_{test_name}.out")
             print("========= Comparing ASTs =========")
-            with open(f"results/my_{test_name}.out", "r") as my_out, open(f"{tests_dir}{test_name}.out", "r") as expected_out:
+            with open(f"results/my_{test_name}.out", "r", errors="ignore") as my_out, open(f"{tests_dir}{test_name}.out", "r", errors="ignore") as expected_out:
+            # with open(f"results/my_{test_name}.out", "r") as my_out, open(f"{tests_dir}{test_name}.out", "r") as expected_out:
                 my_lines = my_out.readlines()
                 expected_lines = expected_out.readlines()
                 if expected_lines[0].strip().startswith("Error"):
