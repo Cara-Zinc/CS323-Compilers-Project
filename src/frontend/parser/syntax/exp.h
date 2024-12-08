@@ -3,11 +3,7 @@
 
 ASTNode *exp_id_handler(program_manager *pm, char *name)
 {
-    // if (!program_manager_get_field(pm, name))
-    // {
-    //     //printf("Error: variable %s not declared\n", name);
-    //     // exit(1);
-    // }
+    
     ASTNode *leaf = createASTLeaf("ID", name);
     ASTNode *node = createASTNode("Exp", 1, leaf);
     return node;
@@ -21,36 +17,7 @@ ASTNode *exp_bi_op_handler(program_manager *pm, ASTNode *left, char *op, ASTNode
     //     return NULL;
     // }
 
-    // // check usage before declaration
-    // if (!strcmp(left->nodeType, "ID"))
-    // {
-    //     if (!program_manager_get_field(pm, left->text))
-    //     {
-    //         printf("Error: variable %s not declared\n", left->text);
-    //         // exit(1);
-    //     }
-    // }
-    // if (!strcmp(right->nodeType, "ID"))
-    // {
-    //     if (!program_manager_get_field(pm, right->text))
-    //     {
-    //         printf("Error: variable %s not declared\n", right->text);
-    //         // exit(1);
-    //     }
-    // }
-
-    // // check type compatibility for binary operations
-    // if (strcmp(op, "="))
-    // {
-    //     if (strcmp(left->nodeType, "ID") && strcmp(right->nodeType, "ID"))
-    //     {
-    //         if (strcmp(left->nodeType, right->nodeType))
-    //         {
-    //             printf("Error: type mismatch\n");
-    //             // exit(1);
-    //         }
-    //     }
-    // }
+   
     // else if (strcmp(op, "+") || strcmp(op, "-") || strcmp(op, "*"))
     // {
     //     // check if both operands are INT or FLOAT
