@@ -1,3 +1,5 @@
-void main() {
-  struct Book b;
+void main(){
+#def
+struct test a;
+#enddef
 }

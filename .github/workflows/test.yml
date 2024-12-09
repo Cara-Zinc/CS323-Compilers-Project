@@ -4,11 +4,11 @@ on:
   push:
     branches: [ "*" ]
     paths:
-      - 'src/**'
+      - '**'
   pull_request:
     branches: [ "*" ]
     paths:
-      - 'src/**'
+      - '**'
 
 jobs:
   test:
@@ -16,17 +16,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Test Parser
+      - name: Test Parser (Phase 1)
         run: |
           sudo -S apt-get install -y flex bison libfl-dev
           flex --version
           bison --version
           git submodule init
           git submodule update --recursive
-          git clone https://github.com/sqlab-sustech/CS323-2024F
           cd src/frontend/parser
           make clean
           make
           ./structura_parser < test.spl
-          python3 compare.py --tests_dir ../../../CS323-2024F/project/phase1/
+          python3 compare.py --tests_dir ../../tests/phase1/
         working-directory: .
+
+      - name: Test Parser (Phase 1, Extended)
+        run: |
+          python3 compare_ext.py
+        working-directory: src/frontend/parser

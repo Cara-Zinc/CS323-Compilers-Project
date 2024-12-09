@@ -29,7 +29,7 @@ void yyerror(const char *s) {
 %token <int_val> INT
 %token <float_val> FLOAT
 %token <char_val> CHAR
-%token <str> INVALID TYPE STRUCT IF ELSE WHILE RETURN DOT SEMI COMMA ASSIGN LT LE GT GE NE EQ PLUS MINUS MUL DIV AND OR NOT LP RP LB RB LC RC
+%token <str> INVALID TYPE STRUCT IF ELSE WHILE RETURN DOT SEMI COMMA ASSIGN LT LE GT GE NE EQ PLUS MINUS MUL DIV AND OR NOT LP RP LB RB LC RC STARTDEF ENDDEF
 
 /* Declare non-terminals and their types */
 %type <node> Program ExtDefList ExtDef ExtDecList Specifier StructSpecifier VarDec FunDec FunDef VarList ParamDec CompSt StmtList Stmt DefList Def DecList Dec Exp Args StructDefList StructDef
@@ -49,6 +49,7 @@ ExtDefList : ExtDef ExtDefList { $$ = ext_def_list_handler(pm, $1, $2, yylineno)
 ExtDef : Specifier ExtDecList SEMI { $$ = ext_def_dec_handler(pm, $1, $2, yylineno); }
        | Specifier SEMI { $$ = ext_def_struct_handler(pm, $1, yylineno); }
        | Specifier FunDec CompSt { $$ = ext_def_func_handler(pm, $1, $2, $3, yylineno); }
+       | Specifier ExtDecList error { yyerror("Missing semicolon after declaration"); $$ = createASTLeaf("Error", yylineno, NULL); }
        | Specifier error { yyerror("Missing semicolon after declaration"); $$ = createASTLeaf("Error", yylineno, NULL); }
        | error ExtDecList SEMI { yyerror("Missing type specifier in declaration"); $$ = createASTLeaf("Error", yylineno, NULL); }
        ;
@@ -65,6 +66,7 @@ Specifier : TYPE { $$ = type_handler(pm, $1, yylineno); }
 
 StructSpecifier : STRUCT ID LC StructDefList RC { $$ = struct_def_handler(pm, $2, $4, yylineno); }
                 | STRUCT ID { $$ = struct_def_handler(pm, $2, NULL, yylineno); }
+                | STRUCT error { yyerror("Missing struct name"); $$ = createASTLeaf("Error", yylineno, NULL); }
                 ;
 
 StructDefList : StructDef StructDefList { $$ = struct_member_list_handler(pm, $1, $2, yylineno); }
@@ -109,13 +111,15 @@ ParamDec : Specifier VarDec { $$ = ParamDec_handler(pm, $1, $2, yylineno); }
          | VarDec { yyerror("Missing type specifier in parameter list"); $$ = createASTLeaf("Error", yylineno, NULL); }
          ;
 
-CompSt : LC StmtList RC { $$ = compst_deflist_stmtlist_handler(pm, NULL, $2, yylineno); }
-       | LC DefList StmtList RC { $$ = compst_deflist_stmtlist_handler(pm, $2, $3, yylineno); }
-       | LC DefList StmtList error { yyerror("Missing closing brace in compound statement"); $$ = createASTLeaf("Error", yylineno, NULL); }
+CompSt : LC STARTDEF DefList ENDDEF StmtList RC { $$ = compst_deflist_stmtlist_handler(pm, $3, $5, yylineno); }
+       | error STARTDEF DefList ENDDEF StmtList RC { yyerror("Missing opening brace in compound statement"); $$ = createASTLeaf("Error", yylineno, NULL); }
+       | LC STARTDEF DefList ENDDEF StmtList error { yyerror("Missing closing brace in compound statement"); $$ = createASTLeaf("Error", yylineno, NULL); }
+       | LC DefList ENDDEF StmtList RC { yyerror("Missing STARTDEF in compound statement"); $$ = createASTLeaf("Error", yylineno, NULL); }
        ;
 
-StmtList : Stmt StmtList { $$ = stmtlist_stmt_stmtlist_handler(pm, $1, $2, yylineno); }
-         |  { $$ = stmtlist_stmt_stmtlist_handler(pm, NULL, NULL, yylineno); }
+StmtList : { $$ = stmtlist_stmt_stmtlist_handler(pm, NULL, NULL, yylineno); } 
+         | Stmt StmtList { $$ = stmtlist_stmt_stmtlist_handler(pm, $1, $2, yylineno); }
+         | Stmt Def DefList StmtList { yyerror("Missing specifier"); $$ = createASTLeaf("Error", yylineno, NULL); }
          ;
 
 Stmt : Exp SEMI { $$ = stmt_exp_handler(pm, $1, yylineno); }
@@ -146,7 +150,7 @@ Stmt : Exp SEMI { $$ = stmt_exp_handler(pm, $1, yylineno); }
      ;
 
 DefList : Def DefList { $$ = deflist_def_deflist_handler(pm, $1, $2, yylineno); }
-        |  { $$ = deflist_def_deflist_handler(pm, NULL, NULL, yylineno); }
+        | { $$ = deflist_def_deflist_handler(pm, NULL, NULL, yylineno); }
         ;
 
 Def : Specifier DecList SEMI { $$ = def_specifier_declist_handler(pm, $1, $2, yylineno); }
