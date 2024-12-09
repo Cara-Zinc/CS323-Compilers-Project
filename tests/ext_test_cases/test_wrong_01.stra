@@ -12,7 +12,9 @@ struct Book {
 };
 
 void main() {
+    #def
     struct Book b;
+    #enddef
     b.printInfo();  
 }
 

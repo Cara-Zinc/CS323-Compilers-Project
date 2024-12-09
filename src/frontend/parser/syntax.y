@@ -112,6 +112,7 @@ ParamDec : Specifier VarDec { $$ = ParamDec_handler(pm, $1, $2, yylineno); }
          ;
 
 CompSt : LC STARTDEF DefList ENDDEF StmtList RC { $$ = compst_deflist_stmtlist_handler(pm, $3, $5, yylineno); }
+       | LC StmtList RC { $$ = compst_deflist_stmtlist_handler(pm, NULL, $2, yylineno); }
        | error STARTDEF DefList ENDDEF StmtList RC { yyerror("Missing opening brace in compound statement"); $$ = createASTLeaf("Error", yylineno, NULL); }
        | LC STARTDEF DefList ENDDEF StmtList error { yyerror("Missing closing brace in compound statement"); $$ = createASTLeaf("Error", yylineno, NULL); }
        | LC DefList ENDDEF StmtList RC { yyerror("Missing STARTDEF in compound statement"); $$ = createASTLeaf("Error", yylineno, NULL); }
