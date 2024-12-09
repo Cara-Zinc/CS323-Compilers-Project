@@ -57,7 +57,7 @@ func_def *fundec_semantic(program_manager *pm, ASTNode *node, type_def *type) {
     func_def *func = NULL;
     char *func_name = alist_get(node->children, 0)->text;
     if (program_manager_get_func_local(pm, func_name) != NULL) {
-        fprintf(stderr, "Error at line %zu: redeclaration of function %s.\n", node->line, func_name);
+        fprintf(stderr, "Error at line %zu: redeclaration of function %s.\n", alist_get(node->children, 0)->line, func_name);
         func = program_manager_create_func_invalid(pm, type);
     } else {
         func = program_manager_create_func(pm, str_copy(func_name), type);
@@ -86,7 +86,7 @@ varlist *varlist_semantic(program_manager *pm, ASTNode *node) {
     field_def *param = paramdec_semantic(pm, alist_get(node->children, 0));
     for (size_t i = 0; i < vlist_count(list); i++) {
         if (strcmp(vlist_get(list, i)->name, param->name) == 0) {
-            fprintf(stderr, "Error at line %zu: redeclaration of variable %s.\n", node->line, param->name);
+            fprintf(stderr, "Error at line %zu: redeclaration of variable %s.\n", alist_get(node->children, 0)->line, param->name);
             field_def_free(param);
             return list;
         }
@@ -111,7 +111,7 @@ field_def *dec_semantic(program_manager *pm, ASTNode *node) {
     if (node->numChildren == 3) {
         type = exp_semantic(pm, alist_get(node->children, 2));
         if (type->is_array || type->is_struct || type->type_id == TYPE_VOID) {
-            fprintf(stderr, "Error at line %zu: cannot assign array, struct or void type to variable.\n", node->line);
+            fprintf(stderr, "Error at line %zu: cannot assign array, struct or void type to variable.\n", alist_get(node->children, 0)->line);
         }
     }
     return field_def_new(vardec_semantic(pm, alist_get(node->children, 0)), type);
