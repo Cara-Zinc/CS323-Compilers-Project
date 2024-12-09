@@ -129,19 +129,31 @@ field_def *dec_semantic(program_manager *pm, ASTNode *node, type_def *type) {
     return field_def_new(vardec_semantic(pm, alist_get(node->children, 0)), type);
 }
 
-void declist_semantic(program_manager *pm, ASTNode *node, ) {
-    if (node->numChildren == 1) {
-        return dec_semantic(pm, alist_get(node->children, 0));
+void declist_semantic(program_manager *pm, ASTNode *node, type_def *type) {
+    if (node->numChildren == 1)
+    {
+        dec_semantic(pm, alist_get(node->children, 0), type);
     }
-
-    field_def *field = declist_semantic(pm, alist_get(node->children, 0));
-    field_def *field2 = dec_semantic(pm, alist_get(node->children, 1));
-    if (strcmp(field->name, field2->name) == 0) {
-        fprintf(stderr, "Error at line %zu: redeclaration of variable %s.\n", node->line, field->name);
-        field_def_free(field2);
-        return field;
+    else
+    {
+        dec_semantic(pm, alist_get(node->children, 0), type);
+        declist_semantic(pm, alist_get(node->children, 1), type);
     }
+}
 
-    field_def_free(field);
-    return field2;
+void def_semantic(program_manager *pm, ASTNode *node) {
+    type_def *type = specifier_semantic(pm, alist_get(node->children, 0));
+    declist_semantic(pm, alist_get(node->children, 1), type);
+}
+
+void deflist_semantic(program_manager *pm, ASTNode *node) {
+    if (node->numChildren == 1)
+    {
+        def_semantic(pm, alist_get(node->children, 0));
+    }
+    else
+    {
+        def_semantic(pm, alist_get(node->children, 0));
+        deflist_semantic(pm, alist_get(node->children, 1));
+    }
 }

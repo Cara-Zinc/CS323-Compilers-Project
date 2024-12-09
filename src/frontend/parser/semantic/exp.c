@@ -3,7 +3,58 @@
 #include "../../utils/util.h"
 #include <stdlib.h>
 
-type_def *exp_semantic(program_manager *pm, ASTNode *node);
+type_def *exp_semantic(program_manager *pm, ASTNode *node)
+{
+    if (node->numChildren == 1)
+    {
+        if (strcmp(alist_get(node->children, 0)->nodeType, "ID") == 0)
+        {
+            return exp_id_semantic(pm, alist_get(node->children, 0));
+        }
+        else if (strcmp(alist_get(node->children, 0)->nodeType, "EXP") == 0)
+        {
+            return exp_semantic(pm, alist_get(node->children, 0));
+        }
+        else if (strcmp(alist_get(node->children, 0)->nodeType, "INT") == 0)
+        {
+            return exp_primitive_semantic(pm, "INT", alist_get(node->children, 0)->text);
+        }
+        else if (strcmp(alist_get(node->children, 0)->nodeType, "FLOAT") == 0)
+        {
+            return exp_primitive_semantic(pm, "FLOAT", alist_get(node->children, 0)->text);
+        }
+        else if (strcmp(alist_get(node->children, 0)->nodeType, "CHAR") == 0)
+        {
+            return exp_primitive_semantic(pm, "CHAR", alist_get(node->children, 0)->text);
+        }
+    }
+    else if (node->numChildren == 2)
+    {
+        if (strcmp(alist_get(node->children, 0)->nodeType, "EXP") == 0)
+        {
+            return exp_unary_op_semantic(pm, node->text, alist_get(node->children, 0));
+        }
+        else if (strcmp(alist_get(node->children, 0)->nodeType, "ID") == 0)
+        {
+            return exp_array_semantic(pm, alist_get(node->children, 0), alist_get(node->children, 1));
+        }
+    }
+    else if (node->numChildren == 3)
+    {
+        if (strcmp(alist_get(node->children, 1)->nodeType, "ASSIGN") == 0)
+        {
+            return exp_assign_semantic(pm, alist_get(node->children, 0), alist_get(node->children, 2));
+        }
+        else if (strcmp(alist_get(node->children, 1)->nodeType, "BI_OP") == 0)
+        {
+            return exp_bi_op_semantic(pm, alist_get(node->children, 0), node->text, alist_get(node->children, 2));
+        }
+        else if (strcmp(alist_get(node->children, 1)->nodeType, "FUNC") == 0)
+        {
+            return exp_func_semantic(pm, alist_get(node->children, 0), alist_get(node->children, 2));
+        }
+    }
+}
 
 type_def *exp_id_semantic(program_manager *pm, ASTNode *node)
 {
@@ -361,6 +412,12 @@ type_def *exp_struct_semantic(program_manager *pm, ASTNode *exp, char *id)
     return type_def_new(program_manager_get_field(pm, id)->type_spec->type_id, true);
 }
 
-type_def *exp_struct_func_semantic(program_manager *pm, ASTNode *exp, char *id, ASTNode *args);
+type_def *exp_struct_func_semantic(program_manager *pm, ASTNode *exp, char *id, ASTNode *args)
+{
+    // @TODO: implement this function
+}
 
-type_def *exp_primitive_semantic(program_manager *pm, char *type, char *text);
+type_def *exp_primitive_semantic(program_manager *pm, char *type, char *text)
+{
+    // @TODO: implement this function
+}

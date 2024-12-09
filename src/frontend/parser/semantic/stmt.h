@@ -13,11 +13,8 @@ void return_semantic(program_manager *pm, ASTNode *node, func_def *func);
 // semantic analysis of a compound statement
 void compst_semantic(program_manager *pm, ASTNode *node, func_def *func);
 
-// semantic analysis of a definition list
-void DefList_semantic(program_manager *pm, ASTNode *node);
-
 // semantic analysis of a statement list
-void StmtList_semantic(program_manager *pm, ASTNode *node, func_def *func);
+void stmtList_semantic(program_manager *pm, ASTNode *node, func_def *func);
 
 // semantic analysis of an if statement
 void if_semantic(program_manager *pm, ASTNode *node, func_def *func);

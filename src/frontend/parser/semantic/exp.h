@@ -6,7 +6,7 @@
 
 type_def *exp_semantic(program_manager *pm, ASTNode *node);
 
-type_def *exp_id_semantic(program_manager *pm, char *name);
+type_def *exp_id_semantic(program_manager *pm, ASTNode *node);
 
 type_def *exp_bi_op_semantic(program_manager *pm, ASTNode *left, char *op, ASTNode *right);
 
