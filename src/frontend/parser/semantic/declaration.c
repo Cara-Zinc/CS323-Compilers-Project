@@ -110,8 +110,8 @@ field_def *dec_semantic(program_manager *pm, ASTNode *node) {
     type_def *type = NULL;
     if (node->numChildren == 3) {
         type = exp_semantic(pm, alist_get(node->children, 2));
-        if (type->is_array || type->is_struct) {
-            fprintf(stderr, "Error at line %zu: cannot assign array or struct to variable.\n", node->line);
+        if (type->is_array || type->is_struct || type->type_id == TYPE_VOID) {
+            fprintf(stderr, "Error at line %zu: cannot assign array, struct or void type to variable.\n", node->line);
         }
     }
     return field_def_new(vardec_semantic(pm, alist_get(node->children, 0)), type);
