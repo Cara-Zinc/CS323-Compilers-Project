@@ -27,7 +27,7 @@ jobs:
           make clean
           make
           ./structura_parser < test.spl
-          python3 compare.py --tests_dir ../../tests/phase1/
+          python3 compare.py --tests_dir ../../../tests/phase1/
         working-directory: .
 
       - name: Test Parser (Phase 1, Extended)
