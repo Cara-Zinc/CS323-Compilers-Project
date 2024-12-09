@@ -31,7 +31,7 @@ id_name_and_sizes *vardec_semantic(program_manager *pm, ASTNode *node) {
     if (strcmp(node->nodeType, "ID")) {
         return id_name_and_sizes_new(str_copy(node->text));
     }
-    
+
     id_name_and_sizes *ins = vardec_semantic(pm, alist_get(node->children, 0));
     int size = atoi(alist_get(node->children, 2)->text);
     if (size < 0) {
@@ -53,7 +53,7 @@ func_def *fundef_semantic(program_manager *pm, ASTNode *node) {
         scope_wrapper_free(wrapper);
         return NULL;
     }
-    
+
     scope_wrapper_free_without_data(wrapper);
     return func;
 }
@@ -116,7 +116,7 @@ field_def *paramdec_semantic(program_manager *pm, ASTNode *node) {
     return field;
 }
 
-field_def *dec_semantic(program_manager *pm, ASTNode *node) {
+field_def *dec_semantic(program_manager *pm, ASTNode *node, type_def *type) {
     type_def *type = NULL;
     if (node->numChildren == 3) {
         type = exp_semantic(pm, alist_get(node->children, 2));
@@ -124,5 +124,24 @@ field_def *dec_semantic(program_manager *pm, ASTNode *node) {
             fprintf(stderr, "Error at line %zu: cannot assign array, struct or void type to variable.\n", alist_get(node->children, 0)->line);
         }
     }
+
+    program_manager_create_field(pm, vardec_semantic(pm, alist_get(node->children, 0))->id, type);
     return field_def_new(vardec_semantic(pm, alist_get(node->children, 0)), type);
+}
+
+void declist_semantic(program_manager *pm, ASTNode *node, ) {
+    if (node->numChildren == 1) {
+        return dec_semantic(pm, alist_get(node->children, 0));
+    }
+
+    field_def *field = declist_semantic(pm, alist_get(node->children, 0));
+    field_def *field2 = dec_semantic(pm, alist_get(node->children, 1));
+    if (strcmp(field->name, field2->name) == 0) {
+        fprintf(stderr, "Error at line %zu: redeclaration of variable %s.\n", node->line, field->name);
+        field_def_free(field2);
+        return field;
+    }
+
+    field_def_free(field);
+    return field2;
 }

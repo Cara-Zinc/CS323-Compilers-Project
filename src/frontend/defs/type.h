@@ -43,4 +43,7 @@ void type_def_free(type_def *t);
 // compare two type specifications
 int type_def_cmp(type_def *t1, type_def *t2);
 
+// get the name of a type
+char *type_def_name(program_manager *pm, type_def *t);
+
 #endif

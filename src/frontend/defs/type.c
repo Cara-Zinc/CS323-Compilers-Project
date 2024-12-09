@@ -1,4 +1,5 @@
 #include "type.h"
+#include "../mm/program_manager.h"
 #include <cmc/utl/futils.h>
 
 // create a new type specification
@@ -50,7 +51,7 @@ void type_def_free(type_def *t) {
 /**
  * compare two type specifications
  * @return 0 if the two type specifications are equal, otherwise a non-zero value
- */ 
+ */
 int type_def_cmp(type_def *t1, type_def *t2) {
     int struct_cmp = cmc_u8_cmp(t1->is_struct, t2->is_struct);
     if (struct_cmp != 0) {
@@ -72,4 +73,41 @@ int type_def_cmp(type_def *t1, type_def *t2) {
     }
 
     return cmc_size_cmp(t1->type_id, t2->type_id);
+}
+
+// get the name of a type
+char *type_def_name(program_manager *pm, type_def *t)
+{
+    if (t->is_array)
+    {
+        char *array_type = type_def_name(pm, t->array_type);
+        char *res = malloc(strlen(array_type) + 10);
+        if (array_type[0] == '[')
+            sprintf(res, "[%zu]%s", t->array_size, array_type + 1);
+        else
+            sprintf(res, "%s[%zu]", array_type, t->array_size);
+        free(array_type);
+        return res;
+    }
+
+    if (t->is_struct)
+    {
+        struct_def *s = program_manager_get_struct_by_id(pm, t->type_id);
+        return s->name;
+    }
+
+    switch (t->type_id)
+    {
+    case TYPE_VOID:
+        return "void";
+    case TYPE_INT:
+        return "int";
+    case TYPE_FLOAT:
+        return "float";
+    case TYPE_CHAR:
+        return "char";
+    default:
+        return "unknown";
+    }
+
 }

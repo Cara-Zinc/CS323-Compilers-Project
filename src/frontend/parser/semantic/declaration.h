@@ -19,7 +19,7 @@ void id_name_and_sizes_free(id_name_and_sizes *ins);
 
 /**
  * Adds a size to the `sizes` array of an `id_name_and_sizes` object.
- * 
+ *
  * @param ins A pointer to the `id_name_and_sizes` structure.
  * @param size The size value to be added to the array.
  */
@@ -27,7 +27,7 @@ void id_name_and_sizes_push_size(id_name_and_sizes *ins, size_t size);
 
 /**
  * Performs semantic analysis for a variable declaration (VarDec).
- * 
+ *
  * @param pm The program manager to manage scopes and symbols.
  * @param node The AST node representing the variable declaration.
  * @return A pointer to an `id_name_and_sizes` structure containing the variable's name and sizes.
@@ -42,6 +42,12 @@ varlist *varlist_semantic(program_manager *pm, ASTNode *node);
 
 field_def *paramdec_semantic(program_manager *pm, ASTNode *node);
 
-field_def *dec_semantic(program_manager *pm, ASTNode *node);
+field_def *dec_semantic(program_manager *pm, ASTNode *node, type_def *type);
+
+void declist_semantic(program_manager *pm, ASTNode *node);
+
+void def_semantic(program_manager *pm, ASTNode *node);
+
+void deflist_semantic(program_manager *pm, ASTNode *node);
 
 #endif
