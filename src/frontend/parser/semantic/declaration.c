@@ -98,8 +98,13 @@ varlist *varlist_semantic(program_manager *pm, ASTNode *node) {
 field_def *paramdec_semantic(program_manager *pm, ASTNode *node) {
     type_def *type = specifier_semantic(pm, alist_get(node->children, 0));
     id_name_and_sizes *ins = vardec_semantic(pm, alist_get(node->children, 1));
-    for (size_t i = 0; i < ins->size_count; i++) {
-        type = type_def_new_array(type, ins->sizes[i]);
+    if (ins->size_count > 0) {
+        for (size_t i = ins->size_count - 1; i >= 0; i--) {
+            type = type_def_new_array(type, ins->sizes[i]);
+            if (i == 0) {
+                break;
+            }
+        }
     }
     field_def *field = field_def_new(str_copy(ins->id), type);
     id_name_and_sizes_free(ins);
