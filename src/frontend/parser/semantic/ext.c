@@ -1,4 +1,5 @@
 #include "ext.h"
+#include "spec.h"
 #include <stdlib.h>
 
 void ext_def_semantic(program_manager *pm, ASTNode *ExtDef)
@@ -44,6 +45,6 @@ void program_semantic(program_manager *pm, ASTNode *Program)
     }
     else 
     {
-        ext_deflist_semantic(pm, alist_get(Program->children, 0));
+        ext_def_list_semantic(pm, alist_get(Program->children, 0));
     }
 }
