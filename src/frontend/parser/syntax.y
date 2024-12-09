@@ -12,6 +12,7 @@
 int yylex(void);
 extern int yylineno;
 program_manager *pm;
+ASTNode *root;
 
 void yyerror(const char *s) {
     fprintf(stderr, "Error type B at Line %d: %s\n", yylineno, s);
@@ -40,7 +41,7 @@ void yyerror(const char *s) {
 
 %%
 
-Program : ExtDefList { $$ = program_handler(pm, $1, yylineno); }
+Program : ExtDefList { $$ = root = program_handler(pm, $1, yylineno); }
         ;
 
 ExtDefList : ExtDef ExtDefList { $$ = ext_def_list_handler(pm, $1, $2, yylineno); }
@@ -234,7 +235,7 @@ Args : Exp COMMA Args {$$ = args_handler(pm, $1, $3, yylineno); }
 
 int main() {
     pm = program_manager_new();
-    ASTNode *root = yyparse();
+    yyparse();
     rprintAST(root, 0);
     program_semantic(pm, root);
     return 0;
