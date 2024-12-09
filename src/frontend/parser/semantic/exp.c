@@ -393,32 +393,71 @@ type_def *exp_array_semantic(program_manager *pm, ASTNode *exp1, ASTNode *exp2)
  * @param exp The AST node representing the struct expression.
  * @param id The name of the struct member.
  */
-type_def *exp_struct_semantic(program_manager *pm, ASTNode *exp, char *id)
+type_def *exp_struct_semantic(program_manager *pm, ASTNode *exp, ASTNode *id)
 {
     bool error_node = false;
-    // check usage before declaration
-    if (!program_manager_get_struct_by_id(pm, id))
+    // check if exp node itself is a struct
+    type_def *exp_type = exp_semantic(pm, exp);
+    if (!exp_type->is_struct)
     {
-        fprintf(stderr, "Error at line %zu: struct %s not declared\n", exp->line, id);
+        fprintf(stderr, "Error at line %zu: expression is not a struct\n", exp->line);
         error_node = true;
     }
-    // check if id is a valid struct member
-    if (!struct_def_get_field(program_manager_get_struct_by_id(pm, id), id))
+    // check if the struct has the member
+    if (!program_manager_get_struct_by_id(pm, exp_type->type_id))
     {
-        fprintf(stderr, "Error at line %zu: struct %s does not have a member %s\n", exp->line, exp->text, id);
+        fprintf(stderr, "Error at line %zu: struct does not have member %s\n", exp->line, id);
         error_node = true;
     }
-
     if (error_node)
     {
         return NULL;
     }
-    return type_def_new(program_manager_get_field(pm, id)->type_spec->type_id, true);
+    struct_def *s = program_manager_get_struct_by_id(pm, exp_type->type_id);
+    if (!struct_def_get_field(s, id->text))
+    {
+        fprintf(stderr, "Error at line %zu: struct does not have member %s\n", id->line, id->text);
+        return NULL;
+    }
+    else
+    {
+        field_def *f = struct_def_get_field(s, id->text);
+        return f->type_spec;
+    }
 }
 
-type_def *exp_struct_func_semantic(program_manager *pm, ASTNode *exp, char *id, ASTNode *args)
+type_def *exp_struct_func_semantic(program_manager *pm, ASTNode *exp, ASTNode *id, ASTNode *args)
 {
     // @TODO: implement this function
+    bool error_node = false;
+    // check if exp node itself is a struct
+    type_def *exp_type = exp_semantic(pm, exp);
+    if (!exp_type->is_struct)
+    {
+        fprintf(stderr, "Error at line %zu: expression is not a struct\n", exp->line);
+        error_node = true;
+    }
+    // check if the struct has the member
+    if (!program_manager_get_struct_by_id(pm, exp_type->type_id))
+    {
+        fprintf(stderr, "Error at line %zu: struct does not have member %s\n", exp->line, id);
+        error_node = true;
+    }
+    if (error_node)
+    {
+        return NULL;
+    }
+    struct_def *s = program_manager_get_struct_by_id(pm, exp_type->type_id);
+    if (!struct_def_get_field(s, id->text))
+    {
+        fprintf(stderr, "Error at line %zu: struct does not have member %s\n", id->line, id->text);
+        return NULL;
+    }
+    else
+    {
+        field_def *f = struct_def_get_field(s, id->text);
+        return f->type_spec;
+    }
 }
 
 type_def *exp_primitive_semantic(program_manager *pm, char *type, char *text)

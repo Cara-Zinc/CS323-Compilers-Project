@@ -4,7 +4,6 @@
 #include "../../mm/program_manager.h"
 #include "../ast.h"
 #include "declaration.h"
-#include "def.h"
 
 type_def *specifier_semantic(program_manager *pm, ASTNode *node);
 type_def *struct_specifier_semantic(program_manager *pm, ASTNode *node);

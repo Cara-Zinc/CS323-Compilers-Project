@@ -113,7 +113,7 @@ void struct_def_semantic(program_manager *pm, ASTNode *struct_def)
         ASTNode *specifier = alist_get(struct_def->children, 0);
         type_def *type = specifier_semantic(pm, specifier);
         ASTNode *dec_list = alist_get(struct_def->children, 1);
-        declist_semantic(pm, dec_list);
+        declist_semantic(pm, dec_list, type);
 
     }
     else if (alist_count(struct_def->children)==1)

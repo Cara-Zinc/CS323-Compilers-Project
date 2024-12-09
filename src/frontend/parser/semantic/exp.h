@@ -18,9 +18,9 @@ type_def *exp_func_semantic(program_manager *pm, ASTNode *func_id, ASTNode *args
 
 type_def *exp_array_semantic(program_manager *pm, ASTNode *exp1, ASTNode *exp2);
 
-type_def *exp_struct_semantic(program_manager *pm, ASTNode *exp, char *id);
+type_def *exp_struct_semantic(program_manager *pm, ASTNode *exp, ASTNode *id);
 
-type_def *exp_struct_func_semantic(program_manager *pm, ASTNode *exp, char *id, ASTNode *args);
+type_def *exp_struct_func_semantic(program_manager *pm, ASTNode *exp, ASTNode *id, ASTNode *args);
 
 type_def *exp_primitive_semantic(program_manager *pm, char *type, char *text);
 
