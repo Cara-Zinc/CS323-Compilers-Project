@@ -44,7 +44,7 @@ field_def *paramdec_semantic(program_manager *pm, ASTNode *node);
 
 field_def *dec_semantic(program_manager *pm, ASTNode *node, type_def *type);
 
-void declist_semantic(program_manager *pm, ASTNode *node);
+void declist_semantic(program_manager *pm, ASTNode *node, type_def *type);
 
 void def_semantic(program_manager *pm, ASTNode *node);
 

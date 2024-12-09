@@ -307,10 +307,6 @@ ASTNode *exp_func_handler(program_manager *pm, char *name, ASTNode *args, size_t
 
 ASTNode *exp_array_handler(program_manager *pm, ASTNode *Exp1, ASTNode *Exp2, size_t line)
 {
-    if(Exp2 == NULL)
-    {
-        return createASTNode("Exp", line, 3, Exp1, createASTLeaf("LB", line, "["), createASTLeaf("RB", line, "]"));
-    }
     ASTNode *node = createASTNode("Exp", line, 4, Exp1, createASTLeaf("LB", line, "["), Exp2, createASTLeaf("RB", line, "]"));
     return node;
 }

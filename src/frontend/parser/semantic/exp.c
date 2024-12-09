@@ -11,10 +11,6 @@ type_def *exp_semantic(program_manager *pm, ASTNode *node)
         {
             return exp_id_semantic(pm, alist_get(node->children, 0));
         }
-        else if (strcmp(alist_get(node->children, 0)->nodeType, "EXP") == 0)
-        {
-            return exp_semantic(pm, alist_get(node->children, 0));
-        }
         else if (strcmp(alist_get(node->children, 0)->nodeType, "INT") == 0)
         {
             return exp_primitive_semantic(pm, "INT", alist_get(node->children, 0)->text);
@@ -30,29 +26,37 @@ type_def *exp_semantic(program_manager *pm, ASTNode *node)
     }
     else if (node->numChildren == 2)
     {
-        if (strcmp(alist_get(node->children, 0)->nodeType, "EXP") == 0)
+        if (strcmp(alist_get(node->children, 0)->nodeType, "op") == 0)
         {
             return exp_unary_op_semantic(pm, node->text, alist_get(node->children, 0));
         }
         else if (strcmp(alist_get(node->children, 0)->nodeType, "ID") == 0)
         {
-            return exp_array_semantic(pm, alist_get(node->children, 0), alist_get(node->children, 1));
+            return exp_func_semantic(pm, alist_get(node->children, 0), alist_get(node->children, 1));
+        }
+        else if (strcmp(alist_get(node->children, 0)->nodeType, "Exp") == 0)
+        {
+            return exp_struct_semantic(pm, alist_get(node->children, 0), alist_get(node->children, 1));
         }
     }
     else if (node->numChildren == 3)
     {
-        if (strcmp(alist_get(node->children, 1)->nodeType, "ASSIGN") == 0)
-        {
-            return exp_assign_semantic(pm, alist_get(node->children, 0), alist_get(node->children, 2));
-        }
-        else if (strcmp(alist_get(node->children, 1)->nodeType, "BI_OP") == 0)
+        if (strcmp(alist_get(node->children, 1)->nodeType, "operator") == 0)
         {
             return exp_bi_op_semantic(pm, alist_get(node->children, 0), node->text, alist_get(node->children, 2));
         }
-        else if (strcmp(alist_get(node->children, 1)->nodeType, "FUNC") == 0)
+        else if (strcmp(alist_get(node->children, 1)->nodeType, "op") == 0)
         {
-            return exp_func_semantic(pm, alist_get(node->children, 0), alist_get(node->children, 2));
+            return exp_bi_op_semantic(pm, alist_get(node->children, 0), node->text, alist_get(node->children, 2));
         }
+        else if (strcmp(alist_get(node->children, 1)->nodeType, "ID") == 0)
+        {
+            return exp_struct_func_semantic(pm, alist_get(node->children, 0), node->text, alist_get(node->children, 2));
+        }
+    }
+    else if (node->numChildren == 4)
+    {
+        return exp_array_semantic(pm, alist_get(node->children, 0), alist_get(node->children, 2));
     }
 }
 
