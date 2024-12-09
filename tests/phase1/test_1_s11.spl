@@ -13,7 +13,9 @@ int main(){
     int d=add(a,b);
     #enddef
     if (d>c){
+        #def 
         float e=add(a,c);
+        #enddef
     }
     while(d>a){
         if(e>c || a==b){

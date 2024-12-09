@@ -1,0 +1,34 @@
+int mod(int x, int n)
+{
+    return x - (x / n) * n;
+}
+
+int test_correct_1(int num) {
+    #def 
+    int reversed = 0;
+    int original = num;
+    int digit = 0;
+    #enddef
+    while (num != 0) {
+        digit = mod(num , 10);
+        reversed = reversed * 10 + digit;
+        num = num / 10;
+    }
+    if(reversed == original){
+        return 1;
+    }else{
+        return 0; 
+    }
+}
+
+int main() {
+    #def 
+    int number = 1024;
+    #enddef
+    if (test_correct_1(number)==1) {
+        return 1;
+    } else {
+        return 0;
+    }
+    return 0;
+}

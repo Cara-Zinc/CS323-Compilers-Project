@@ -27,4 +27,14 @@ id_name_and_sizes *ext_dec_list_semantic(program_manager *pm, ASTNode *ExtDecLis
 }
 
 
-
+void program_semantic(program_manager *pm, ASTNode *Program)
+{
+    if(Program->numChildren == 0) 
+    {
+        return;
+    }
+    else 
+    {
+        ext_deflist_semantic(pm, alist_get(Program->children, 0));
+    }
+}
