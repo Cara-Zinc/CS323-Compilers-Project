@@ -60,7 +60,8 @@ void yyerrora(const char *s) {
     printf("Error: illegal hex char '%s'\n", yytext);
     return -1;
 }
-
+"#def"                  { yylval.str = yytext; return STARTDEF; }
+"#enddef"                { yylval.str = yytext; return ENDDEF; }
 "if"                    { yylval.str = "IF"; return IF; }
 "else"                  { yylval.str = "ELSE"; return ELSE; }
 "while"                 { yylval.str = "WHILE"; return WHILE; } 
