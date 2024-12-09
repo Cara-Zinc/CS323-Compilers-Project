@@ -453,14 +453,43 @@ type_def *exp_struct_func_semantic(program_manager *pm, ASTNode *exp, ASTNode *i
         fprintf(stderr, "Error at line %zu: struct does not have member %s\n", id->line, id->text);
         return NULL;
     }
+    else if (!struct_def_get_func(s, id->text))
+    {
+        fprintf(stderr, "Error at line %zu: struct does not have function %s\n", id->line, id->text);
+        return NULL;
+    }
     else
     {
-        field_def *f = struct_def_get_field(s, id->text);
-        return f->type_spec;
+        func_def *f = struct_def_get_func(s, id->text);
+        // check if the function is called with the correct number of arguments
+        varlist *args_list = args_semantic(pm, args);
+        int fun_args_cnt = vlist_count(f->args);
+        if(fun_args_cnt != vlist_count(args_list))
+        {
+            fprintf(stderr, "Error at line %zu: function %s is called with %zu arguments, but it expects %zu arguments\n", id->line, id->text, vlist_count(args_list), fun_args_cnt);
+            error_node = true;
+        }
+        // check if the arguments are of the correct type
+        for(int i=0; i<fun_args_cnt; i++)
+        {
+            type_def *t1 = vlist_get(args_list, i)->type_spec;
+            type_def *t2 = vlist_get(f->args, i)->type_spec;
+            if(type_def_cmp(t1, t2) != 0)
+            {
+                fprintf(stderr, "Error at line %zu: argument %d of function %s is of type %s, but it expects type %s\n", id->line, i, id->text, type_def_name(pm, t1), type_def_name(pm, t2));
+                error_node = true;
+            }
+        }
+        if(error_node)
+        {
+            return NULL;
+        }
+        return f->return_type;
     }
 }
 
 type_def *exp_primitive_semantic(program_manager *pm, char *type, char *text)
 {
     // @TODO: implement this function
+   
 }
