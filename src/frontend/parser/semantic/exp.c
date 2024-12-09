@@ -1,3 +1,4 @@
+#include "args.h"
 #include "exp.h"
 #include "../../utils/util.h"
 #include <stdlib.h>
@@ -63,7 +64,8 @@ type_def *exp_bi_op_semantic(program_manager *pm, ASTNode *left, char *op, ASTNo
                 fprintf(stderr, "Error at line %zu: type mismatch, try to assign type '%s' to type '%s'\n", left->line, right->nodeType, left->nodeType);
                 error_node = true;
             }
-            if(error_node){
+            if (error_node)
+            {
                 return NULL;
             }
             return type_def_new(right_type->type_id, false);
@@ -89,7 +91,8 @@ type_def *exp_bi_op_semantic(program_manager *pm, ASTNode *left, char *op, ASTNo
             error_node = true;
         }
         // CHAR + INT = CHAR, CHAR + FLOAT = FLOAT, CHAR + CHAR = CHAR, INT + CHAR = CHAR,INT + INT = INT, INT + FLOAT = FLOAT, FLOAT + FLOAT = FLOAT
-        if(error_node){
+        if (error_node)
+        {
             return NULL;
         }
 
@@ -268,21 +271,36 @@ type_def *exp_func_semantic(program_manager *pm, ASTNode *func_id, ASTNode *args
     else
     {
         // check if the function is called with the correct number of arguments
-        if (program_manager_get_func(pm, func_id->text)->args->count != alist_count(args))
+        varlist *args_list = args_semantic(pm, args);
+        func_def *func = program_manager_get_func(pm, func_id->text);
+        int fun_args_cnt = vlist_count(func->args);
+
+        if (fun_args_cnt != vlist_count(args_list))
         {
-            // fprintf(stderr, "Error at line %zu: function %s is called with %zu arguments, but it expects %zu arguments\n", func_id->line, func_id->text, alist_count(args), program_manager_get_func(pm, func_id->text)->args_count);
-            // error_node = true;
+            fprintf(stderr, "Error at line %zu: function %s is called with %zu arguments, but it expects %zu arguments\n", func_id->line, func_id->text, vlist_count(args_list), fun_args_cnt);
+            error_node = true;
         }
-        else
+
+        // check if the arguments are of the correct type
+        // vlist = args_semantic(pm, args);
+        for (int i = 0; i < fun_args_cnt; i++)
         {
-            // check if the arguments are of the correct type
+            // @TODO: use util function to get name of a type from its type_id
+            if (type_def_cmp(vlist_get(args_list, i)->type_spec, vlist_get(func->args, i)->type_spec) != 0)
+            {
+                // fprintf(stderr, "Error at line %zu: argument %d of function %s is of type %s, but it expects type %s\n", func_id->line, i, func_id->text)
+                error_node = true;
+            }
         }
+        if (error_node)
+        {
+            return NULL;
+        }
+
+        return program_manager_get_func(pm, func_id->text)->return_type;
     }
-    if (error_node)
-    {
-        return NULL;
-    }
-    return type_def_new(program_manager_get_field(pm, func_id->text)->type_spec->type_id, false);
+
+    return type_def_new(TYPE_VOID, false);
 }
 
 type_def *exp_array_semantic(program_manager *pm, ASTNode *exp1, ASTNode *exp2)
@@ -331,7 +349,8 @@ type_def *exp_struct_semantic(program_manager *pm, ASTNode *exp, char *id)
         error_node = true;
     }
     // check if id is a valid struct member
-    if(!struct_def_get_field(program_manager_get_struct_by_id(pm, id), id)){
+    if (!struct_def_get_field(program_manager_get_struct_by_id(pm, id), id))
+    {
         fprintf(stderr, "Error at line %zu: struct %s does not have a member %s\n", exp->line, exp->text, id);
         error_node = true;
     }
