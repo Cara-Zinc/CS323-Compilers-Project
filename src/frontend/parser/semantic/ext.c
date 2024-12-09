@@ -3,27 +3,36 @@
 
 void ext_def_semantic(program_manager *pm, ASTNode *ExtDef)
 {
-    // TODO: Implement this function
-
+    type_def *type = specifier_semantic(pm, alist_get(ExtDef->children, 0));
+    ext_dec_list_semantic(pm, alist_get(ExtDef->children, 1), type);
+    
 }
 
-id_name_and_sizes *ext_dec_list_semantic(program_manager *pm, ASTNode *ExtDecList)
+void ext_def_list_semantic(program_manager *pm, ASTNode *ExtDefList)
 {
-    if(alist_count(ExtDecList->children) == 1) 
+    if(ExtDefList->numChildren == 0) 
     {
-        return vardec_semantic(pm, alist_get(ExtDecList->children, 0));
+        return;
     }
     else 
     {
-        id_name_and_sizes *ins = vardec_semantic(pm, alist_get(ExtDecList->children, 0));
-        id_name_and_sizes *ins2 = ext_dec_list_semantic(pm, alist_get(ExtDecList->children, 2));
-        for(int i=0;i<ins2->size_count;i++) 
-        {
-            id_name_and_sizes_push_size(ins, ins2->sizes[i]);
-        }
-        id_name_and_sizes_free(ins2);
-        return ins;
+        ext_def_semantic(pm, alist_get(ExtDefList->children, 0));
+        ext_def_list_semantic(pm, alist_get(ExtDefList->children, 1));
     }
+}
+
+void ext_dec_list_semantic(program_manager *pm, ASTNode *ExtDecList, type_def *type)
+{
+    if(ExtDecList->numChildren == 1) 
+    {
+        dec_semantic(pm, alist_get(ExtDecList->children, 0), type);
+    }
+    else 
+    {
+        dec_semantic(pm, alist_get(ExtDecList->children, 0), type);
+        ext_dec_list_semantic(pm, alist_get(ExtDecList->children, 2), type);
+    }
+    
 }
 
 
