@@ -85,4 +85,7 @@ struct_def *program_manager_current_struct(program_manager *pm);
 // note to free the wrapper after using it
 scope_wrapper *program_manager_pop(program_manager *pm);
 
+// get the name of a type
+char *type_def_name(program_manager *pm, type_def *t);
+
 #endif

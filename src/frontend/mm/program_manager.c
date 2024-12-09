@@ -184,3 +184,41 @@ scope_wrapper *program_manager_pop(program_manager *pm) {
     scwlist_pop_back(pm->scope_wrapper_stack);
     return res;
 }
+
+
+// get the name of a type
+char *type_def_name(program_manager *pm, type_def *t)
+{
+    if (t->is_array)
+    {
+        char *array_type = type_def_name(pm, t->array_type);
+        char *res = malloc(strlen(array_type) + 10);
+        if (array_type[0] == '[')
+            sprintf(res, "[%zu]%s", t->array_size, array_type + 1);
+        else
+            sprintf(res, "%s[%zu]", array_type, t->array_size);
+        free(array_type);
+        return res;
+    }
+
+    if (t->is_struct)
+    {
+        struct_def *s = program_manager_get_struct_by_id(pm, t->type_id);
+        return s->name;
+    }
+
+    switch (t->type_id)
+    {
+    case TYPE_VOID:
+        return "void";
+    case TYPE_INT:
+        return "int";
+    case TYPE_FLOAT:
+        return "float";
+    case TYPE_CHAR:
+        return "char";
+    default:
+        return "unknown";
+    }
+
+}
