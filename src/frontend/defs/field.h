@@ -6,7 +6,10 @@
 #include "type.h"
 #include "../utils/util.h"
 
-// field definition
+/**
+ * @brief Definition of a field
+ * type specification of the field of type type_def
+ */
 typedef struct field_def {
     char *name; // field name
     type_def *type_spec; // field type specification

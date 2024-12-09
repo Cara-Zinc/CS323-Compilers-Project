@@ -47,7 +47,10 @@ void type_def_free(type_def *t) {
     free(t);
 }
 
-// compare two type specifications
+/**
+ * compare two type specifications
+ * @return 0 if the two type specifications are equal, otherwise a non-zero value
+ */ 
 int type_def_cmp(type_def *t1, type_def *t2) {
     int struct_cmp = cmc_u8_cmp(t1->is_struct, t2->is_struct);
     if (struct_cmp != 0) {
