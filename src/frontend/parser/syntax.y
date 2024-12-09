@@ -6,6 +6,7 @@
 #include "syntax.tab.h"
 #include "syntax/syntax_analysis.h" // 语法分析相关的函数和声明
 #include "../mm/program_manager.h" // 程序管理器相关的函数和声明
+#include "semantic/ext.h" // 语义分析相关的函数和声明
 
 
 int yylex(void);
@@ -39,7 +40,7 @@ void yyerror(const char *s) {
 
 %%
 
-Program : ExtDefList { $$ = program_handler(pm, $1, yylineno); rprintAST($$, 0); program_semantic(pm, $$); }
+Program : ExtDefList { $$ = program_handler(pm, $1, yylineno); }
         ;
 
 ExtDefList : ExtDef ExtDefList { $$ = ext_def_list_handler(pm, $1, $2, yylineno); }
@@ -233,5 +234,8 @@ Args : Exp COMMA Args {$$ = args_handler(pm, $1, $3, yylineno); }
 
 int main() {
     pm = program_manager_new();
-    return yyparse();
+    ASTNode *root = yyparse();
+    rprintAST(root, 0);
+    program_semantic(pm, root);
+    return 0;
 }
