@@ -1,5 +1,7 @@
-void main(){
-#def
-struct test a;
-#enddef
+void main() {
+    #def
+    struct Address a;
+    #enddef
+    
+    p.nickname = 'A';
 }

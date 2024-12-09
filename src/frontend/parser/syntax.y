@@ -66,7 +66,6 @@ Specifier : TYPE { $$ = type_handler(pm, $1, yylineno); }
 
 StructSpecifier : STRUCT ID LC StructDefList RC { $$ = struct_def_handler(pm, $2, $4, yylineno); }
                 | STRUCT ID { $$ = struct_def_handler(pm, $2, NULL, yylineno); }
-                | STRUCT error { yyerror("Missing struct name"); $$ = createASTLeaf("Error", yylineno, NULL); }
                 ;
 
 StructDefList : StructDef StructDefList { $$ = struct_member_list_handler(pm, $1, $2, yylineno); }
@@ -74,8 +73,8 @@ StructDefList : StructDef StructDefList { $$ = struct_member_list_handler(pm, $1
               ;
 
 StructDef : Specifier DecList SEMI { $$ = struct_member_handler(pm, $1, $2, NULL, yylineno); }
-          | Specifier DecList error { yyerror("Missing semicolon after struct member declaration"); $$ = createASTLeaf("Error", yylineno, NULL); }
           | FunDef { $$ = $1; }
+          | Specifier DecList error { yyerror("Missing semicolon after struct member declaration"); $$ = createASTLeaf("Error", yylineno, NULL); }
           ;
 
 VarDec : ID { $$ = VarDec_ID_handler(pm, $1, yylineno); }
@@ -88,6 +87,7 @@ VarDec : ID { $$ = VarDec_ID_handler(pm, $1, yylineno); }
        ;
 
 FunDef : Specifier FunDec CompSt { $$ = struct_member_handler(pm, $1, $2, $3, yylineno); }
+       | Specifier FunDec SEMI { $$ = struct_member_handler(pm, $1, $2, NULL, yylineno); }
        ;
 
 FunDec : ID LP VarList RP { $$ = FunDec_handler(pm, $1, $3, yylineno); }
@@ -112,6 +112,7 @@ ParamDec : Specifier VarDec { $$ = ParamDec_handler(pm, $1, $2, yylineno); }
          ;
 
 CompSt : LC STARTDEF DefList ENDDEF StmtList RC { $$ = compst_deflist_stmtlist_handler(pm, $3, $5, yylineno); }
+       | LC STARTDEF error ENDDEF StmtList RC { yyerror("Some error in DefList"); $$ = createASTLeaf("Error", yylineno, NULL); }
        | LC StmtList RC { $$ = compst_deflist_stmtlist_handler(pm, NULL, $2, yylineno); }
        | error STARTDEF DefList ENDDEF StmtList RC { yyerror("Missing opening brace in compound statement"); $$ = createASTLeaf("Error", yylineno, NULL); }
        | LC STARTDEF DefList ENDDEF StmtList error { yyerror("Missing closing brace in compound statement"); $$ = createASTLeaf("Error", yylineno, NULL); }
@@ -156,7 +157,7 @@ DefList : Def DefList { $$ = deflist_def_deflist_handler(pm, $1, $2, yylineno); 
 
 Def : Specifier DecList SEMI { $$ = def_specifier_declist_handler(pm, $1, $2, yylineno); }
     | Specifier DecList error { yyerror("Missing semicolon after declaration"); $$ = createASTLeaf("Error", yylineno, NULL); }
-    // | DecList SEMI { yyerror("Missing type specifier in declaration"); $$ = createASTLeaf("Error", yylineno, NULL); }
+    | error DecList SEMI { yyerror("Missing type specifier in declaration"); $$ = createASTLeaf("Error", yylineno, NULL); }
     ;
 
 DecList : Dec { $$ = DecList_handler(pm, $1, NULL, yylineno); }

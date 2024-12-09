@@ -15,10 +15,12 @@ struct Person {
 };
 
 void main() {
+    #def
     struct Person p;
+    struct Address addr;
+    #enddef
     p.nickname = 'A';
     p.age = 30;
-    struct Address addr;
     addr.street = 12;
     addr.city = 'w';
     p.address = addr;
