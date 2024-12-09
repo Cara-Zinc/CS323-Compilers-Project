@@ -86,5 +86,5 @@ void stmtlist_semantic(program_manager *pm, ASTNode *node, func_def *func) {
         return;
     }
     stmt_semantic(pm, alist_get(node->children, 0), func);
-    stmtList_semantic(pm, alist_get(node->children, 1), func);
+    stmtlist_semantic(pm, alist_get(node->children, 1), func);
 }

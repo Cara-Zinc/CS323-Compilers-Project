@@ -13,15 +13,15 @@ type_def *exp_semantic(program_manager *pm, ASTNode *node)
         }
         else if (strcmp(alist_get(node->children, 0)->nodeType, "INT") == 0)
         {
-            return exp_primitive_semantic(pm, "INT", alist_get(node->children, 0)->text);
+            return type_def_new(TYPE_INT, false);
         }
         else if (strcmp(alist_get(node->children, 0)->nodeType, "FLOAT") == 0)
         {
-            return exp_primitive_semantic(pm, "FLOAT", alist_get(node->children, 0)->text);
+            return type_def_new(TYPE_FLOAT, false);
         }
         else if (strcmp(alist_get(node->children, 0)->nodeType, "CHAR") == 0)
         {
-            return exp_primitive_semantic(pm, "CHAR", alist_get(node->children, 0)->text);
+            return type_def_new(TYPE_CHAR, false);
         }
     }
     else if (node->numChildren == 2)
@@ -51,7 +51,7 @@ type_def *exp_semantic(program_manager *pm, ASTNode *node)
         }
         else if (strcmp(alist_get(node->children, 1)->nodeType, "ID") == 0)
         {
-            return exp_struct_func_semantic(pm, alist_get(node->children, 0), node->text, alist_get(node->children, 2));
+            return exp_struct_func_semantic(pm, alist_get(node->children, 0), alist_get(node->children, 1), alist_get(node->children, 2));
         }
     }
     else if (node->numChildren == 4)
@@ -464,32 +464,26 @@ type_def *exp_struct_func_semantic(program_manager *pm, ASTNode *exp, ASTNode *i
         // check if the function is called with the correct number of arguments
         varlist *args_list = args_semantic(pm, args);
         int fun_args_cnt = vlist_count(f->args);
-        if(fun_args_cnt != vlist_count(args_list))
+        if (fun_args_cnt != vlist_count(args_list))
         {
             fprintf(stderr, "Error at line %zu: function %s is called with %zu arguments, but it expects %zu arguments\n", id->line, id->text, vlist_count(args_list), fun_args_cnt);
             error_node = true;
         }
         // check if the arguments are of the correct type
-        for(int i=0; i<fun_args_cnt; i++)
+        for (int i = 0; i < fun_args_cnt; i++)
         {
             type_def *t1 = vlist_get(args_list, i)->type_spec;
             type_def *t2 = vlist_get(f->args, i)->type_spec;
-            if(type_def_cmp(t1, t2) != 0)
+            if (type_def_cmp(t1, t2) != 0)
             {
                 fprintf(stderr, "Error at line %zu: argument %d of function %s is of type %s, but it expects type %s\n", id->line, i, id->text, type_def_name(pm, t1), type_def_name(pm, t2));
                 error_node = true;
             }
         }
-        if(error_node)
+        if (error_node)
         {
             return NULL;
         }
         return f->return_type;
     }
-}
-
-type_def *exp_primitive_semantic(program_manager *pm, char *type, char *text)
-{
-    // @TODO: implement this function
-   
 }
