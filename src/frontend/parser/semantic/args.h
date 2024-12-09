@@ -1,5 +1,5 @@
-#ifndef _ARGS_H_
-#define _ARGS_H_
+#ifndef __SEM_ARGS_H__
+#define __SEM_ARGS_H__
 
 #include <stdio.h>
 #include "../../mm/program_manager.h"

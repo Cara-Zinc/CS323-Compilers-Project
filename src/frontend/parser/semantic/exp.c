@@ -319,7 +319,7 @@ type_def *exp_array_semantic(program_manager *pm, ASTNode *exp1, ASTNode *exp2)
         error_node = true;
     }
     // check if the index is an integer
-    if (exp_semantic(pm, exp2)->type_id != TYPE_INT)
+    if (exp_semantic(pm, exp2)->type_id != TYPE_INT || exp_semantic(pm, exp2)->is_array || exp_semantic(pm, exp2)->is_struct)
     {
         fprintf(stderr, "Error at line %zu: invalid type for array index\n", exp2->line);
         error_node = true;
@@ -338,7 +338,6 @@ type_def *exp_array_semantic(program_manager *pm, ASTNode *exp1, ASTNode *exp2)
  * @param exp The AST node representing the struct expression.
  * @param id The name of the struct member.
  */
-
 type_def *exp_struct_semantic(program_manager *pm, ASTNode *exp, char *id)
 {
     bool error_node = false;
