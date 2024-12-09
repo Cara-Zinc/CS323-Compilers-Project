@@ -6,7 +6,9 @@ struct my_struct
 };
 int test_1_r02()
 {
+  #def
   struct my_struct obj;
+  #enddef
   obj.code = global;
   global = global + 1;
 }

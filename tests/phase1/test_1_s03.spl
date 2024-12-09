@@ -1,5 +1,6 @@
 int test() 
 {
+    #def 
     char b='\x90';
     char c='\xr0';
     int 2_A=3;
@@ -9,6 +10,7 @@ int test()
     int g = 0023;
     float d = 1.234;
     float h = 000.234;
+    #enddef
     while(a < f{
         f = 2* a;
     }

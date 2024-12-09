@@ -6,10 +6,12 @@ float add(int a,float b){
 }
 
 int main(){
+    #def 
     int a=100;
     int b=100;
     float c=0.01;
     int d=add(a,b);
+    #enddef
     if (d>c){
         float e=add(a,c);
     }

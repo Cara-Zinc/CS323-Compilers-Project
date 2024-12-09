@@ -1,6 +1,8 @@
 int test_1_r05()
 {
+  #def
   int res = -1, n = +1;
+  #enddef
   if (b != c){
     a = 0;
   }

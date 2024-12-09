@@ -3,19 +3,25 @@ int d,;
 
 int foo1(a, int b)
 {
+  #def
   int c = a + b;
+  #enddef
   return c;
 }
 
 int foo2(int a, int)
 {
+  #def
   int c = a + b;
+  #enddef
   return c;
 }
 
 int foo3(int a,)
 {
+  #def
   int c = a + b;
+  #enddef
   return c;
 }
 

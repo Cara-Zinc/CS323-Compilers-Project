@@ -1,6 +1,8 @@
 int test_1_r07()
 {
+  #def 
   int a, b, c;
+  #enddef
   a = 1;
   b = a && 2;
   c = b || 3;

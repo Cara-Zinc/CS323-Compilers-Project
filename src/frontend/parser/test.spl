@@ -1,7 +1,14 @@
-void main() {
-    #def
-    struct Address a;
-    #enddef
-    
-    p.nickname = 'A';
+int global;
+struct my_struct
+{
+  int code;
+  char data;
+};
+int test_1_r02()
+{
+  #def
+  struct my_struct obj;
+  #enddef
+  obj.code = global;
+  global = global + 1;
 }

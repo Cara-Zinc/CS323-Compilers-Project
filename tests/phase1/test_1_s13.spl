@@ -1,5 +1,7 @@
 int test_2_r04 (){
+    #def 
     int a = 5;
+    #enddef 
     a = a [+2;
     while(1){
         max( a , a + 2;

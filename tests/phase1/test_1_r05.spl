@@ -1,6 +1,8 @@
 int test_1_r05(int n)
 {
+  #def 
   int res = 1;
+  #enddef
   while (n > 0)
   {
     res = res * n;

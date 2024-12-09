@@ -1,8 +1,10 @@
 int test_1_r10()
 {
+  #def
   int a, b = 1;
   a = 10;
   int i = 0;
+  #enddef
   while (i < a)
   {
     b = b + i;

@@ -1,7 +1,9 @@
 int test_2_r03()
 {
+  #def 
   int res = 1;
   int 3b = 3 + , C= a*, d = 5/;
+  #enddef
   if (b != c){
     a = 0;
   }

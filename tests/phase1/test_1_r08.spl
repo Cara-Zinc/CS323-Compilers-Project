@@ -1,6 +1,8 @@
 int test_1_r08()
 {
+  #def
   int a, bb
+  #enddef
   if (a > 4)
     return bb;
 }

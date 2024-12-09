@@ -1,16 +1,20 @@
 int fn1() {
+    #def
       int a, b = 1;
   a = 10;
     int i = 0;
     int j = 142414
+    #enddef
 }
 
 int fn2() {
+    #def
     int a = 1
     int b = 2;
     int c = 3;
     int d = 4
     int e = 5;
+    #enddef
     return a + b + c + d + e;
 }
 
@@ -25,19 +29,27 @@ char fn4(int f) {
 
 
 float fn5() {
+    #def
     int j = 1;
     int k =2 ;
+    #enddef
     while (j != k) {
-        int i = 1}
+        #def 
+        int i = 1
+        #enddef}
     return 1.0
 }
 
 float fn6() {
+    #def
     int j = 1;
     int k =2 ;
+    #enddef
     while (j != k) 
     {
+        #def
         float s =213.21;
+        #enddef
     }
     return 1.0
 }

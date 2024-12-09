@@ -4,14 +4,15 @@ struct my_struct
   int a;
   char data
   char b;
-}
+};
 int test(int a,int B
 {
+    #def 
     struct my_struct c
     struct my_struct d;
     int e=(2+3/(2-2)*2;
     int f=(2+3/(2-2))*2;
- 
+    #enddef 
     if(a>=b
     {
         a=1+1;
