@@ -33,7 +33,12 @@ id_name_and_sizes *vardec_semantic(program_manager *pm, ASTNode *node) {
     }
     
     id_name_and_sizes *ins = vardec_semantic(pm, alist_get(node->children, 0));
-    id_name_and_sizes_push_size(ins, atoi(alist_get(node->children, 2)->text));
+    int size = atoi(alist_get(node->children, 2)->text);
+    if (size < 0) {
+        fprintf(stderr, "Error at line %zu: array size must not be negative.\n", alist_get(node->children, 2)->line);
+        size = 0;
+    }
+    id_name_and_sizes_push_size(ins, size);
     return ins;
 }
 
