@@ -124,7 +124,7 @@ field_def *dec_semantic(program_manager *pm, ASTNode *node, type_def *specifier_
             fprintf(stderr, "Error at line %zu: cannot assign array, struct or void type to variable.\n", alist_get(node->children, 0)->line);
         }
         if (type_def_cmp(type, specifier_type) != 0) {
-            fprintf(stderr, "Error at line %zu: type mismatch, trying to assign type '%s' to type '%s'.\n", alist_get(node->children, 0)->line, type, specifier_type);
+            fprintf(stderr, "Error at line %zu: type mismatch, trying to assign type '%zu' to type '%zu'.\n", alist_get(node->children, 0)->line, type->type_id, specifier_type->type_id);
         }
     }
 

@@ -58,6 +58,9 @@ type_def *exp_semantic(program_manager *pm, ASTNode *node)
     {
         return exp_array_semantic(pm, alist_get(node->children, 0), alist_get(node->children, 2));
     }
+
+    fprintf(stderr, "Error: Invalid expression with node type '%s' and %d children\n", node->nodeType, node->numChildren);
+    return type_def_new(TYPE_VOID, false);
 }
 
 type_def *exp_id_semantic(program_manager *pm, ASTNode *node)
@@ -140,7 +143,7 @@ type_def *exp_bi_op_semantic(program_manager *pm, ASTNode *left, char *op, ASTNo
             fprintf(stderr, "Error at line %zu: invalid type for operation %s on left expression\n", left->line, op);
             error_node = true;
         }
-        if (right_type->type_id != TYPE_INT && right_type->type_id != TYPE_FLOAT && right_type->type_id, TYPE_CHAR)
+        if (right_type->type_id != TYPE_INT && right_type->type_id != TYPE_FLOAT && right_type->type_id != TYPE_CHAR)
         {
             fprintf(stderr, "Error at line %zu: invalid type for operation %s on right expression\n", right->line, op);
             error_node = true;
@@ -332,7 +335,7 @@ type_def *exp_func_semantic(program_manager *pm, ASTNode *func_id, ASTNode *args
 
         if (fun_args_cnt != vlist_count(args_list))
         {
-            fprintf(stderr, "Error at line %zu: function %s is called with %zu arguments, but it expects %zu arguments\n", func_id->line, func_id->text, vlist_count(args_list), fun_args_cnt);
+            fprintf(stderr, "Error at line %zu: function %s is called with %zu arguments, but it expects %d arguments\n", func_id->line, func_id->text, vlist_count(args_list), fun_args_cnt);
             error_node = true;
         }
 
@@ -406,7 +409,7 @@ type_def *exp_struct_semantic(program_manager *pm, ASTNode *exp, ASTNode *id)
     // check if the struct has the member
     if (!program_manager_get_struct_by_id(pm, exp_type->type_id))
     {
-        fprintf(stderr, "Error at line %zu: struct does not have member %s\n", exp->line, id);
+        fprintf(stderr, "Error at line %zu: struct does not have member %s\n", exp->line, id->nodeType);
         error_node = true;
     }
     if (error_node)
@@ -440,7 +443,7 @@ type_def *exp_struct_func_semantic(program_manager *pm, ASTNode *exp, ASTNode *i
     // check if the struct has the member
     if (!program_manager_get_struct_by_id(pm, exp_type->type_id))
     {
-        fprintf(stderr, "Error at line %zu: struct does not have member %s\n", exp->line, id);
+        fprintf(stderr, "Error at line %zu: struct does not have member %s\n", exp->line, id->nodeType);
         error_node = true;
     }
     if (error_node)
@@ -466,7 +469,7 @@ type_def *exp_struct_func_semantic(program_manager *pm, ASTNode *exp, ASTNode *i
         int fun_args_cnt = vlist_count(f->args);
         if (fun_args_cnt != vlist_count(args_list))
         {
-            fprintf(stderr, "Error at line %zu: function %s is called with %zu arguments, but it expects %zu arguments\n", id->line, id->text, vlist_count(args_list), fun_args_cnt);
+            fprintf(stderr, "Error at line %zu: function %s is called with %zu arguments, but it expects %d arguments\n", id->line, id->text, vlist_count(args_list), fun_args_cnt);
             error_node = true;
         }
         // check if the arguments are of the correct type
