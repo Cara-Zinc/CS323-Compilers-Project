@@ -272,6 +272,7 @@ type_def *exp_unary_op_semantic(program_manager *pm, char *op, ASTNode *child)
     {
         fprintf(stderr, "Error: Invalid unary operation, child is NULL\n");
         error_node = true;
+        return NULL;
     }
 
     if (alist_get(child->children, 0) && !strcmp(alist_get(child->children, 0)->nodeType, "ID"))
@@ -288,6 +289,9 @@ type_def *exp_unary_op_semantic(program_manager *pm, char *op, ASTNode *child)
             {
                 fprintf(stderr, "Error at line %zu: invalid type for operation %s on child expression\n", child->line, op);
                 error_node = true;
+            }
+            if(error_node) {
+                return NULL;
             }
             // int a = ++a;
             // --a;
@@ -309,6 +313,10 @@ type_def *exp_unary_op_semantic(program_manager *pm, char *op, ASTNode *child)
         }
         return type_def_new(child_type->type_id, false);
     }
+    if(error_node) {
+        return NULL;
+    }
+
 }
 
 type_def *exp_func_semantic(program_manager *pm, ASTNode *func_id, ASTNode *args)

@@ -42,6 +42,7 @@ type_def *specifier_semantic(program_manager *pm, ASTNode *node)
         
     }
    
+    return NULL;
 }
 
 type_def *struct_specifier_semantic(program_manager *pm, ASTNode *node)
@@ -83,6 +84,8 @@ type_def *struct_specifier_semantic(program_manager *pm, ASTNode *node)
             }
         }
     }
+
+    return NULL;
 }
 
 void struct_def_list_semantic(program_manager *pm, ASTNode *struct_def_list, type_id struct_id)
@@ -98,9 +101,9 @@ void struct_def_list_semantic(program_manager *pm, ASTNode *struct_def_list, typ
     }
     else
     {
-        ASTNode *struct_def_list = alist_get(struct_def_list->children, 1);
+        ASTNode *struct_def_list_1 = alist_get(struct_def_list->children, 1);
         struct_def_semantic(pm, struct_def);
-        struct_def_list_semantic(pm, struct_def_list, struct_id);
+        struct_def_list_semantic(pm, struct_def_list_1, struct_id);
     }
 }
 

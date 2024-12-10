@@ -12,6 +12,7 @@ varlist *args_semantic(program_manager *pm, ASTNode *node)
         {
             fprintf(stderr, "Error at line %zu: invalid argument\n", alist_get(node->children, i)->line);
             field_def *field = field_def_new("invalid", type_def_new(TYPE_VOID, false));
+            vlist_push_back(vlist, field);
             continue;
         }
         char *name = alist_get(alist_get(node->children, i)->children, 0)->text;
@@ -21,6 +22,7 @@ varlist *args_semantic(program_manager *pm, ASTNode *node)
         {
             fprintf(stderr, "Error at line %zu: invalid argument\n", alist_get(node->children, i)->line);
             field_def *field = field_def_new(name, type_def_new(TYPE_VOID, false));
+            vlist_push_back(vlist, field);
             continue;
         }
 
