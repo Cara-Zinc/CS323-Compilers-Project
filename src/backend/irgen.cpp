@@ -33,6 +33,27 @@ void generateIR(ASTNode *node) {
         Builder.CreateRet(Builder.getInt32(value));
     }
     // Add more cases for other node types...
+    else if (strcmp(node->nodeType, "BinaryOp") == 0) {
+        // Handle binary operation
+        Value *L = generateIR(node->children->data[0]);
+        Value *R = generateIR(node->children->data[1]);
+
+        Value *Result;
+        if (strcmp(node->text, "+") == 0) {
+            Result = Builder.CreateAdd(L, R, "addtmp");
+        } else if (strcmp(node->text, "-") == 0) {
+            Result = Builder.CreateSub(L, R, "subtmp");
+        } else if (strcmp(node->text, "*") == 0) {
+            Result = Builder.CreateMul(L, R, "multmp");
+        } else if (strcmp(node->text, "/") == 0) {
+            Result = Builder.CreateSDiv(L, R, "divtmp");
+        } else {
+            // Handle other binary operations or throw an error
+            Result = nullptr;
+        }
+
+        return Result;
+    }
 }
 
 int main() {
