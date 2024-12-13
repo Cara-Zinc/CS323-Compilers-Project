@@ -316,7 +316,7 @@ type_def *exp_unary_op_semantic(program_manager *pm, char *op, ASTNode *child)
     if(error_node) {
         return NULL;
     }
-
+    return type_def_new(TYPE_VOID, false);
 }
 
 type_def *exp_func_semantic(program_manager *pm, ASTNode *func_id, ASTNode *args)
