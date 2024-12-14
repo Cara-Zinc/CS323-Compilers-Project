@@ -68,7 +68,12 @@ type_def *struct_specifier_semantic(program_manager *pm, ASTNode *node)
         if (id && !strcmp(id->nodeType, "ID"))
         {
             // @TODO return the type of the struct
-            // @bug: segfault here
+            // @bug: segfault here: type can be NULL
+            if(program_manager_get_field(pm, id->text) == NULL)
+            {
+                struct_def *s = program_manager_create_struct(pm, id->text);
+                struct_def_list_semantic(pm, alist_get(node->children, 1), s->id);
+            }
             type_def *type = program_manager_get_field(pm, id->text)->type_spec;
             if (type)
             {
@@ -77,11 +82,6 @@ type_def *struct_specifier_semantic(program_manager *pm, ASTNode *node)
                 struct_def_list_semantic(pm, alist_get(node->children, 1), s->id);
 
                 return NULL;
-            }
-            else
-            {
-                struct_def *s = program_manager_create_struct(pm, id->text);
-                struct_def_list_semantic(pm, alist_get(node->children, 1), s->id);
             }
         }
     }
