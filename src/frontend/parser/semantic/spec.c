@@ -55,7 +55,8 @@ type_def *struct_specifier_semantic(program_manager *pm, ASTNode *node)
             type_def *type = program_manager_get_field(pm, alist_get(node->children, 0)->text)->type_spec;
             if (!type)
             {
-                fprintf(stderr, "Error at line %zu: unknown struct %s\n", node->line, alist_get(node->children, 0)->text);
+                // return NULL to state that the struct is not defined yet
+                // BUT we do not know whether this specifier is a definition or a reference
                 return NULL;
             }
             return type;
@@ -67,6 +68,7 @@ type_def *struct_specifier_semantic(program_manager *pm, ASTNode *node)
         if (id && !strcmp(id->nodeType, "ID"))
         {
             // @TODO return the type of the struct
+            // @bug: segfault here
             type_def *type = program_manager_get_field(pm, id->text)->type_spec;
             if (type)
             {

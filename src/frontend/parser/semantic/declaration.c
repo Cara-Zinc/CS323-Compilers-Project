@@ -32,6 +32,12 @@ id_name_and_sizes *vardec_semantic(program_manager *pm, ASTNode *node) {
         return id_name_and_sizes_new(str_copy(node->text));
     }
 
+    if(!node->children)
+    {
+        fprintf(stderr, "Error at line %zu: invalid variable declaration.\n", node->line);
+        return id_name_and_sizes_new("INVALID");
+    }
+
     id_name_and_sizes *ins = vardec_semantic(pm, alist_get(node->children, 0));
     int size = atoi(alist_get(node->children, 2)->text);
     if (size < 0) {

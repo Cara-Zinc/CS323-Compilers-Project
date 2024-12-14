@@ -4,8 +4,18 @@
 
 void ext_def_semantic(program_manager *pm, ASTNode *ExtDef)
 {
-    type_def *type = specifier_semantic(pm, alist_get(ExtDef->children, 0));
-    ext_dec_list_semantic(pm, alist_get(ExtDef->children, 1), type);
+    if(ExtDef->numChildren==2)
+    {
+        // Specifier ExtDecList SEMI
+        type_def *type = specifier_semantic(pm, alist_get(ExtDef->children, 0));
+        ext_dec_list_semantic(pm, alist_get(ExtDef->children, 1), type);
+    }
+    else if (ExtDef->numChildren==1)
+    {
+        // Specifier SEMI
+        specifier_semantic(pm, alist_get(ExtDef->children, 0));
+    }
+    
     
 }
 
