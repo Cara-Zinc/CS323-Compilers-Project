@@ -76,23 +76,23 @@ type_def *struct_specifier_semantic(program_manager *pm, ASTNode *node)
         {
             // @TODO return the type of the struct
             // @bug: segfault here: type can be NULL
-            if (program_manager_get_field(pm, id->text) == NULL)
+            if (program_manager_get_struct(pm, id->text) == NULL)
             {
                 struct_def *s = program_manager_create_struct(pm, id->text);
                 struct_def_list_semantic(pm, alist_get(node->children, 1), s->id);
+                return type_def_new_struct(s->id);
             }
-            type_def *type = program_manager_get_field(pm, id->text)->type_spec;
-            if (type)
+            struct_def *s = program_manager_get_struct(pm, id->text);
+            if (s)
             {
                 fprintf(stderr, "Error at line %zu: redefinition of struct %s\n", node->line, id->text);
                 struct_def *s = program_manager_create_struct_invalid(pm);
                 struct_def_list_semantic(pm, alist_get(node->children, 1), s->id);
-
                 return NULL;
             }
         }
     }
-
+    
     return NULL;
 }
 
