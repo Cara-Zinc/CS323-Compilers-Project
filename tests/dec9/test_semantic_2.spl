@@ -5,7 +5,9 @@ struct test
 };
 int test_semantic_2()
 {
+  #def
   struct test t;
+  #enddef
   t.a = 1;
   t.b = 20.0;
   t.c = t.a;
