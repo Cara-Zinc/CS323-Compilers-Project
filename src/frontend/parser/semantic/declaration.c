@@ -39,6 +39,11 @@ id_name_and_sizes *vardec_semantic(program_manager *pm, ASTNode *node) {
     }
 
     id_name_and_sizes *ins = vardec_semantic(pm, alist_get(node->children, 0));
+    if (node->numChildren == 1)
+    {
+        // check if it's VarDec -> ID
+        return ins;
+    }
     int size = atoi(alist_get(node->children, 2)->text);
     if (size < 0) {
         fprintf(stderr, "Error at line %zu: array size must not be negative.\n", alist_get(node->children, 2)->line);
@@ -124,6 +129,7 @@ field_def *paramdec_semantic(program_manager *pm, ASTNode *node) {
 
 field_def *dec_semantic(program_manager *pm, ASTNode *node, type_def *specifier_type) {
     type_def *type = NULL;
+    // vardec assign exp
     if (node->numChildren == 3) {
         type = exp_semantic(pm, alist_get(node->children, 2));
         if (type->is_array || type->is_struct || type->type_id == TYPE_VOID) {
