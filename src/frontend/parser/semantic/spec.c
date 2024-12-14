@@ -47,6 +47,12 @@ type_def *specifier_semantic(program_manager *pm, ASTNode *node)
 
 type_def *struct_specifier_semantic(program_manager *pm, ASTNode *node)
 {
+    if (!node->children)
+    {
+        fprintf(stderr, "Error at line %zu: invalid struct specifier without children node\n", node->line);
+        return NULL;
+    }
+
     if (alist_count(node->children) == 1)
     {
         if (alist_get(node->children, 0) && !strcmp(alist_get(node->children, 0)->nodeType, "ID"))
@@ -62,14 +68,15 @@ type_def *struct_specifier_semantic(program_manager *pm, ASTNode *node)
             return type;
         }
     }
-    else if (alist_count(node->children) == 2)
+    // STRUCT ID LC DefList RC
+    else if (alist_count(node->children) >= 2)
     {
         ASTNode *id = alist_get(node->children, 0);
         if (id && !strcmp(id->nodeType, "ID"))
         {
             // @TODO return the type of the struct
             // @bug: segfault here: type can be NULL
-            if(program_manager_get_field(pm, id->text) == NULL)
+            if (program_manager_get_field(pm, id->text) == NULL)
             {
                 struct_def *s = program_manager_create_struct(pm, id->text);
                 struct_def_list_semantic(pm, alist_get(node->children, 1), s->id);
@@ -92,20 +99,15 @@ type_def *struct_specifier_semantic(program_manager *pm, ASTNode *node)
 void struct_def_list_semantic(program_manager *pm, ASTNode *struct_def_list, type_id struct_id)
 {
     // @TODO
-
-    ASTNode *struct_def = alist_get(struct_def_list->children, 0);
-
-    if (!struct_def)
+    if (!struct_def_list)
     {
-        // this is the end of the list
         return;
     }
-    else
-    {
-        ASTNode *struct_def_list_1 = alist_get(struct_def_list->children, 1);
-        struct_def_semantic(pm, struct_def);
-        struct_def_list_semantic(pm, struct_def_list_1, struct_id);
-    }
+
+    ASTNode *struct_def = alist_get(struct_def_list->children, 0);
+    ASTNode *struct_def_list_1 = alist_get(struct_def_list->children, 1);
+    struct_def_semantic(pm, struct_def);
+    struct_def_list_semantic(pm, struct_def_list_1, struct_id);
 }
 
 void struct_def_semantic(program_manager *pm, ASTNode *struct_def)
