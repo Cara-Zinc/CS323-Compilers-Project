@@ -28,7 +28,7 @@ void id_name_and_sizes_push_size(id_name_and_sizes *ins, size_t size) {
 }
 
 id_name_and_sizes *vardec_semantic(program_manager *pm, ASTNode *node) {
-    if (strcmp(node->nodeType, "ID")) {
+    if (!strcmp(node->nodeType, "ID")) {
         return id_name_and_sizes_new(str_copy(node->text));
     }
 
