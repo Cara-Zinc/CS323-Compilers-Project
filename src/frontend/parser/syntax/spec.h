@@ -23,6 +23,10 @@ ASTNode *struct_member_handler(program_manager *pm, ASTNode *Specifier, ASTNode 
     return createASTNode("StructDef", line, 3, Specifier, DecList, Compst);
 }
 
+ASTNode *struct_fundef_handler(program_manager *pm, ASTNode *FunDef, size_t line) {
+    return createASTNode("FunDef", line, 1, FunDef);
+}
+
 ASTNode *struct_member_list_handler(program_manager *pm, ASTNode *StructDef, ASTNode *StructDefList, size_t line) {
     if(StructDefList == NULL) {
         if(StructDef == NULL) {

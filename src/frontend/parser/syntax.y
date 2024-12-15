@@ -75,7 +75,7 @@ StructDefList : StructDef StructDefList { $$ = struct_member_list_handler(pm, $1
               ;
 
 StructDef : Specifier DecList SEMI { $$ = struct_member_handler(pm, $1, $2, NULL, yylineno); }
-          | FunDef { $$ = $1; }
+          | FunDef { $$ = struct_fundef_handler(pm, $1, yylineno); }
           | Specifier DecList error { yyerror("Missing semicolon after struct member declaration"); $$ = createASTLeaf("Error", yylineno, NULL); }
           ;
 
@@ -121,7 +121,7 @@ CompSt : LC STARTDEF DefList ENDDEF StmtList RC { $$ = compst_deflist_stmtlist_h
        | LC DefList ENDDEF StmtList RC { yyerror("Missing STARTDEF in compound statement"); $$ = createASTLeaf("Error", yylineno, NULL); }
        ;
 
-StmtList : { $$ = stmtlist_stmt_stmtlist_handler(pm, NULL, NULL, yylineno); } 
+StmtList : { $$ = stmtlist_stmt_stmtlist_handler(pm, NULL, NULL, yylineno); }
          | Stmt StmtList { $$ = stmtlist_stmt_stmtlist_handler(pm, $1, $2, yylineno); }
          | Stmt Def DefList StmtList { yyerror("Missing specifier"); $$ = createASTLeaf("Error", yylineno, NULL); }
          ;

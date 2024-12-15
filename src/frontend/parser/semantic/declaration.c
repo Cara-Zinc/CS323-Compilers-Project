@@ -57,7 +57,10 @@ func_def *fundef_semantic(program_manager *pm, ASTNode *node) {
     type_def *return_type = specifier_semantic(pm, alist_get(node->children, 0));
     func_def *func = fundec_semantic(pm, alist_get(node->children, 1), return_type);
 
-    compst_semantic(pm, alist_get(node->children, 2), func);
+    if (node->numChildren == 3)
+    {
+        compst_semantic(pm, alist_get(node->children, 2), func);
+    }
 
     scope_wrapper *wrapper = program_manager_pop(pm);
     if (strcmp(wrapper->func->name, INVALID_FUNC_NAME) == 0) {

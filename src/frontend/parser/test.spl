@@ -1,14 +1,28 @@
-int global;
-struct my_struct
-{
-  int code;
-  char data;
+struct Address {
+    int street;
+    char city;
+    void print_addr(int street, char city);
+    void display() {
+        print_addr(street, city);
+    }
 };
-int test_1_r02()
-{
-  #def
-  struct my_struct obj;
-  #enddef
-  obj.code = global;
-  global = global + 1;
+
+struct Person {
+    char nickname;
+    int age;
+    struct Address address;
+    void print(char name[50], int age);
+};
+
+void main() {
+    #def
+    struct Person p;
+    struct Address addr;
+    #enddef
+    p.nickname = 'A';
+    p.age = 30;
+    addr.street = 12;
+    addr.city = 'w';
+    p.address = addr;
+    p.address.print_addr(addr.street, addr.city);
 }
