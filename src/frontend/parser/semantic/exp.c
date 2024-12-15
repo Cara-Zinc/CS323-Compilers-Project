@@ -58,8 +58,7 @@ type_def *exp_semantic(program_manager *pm, ASTNode *node)
     {
         return exp_array_semantic(pm, alist_get(node->children, 0), alist_get(node->children, 2));
     }
-
-    fprintf(stderr, "Error: Invalid expression with node type '%s' and %d children\n", node->nodeType, node->numChildren);
+    fprintf(stderr, "Error at line %zu: invalid expression with node type '%s' and %d children\n", node->line, node->nodeType, node->numChildren);
     return type_def_new(TYPE_VOID, false);
 }
 

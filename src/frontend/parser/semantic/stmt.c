@@ -40,7 +40,7 @@ void stmt_semantic(program_manager *pm, ASTNode *node, func_def *func)
 }
 
 void return_semantic(program_manager *pm, ASTNode *node, func_def *func) {
-    type_def *exp_type = exp_semantic(pm, alist_get(node->children, 0));
+    type_def *exp_type = exp_semantic(pm, node);
     char* exp_type_name = type_def_name(pm, exp_type);
     char* func_type_name = type_def_name(pm, func->return_type);
 
