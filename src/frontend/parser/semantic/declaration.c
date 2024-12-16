@@ -82,8 +82,8 @@ func_def *fundec_semantic(program_manager *pm, ASTNode *node, type_def *type) {
         func = program_manager_create_func(pm, str_copy(func_name), type);
     }
 
-    if (node->numChildren == 4) {
-        varlist *list = varlist_semantic(pm, alist_get(node->children, 2));
+    if (node->numChildren == 2) {
+        varlist *list = varlist_semantic(pm, alist_get(node->children, 1));
         while (!vlist_empty(list)) {
             field_def *param = vlist_back(list);
             vlist_pop_back(list);
