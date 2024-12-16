@@ -5,9 +5,9 @@ void stmt_semantic(program_manager *pm, ASTNode *node, func_def *func)
 {
     if (node->numChildren == 1)
     {
-        if (strcmp(alist_get(node->children, 0)->nodeType, "Stmt") == 0)
+        if (strcmp(node->nodeType, "Stmt") == 0)
         {
-            if (strcmp(alist_get(alist_get(node->children, 0)->children, 0)->nodeType, "Compst"))
+            if (!strcmp(alist_get(node->children, 0)->nodeType, "Compst"))
             {
                 compst_semantic(pm, alist_get(node->children, 0), func);
             }

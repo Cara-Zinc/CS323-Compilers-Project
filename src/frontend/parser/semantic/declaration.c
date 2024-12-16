@@ -133,7 +133,8 @@ field_def *paramdec_semantic(program_manager *pm, ASTNode *node) {
 field_def *dec_semantic(program_manager *pm, ASTNode *node, type_def *specifier_type) {
     type_def *type = NULL;
     // vardec assign exp
-    if (node->numChildren == 3) {
+    if (node->numChildren == 3)
+    {
         type = exp_semantic(pm, alist_get(node->children, 2));
         if (type->is_array || type->is_struct || type->type_id == TYPE_VOID) {
             fprintf(stderr, "Error at line %zu: cannot assign array, struct or void type to variable.\n", alist_get(node->children, 0)->line);
@@ -141,6 +142,10 @@ field_def *dec_semantic(program_manager *pm, ASTNode *node, type_def *specifier_
         if (type_def_cmp(type, specifier_type) != 0) {
             fprintf(stderr, "Error at line %zu: type mismatch, trying to assign type '%zu' to type '%zu'.\n", alist_get(node->children, 0)->line, type->type_id, specifier_type->type_id);
         }
+    }
+    else if (node->numChildren == 1)
+    {
+        // TODO: set type so it's not NULL
     }
 
     // set the id and size from vardec_semantic to a new char*, then create a field_def

@@ -14,15 +14,15 @@ varlist *args_semantic(program_manager *pm, ASTNode *node)
         ASTNode *child = alist_get(node->children, i);
         if (!child->numChildren)
         {
-            fprintf(stderr, "Error at line %zu: invalid argument\n", child->line);
+            fprintf(stderr, "Error at line %zu: invalid argument with no children\n", child->line);
             field_def *field = field_def_new("invalid", type_def_new(TYPE_VOID, false));
             vlist_push_back(vlist, field);
             continue;
         }
         // check if the argument contains an ID leaf node
-        if (!strcmp(alist_get(child->children, 0)->nodeType, "ID"))
+        if (strcmp(alist_get(child->children, 0)->nodeType, "ID") != 0)
         {
-            fprintf(stderr, "Error at line %zu: invalid argument\n", child->line);
+            fprintf(stderr, "Error at line %zu: invalid argument with no ID\n", child->line);
             field_def *field = field_def_new("invalid", type_def_new(TYPE_VOID, false));
             vlist_push_back(vlist, field);
             continue;
