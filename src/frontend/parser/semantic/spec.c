@@ -125,6 +125,5 @@ void struct_def_semantic(program_manager *pm, ASTNode *struct_def)
     {
         ASTNode *fundef = alist_get(struct_def->children, 0);
         func_def *func = fundef_semantic(pm, fundef);
-        func_def_free(func);
     }
 }
