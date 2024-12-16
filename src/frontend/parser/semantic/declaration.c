@@ -145,7 +145,7 @@ field_def *dec_semantic(program_manager *pm, ASTNode *node, type_def *specifier_
     }
     else if (node->numChildren == 1)
     {
-        // TODO: set type so it's not NULL
+        type = specifier_type;
     }
 
     // set the id and size from vardec_semantic to a new char*, then create a field_def
