@@ -13,7 +13,6 @@ typedef struct explist explist;
 #include "../../utils/util.h"
 #include <stdarg.h>
 #include <string.h>
-#include "../../irgen/ir_context.h"
 
 typedef enum exp_type
 {
@@ -66,22 +65,6 @@ exp *exp_new_id(type_def *result_type, char *name);
 void exp_free(exp *e);
 
 exp *exp_cpy(exp *e);
-
-char *exp_bi_op_ir_gen(exp *e, IRContext *ctx);
-
-char *exp_unary_op_ir_gen(exp *e, IRContext *ctx);
-
-char *exp_func_call_ir_gen(exp *e, IRContext *ctx);
-
-char *exp_array_access_ir_gen(exp *e, IRContext *ctx);
-
-char *exp_struct_access_ir_gen(exp *e, IRContext *ctx);
-
-char *exp_literal_ir_gen(exp *e, IRContext *ctx);
-
-char *exp_id_ir_gen(exp *e, IRContext *ctx);
-
-char *exp_ir_gen(exp *e, IRContext *ctx);
 
 #define SNAME explist
 #define PFX explist
