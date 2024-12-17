@@ -57,8 +57,8 @@ type_def *struct_specifier_semantic(program_manager *pm, ASTNode *node)
     {
         if (alist_get(node->children, 0) && !strcmp(alist_get(node->children, 0)->nodeType, "ID"))
         {
-            // @TODO return the type of the struct
-            type_def *type = program_manager_get_field(pm, alist_get(node->children, 0)->text)->type_spec;
+            type_id t_id = program_manager_get_struct(pm, alist_get(node->children, 0)->text)->id;
+            type_def *type = type_def_new_struct(t_id);
             if (!type)
             {
                 // return NULL to state that the struct is not defined yet
@@ -92,7 +92,7 @@ type_def *struct_specifier_semantic(program_manager *pm, ASTNode *node)
             }
         }
     }
-    
+
     return NULL;
 }
 

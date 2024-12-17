@@ -43,11 +43,11 @@ type_def *exp_semantic(program_manager *pm, ASTNode *node)
     {
         if (strcmp(alist_get(node->children, 1)->nodeType, "operator") == 0)
         {
-            return exp_bi_op_semantic(pm, alist_get(node->children, 0), node->text, alist_get(node->children, 2));
+            return exp_bi_op_semantic(pm, alist_get(node->children, 0), alist_get(node->children, 1)->text, alist_get(node->children, 2));
         }
         else if (strcmp(alist_get(node->children, 1)->nodeType, "op") == 0)
         {
-            return exp_bi_op_semantic(pm, alist_get(node->children, 0), node->text, alist_get(node->children, 2));
+            return exp_bi_op_semantic(pm, alist_get(node->children, 0), alist_get(node->children, 1)->text, alist_get(node->children, 2));
         }
         else if (strcmp(alist_get(node->children, 1)->nodeType, "ID") == 0)
         {
@@ -87,7 +87,9 @@ type_def *exp_bi_op_semantic(program_manager *pm, ASTNode *left, char *op, ASTNo
     // check usage before declaration
     if (alist_get(left->children, 0) && !strcmp(alist_get(left->children, 0)->nodeType, "ID"))
     {
-        if (!program_manager_get_field(pm, left->text))
+        ASTNode *child = alist_get(left->children, 0);
+        // assume this is a valid ID node
+        if (!program_manager_get_field(pm, child->text))
         {
             fprintf(stderr, "Error at line %zu: variable %s not declared\n", left->line, left->text);
             error_node = true;
@@ -95,7 +97,9 @@ type_def *exp_bi_op_semantic(program_manager *pm, ASTNode *left, char *op, ASTNo
     }
     if (alist_get(right->children, 0) && !strcmp(alist_get(right->children, 0)->nodeType, "ID"))
     {
-        if (!program_manager_get_field(pm, right->text))
+        ASTNode *child = alist_get(right->children, 0);
+        // assume this is a valid ID node
+        if (!program_manager_get_field(pm, child->text))
         {
             fprintf(stderr, "Error at line %zu: variable %s not declared\n", right->line, right->text);
             error_node = true;
@@ -321,12 +325,6 @@ type_def *exp_unary_op_semantic(program_manager *pm, char *op, ASTNode *child)
 type_def *exp_func_semantic(program_manager *pm, ASTNode *func_id, ASTNode *args)
 {
     bool error_node = false;
-    // check usage before declaration
-    if (!program_manager_get_field(pm, func_id->text))
-    {
-        fprintf(stderr, "Error at line %zu: function %s not declared\n", func_id->line, func_id->text);
-        error_node = true;
-    }
     // check if the function is a function
     if (!program_manager_get_func(pm, func_id->text))
     {

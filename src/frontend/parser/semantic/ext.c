@@ -1,4 +1,5 @@
 #include "ext.h"
+#include "declaration.h"
 #include "spec.h"
 #include <stdlib.h>
 
@@ -14,6 +15,27 @@ void ext_def_semantic(program_manager *pm, ASTNode *ExtDef)
     {
         // Specifier SEMI
         specifier_semantic(pm, alist_get(ExtDef->children, 0));
+    }
+    else if(ExtDef->numChildren==3)
+    {
+        // Specifier FunDec CompSt
+
+        func_def *func = fundef_semantic(pm, alist_get(ExtDef->children, 1));
+        type_def *spec_type = specifier_semantic(pm, alist_get(ExtDef->children, 0));
+        type_def *func_type = func->return_type;
+        if(type_def_cmp(spec_type, func_type) != 0)
+        {
+            fprintf(stderr, "Error at line %zu: function %s has return type %s, but it is declared as %s\n", alist_get(ExtDef->children, 1)->line, alist_get(ExtDef->children, 1)->text, type_def_name(pm, spec_type), type_def_name(pm, func_type));
+        }
+        else
+        {
+            program_manager_create_func(pm, func->name, spec_type);
+        }
+
+    }
+    else
+    {
+        fprintf(stderr, "Error at line %zu: invalid syntax structure\n", ExtDef->line);
     }
 
 
