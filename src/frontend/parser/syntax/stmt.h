@@ -10,11 +10,11 @@ ASTNode *stmt_comp_handler(program_manager *pm, ASTNode *CompSt, size_t line) {
 }
 
 ASTNode *stmt_return_handler(program_manager *pm, ASTNode *Exp, size_t line) {
-    return createASTNode("RETURN", line, 1, Exp);
+    return createASTNode("Stmt", line, 1, createASTNode("RETURN", line, 1, Exp));
 }
 
 ASTNode *stmt_if_handler(program_manager *pm, ASTNode *Exp, ASTNode *Stmt, size_t line) {
-    return createASTNode("IF", line, 2, Exp, Stmt);
+    return createASTNode("Stmt", line, 1, createASTNode("IF", line, 2, Exp, Stmt));
 }
 
 ASTNode *stmt_if_else_handler(program_manager *pm, ASTNode *Exp, ASTNode *Stmt1, ASTNode *Stmt2, size_t line) {
@@ -24,7 +24,7 @@ ASTNode *stmt_if_else_handler(program_manager *pm, ASTNode *Exp, ASTNode *Stmt1,
 }
 
 ASTNode *stmt_while_handler(program_manager *pm, ASTNode *Exp, ASTNode *Stmt, size_t line) {
-    return createASTNode("WHILE", line, 2, Exp, Stmt);
+    return createASTNode("Stmt", line, 1, createASTNode("WHILE", line, 2, Exp, Stmt));
 }
 
 ASTNode *stmtlist_stmt_stmtlist_handler(program_manager *pm, ASTNode *Stmt, ASTNode *StmtList, size_t line) {
