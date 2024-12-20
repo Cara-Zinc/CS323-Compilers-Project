@@ -13,24 +13,8 @@ Module *TheModule = new Module("MyModule", TheContext);
 IRBuilder<> Builder(TheContext);
 
 void generateIR(ASTNode *node) {
-    if (strcmp(node->nodeType, "Function") == 0) {
-        // Create function
-        // FunctionType *FT = FunctionType::get(Builder.getInt32Ty(), false);
-        // Function *F = Function::Create(FT, Function::ExternalLinkage, node->text, TheModule);
-
-        // // Create entry basic block
-        // BasicBlock *BB = BasicBlock::Create(TheContext, "entry", F);
-        // Builder.SetInsertPoint(BB);
-
-        // // Recurse into function body
-        // for (int i = 0; i < node->numChildren; ++i) {
-        //     generateIR(node->children->data[i]);
-        // }
-
-        // // Add return statement
-        // Builder.CreateRet(Builder.getInt32(0));
-    } else if (strcmp(node->nodeType, "Return") == 0) {
-        // Handle return statement
+    if (strcmp(node->nodeType, "ExtDef") == 0) {
+        // TODO: Call extdef::handle_extdef(Builder, node)
     }
     else if (strcmp(node->nodeType, "BinaryOp") == 0) {
         return exp::binary_op(Builder, node);
