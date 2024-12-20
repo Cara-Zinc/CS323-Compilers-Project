@@ -14,7 +14,7 @@ IRBuilder<> Builder(TheContext);
 
 void generateIR(ASTNode *node) {
     if (strcmp(node->nodeType, "ExtDef") == 0) {
-        // TODO: Call extdef::handle_extdef(Builder, node)
+        return extdef::handle_extdef(Builder, node)
     }
     else if (strcmp(node->nodeType, "BinaryOp") == 0) {
         return exp::binary_op(Builder, node);
