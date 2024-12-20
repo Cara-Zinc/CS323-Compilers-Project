@@ -188,7 +188,8 @@ type_def *exp_bi_op_semantic(program_manager *pm, ASTNode *left, char *op, ASTNo
             error_node = true;
         }
         // check divide-by-zero, such as 0, 0.0f, .0f, 0.0, .0, 0x0
-        if (!strcmp(right->text, "0") && !strcmp(right->text, "0.0f") && !strcmp(right->text, ".0f") && !strcmp(right->text, "0.0") && !strcmp(right->text, ".0") && !strcmp(right->text, "0x0"))
+        char *right_text = alist_get(right->children, 0)->text;
+        if (!strcmp(right_text, "0") && !strcmp(right_text, "0.0f") && !strcmp(right_text, ".0f") && !strcmp(right_text, "0.0") && !strcmp(right_text, ".0") && !strcmp(right_text, "0x0"))
         {
             fprintf(stderr, "Error at line %zu: divide by zero\n", right->line);
             error_node = true;
