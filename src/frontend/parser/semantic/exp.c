@@ -90,10 +90,21 @@ type_def *exp_bi_op_semantic(program_manager *pm, ASTNode *left, char *op, ASTNo
     {
         ASTNode *child = alist_get(left->children, 0);
         // assume this is a valid ID node
-        if (!program_manager_get_field(pm, child->text) && !program_manager_get_func(pm, child->text) && !program_manager_get_struct(pm, child->text))
+        if (strcmp(op, "==") == 0 || strcmp(op, "!=") == 0 || strcmp(op, "<=") == 0 || strcmp(op, ">=") == 0 || strcmp(op, "<") == 0 || strcmp(op, ">") == 0)
         {
-            fprintf(stderr, "Error at line %zu: variable %s at operator left not declared\n", left->line, child->text);
-            error_node = true;
+            if (!program_manager_get_field(pm, child->text) && !program_manager_get_func(pm, child->text) && !program_manager_get_struct(pm, child->text))
+            {
+                fprintf(stderr, "Error at line %zu: variable %s at operator left for assign not declared\n", left->line, child->text);
+                error_node = true;
+            }
+        }
+        else if (strcmp(op, "=") == 0)
+        {
+            if (!program_manager_get_field(pm, child->text))
+            {
+                fprintf(stderr, "Error at line %zu: variable %s at operator left for assign not declared\n", left->line, child->text);
+                error_node = true;
+            }
         }
     }
 
