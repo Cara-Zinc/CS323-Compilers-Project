@@ -181,11 +181,7 @@ void def_semantic(program_manager *pm, ASTNode *node) {
 }
 
 void deflist_semantic(program_manager *pm, ASTNode *node) {
-    if (node->numChildren == 1)
-    {
-        def_semantic(pm, alist_get(node->children, 0));
-    }
-    else
+    if (node->numChildren == 2)
     {
         def_semantic(pm, alist_get(node->children, 0));
         deflist_semantic(pm, alist_get(node->children, 1));
