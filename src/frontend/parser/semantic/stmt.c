@@ -7,7 +7,7 @@ void stmt_semantic(program_manager *pm, ASTNode *node, func_def *func)
     {
         if (strcmp(node->nodeType, "Stmt") == 0)
         {
-            if (!strcmp(alist_get(node->children, 0)->nodeType, "Compst"))
+            if (strcmp(alist_get(node->children, 0)->nodeType, "CompSt") == 0)
             {
                 compst_semantic(pm, alist_get(node->children, 0), func);
             }

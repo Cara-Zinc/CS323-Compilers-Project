@@ -16,11 +16,11 @@ ASTNode *struct_def_handler(program_manager *pm, char *id, ASTNode *DefList, siz
     return createASTNode("StructSpecifier", line, 2, createASTLeaf("ID", line, id), DefList);
 }
 
-ASTNode *struct_member_handler(program_manager *pm, ASTNode *Specifier, ASTNode *DecList, ASTNode *Compst, size_t line) {
-    if(Compst == NULL) {
+ASTNode *struct_member_handler(program_manager *pm, ASTNode *Specifier, ASTNode *DecList, ASTNode *CompSt, size_t line) {
+    if(CompSt == NULL) {
         return createASTNode("StructDef", line, 2, Specifier, DecList);
     }
-    return createASTNode("StructDef", line, 3, Specifier, DecList, Compst);
+    return createASTNode("StructDef", line, 3, Specifier, DecList, CompSt);
 }
 
 ASTNode *struct_fundef_handler(program_manager *pm, ASTNode *FunDef, size_t line) {
