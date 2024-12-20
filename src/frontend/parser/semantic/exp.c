@@ -91,7 +91,7 @@ type_def *exp_bi_op_semantic(program_manager *pm, ASTNode *left, char *op, ASTNo
         // assume this is a valid ID node
         if (!program_manager_get_field(pm, child->text))
         {
-            fprintf(stderr, "Error at line %zu: variable %s not declared\n", left->line, left->text);
+            fprintf(stderr, "Error at line %zu: variable %s not declared\n", left->line, child->text);
             error_node = true;
         }
     }
@@ -99,9 +99,9 @@ type_def *exp_bi_op_semantic(program_manager *pm, ASTNode *left, char *op, ASTNo
     {
         ASTNode *child = alist_get(right->children, 0);
         // assume this is a valid ID node
-        if (!program_manager_get_field(pm, child->text))
+        if (!program_manager_get_field(pm, child->text)&& !program_manager_get_func(pm, child->text)&& !program_manager_get_struct(pm, child->text))
         {
-            fprintf(stderr, "Error at line %zu: variable %s not declared\n", right->line, right->text);
+            fprintf(stderr, "Error at line %zu: variable %s not declared\n", right->line, child->text);
             error_node = true;
         }
     }
