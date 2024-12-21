@@ -66,5 +66,5 @@
         "format": "c",
         "text_encoding": "c"
     },
-    "cmake.sourceDirectory": "/Users/zincara/Documents/CSEThirdYear/Compilers/CS323-Compilers-Project/dep/cmc"
+    "cmake.sourceDirectory": "/home/cara/structura/CS323-Compilers-Project/dep/cmc"
 }
