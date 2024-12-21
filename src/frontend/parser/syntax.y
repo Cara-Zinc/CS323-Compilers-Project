@@ -236,7 +236,11 @@ Args : Exp COMMA Args {$$ = args_handler(pm, $1, $3, yylineno); }
 int main() {
     pm = program_manager_new();
     yyparse();
-    rprintAST(root, 0);
+    if(!rprintAST(root, 0)) {
+        printf("Syntax error, skip semantic and code-gen phases\n");
+        return 0;
+    }
+    printf("Syntax tree printed successfully\n");
     program_semantic(pm, root);
     return 0;
 }

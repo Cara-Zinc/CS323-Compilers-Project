@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "../utils/util.h"
 
@@ -31,7 +32,7 @@ ASTNode *createASTLeaf(char *type, int line, char *text);
 void printAST(ASTNode *node, int level);
 
 // Function to print the whole AST recursively
-void rprintAST(ASTNode *node, int level);
+bool rprintAST(ASTNode *node, int level);
 
 // Function to free the AST
 void freeAST(ASTNode *node);

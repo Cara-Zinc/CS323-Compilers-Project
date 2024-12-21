@@ -36,8 +36,10 @@ void printAST(ASTNode *node, int level) {
     alist_print(node->children, stdout, " ", " ", " ");
 }
 
-void rprintAST(ASTNode *node, int level) {
-    if (!node) return;
+bool rprintAST(ASTNode *node, int level) {
+    bool success = true;
+
+    if (!node) return false;
 
     // Print the current node with appropriate indentation
     for (int i = 0; i < level; i++) {
@@ -46,6 +48,10 @@ void rprintAST(ASTNode *node, int level) {
     printf("%s", node->nodeType);
     if(strcmp(node->nodeType, "ID") == 0 || strcmp(node->nodeType, "INT") == 0 || strcmp(node->nodeType, "FLOAT") == 0 || strcmp(node->nodeType, "CHAR") == 0) {
         printf(":");
+    }
+
+    if(strcmp(node->nodeType, "Error") == 0) {
+        success = false;
     }
 
     if (node->text) {
@@ -61,9 +67,10 @@ void rprintAST(ASTNode *node, int level) {
     if (node->children) {
         for (size_t i = 0; i < alist_count(node->children); i++) {
             ASTNode *child = alist_get(node->children, i);
-            rprintAST(child, level + 1);
+            success = success && rprintAST(child, level + 1);
         }
     }
+    return success;
 }
 
 void freeAST(ASTNode *node) {
