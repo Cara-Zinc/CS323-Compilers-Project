@@ -415,7 +415,10 @@ type_def *exp_array_semantic(program_manager *pm, ASTNode *exp1, ASTNode *exp2)
     {
         return NULL;
     }
-    return type_def_new(program_manager_get_field(pm, child1->text)->type_spec->type_id, false);
+
+    type_def *t = program_manager_get_field(pm, child1->text)->type_spec;
+
+    return type_def_new(t->array_type->type_id, false);
 }
 
 /**
