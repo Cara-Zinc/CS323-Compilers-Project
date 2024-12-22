@@ -157,7 +157,7 @@ field_def *dec_semantic(program_manager *pm, ASTNode *node, type_def *specifier_
 
     if (ins->size_count > 0) {
         for (size_t i = ins->size_count - 1; i >= 0; i--) {
-            specifier_type = type_def_new_array(specifier_type, ins->sizes[i]);
+            type = type_def_new_array(type, ins->sizes[i]);
             if (i == 0) {
                 break;
             }

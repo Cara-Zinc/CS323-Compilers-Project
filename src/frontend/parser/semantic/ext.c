@@ -1,6 +1,7 @@
 #include "ext.h"
 #include "declaration.h"
 #include "spec.h"
+#include "compst.h"
 #include <stdlib.h>
 
 void ext_def_semantic(program_manager *pm, ASTNode *ExtDef)
