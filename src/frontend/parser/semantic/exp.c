@@ -138,9 +138,9 @@ type_def *exp_bi_op_semantic(program_manager *pm, ASTNode *left, char *op, ASTNo
                 error_node = true;
             }
 
-            if (left_type->type_id != right_type->type_id)
+            if (type_def_cmp(left_type, right_type) != 0)
             {
-                fprintf(stderr, "Error at line %zu: type mismatch, try to assign type '%s' to type '%s'\n", left->line, right->nodeType, left->nodeType);
+                fprintf(stderr, "Error at line %zu: type mismatch, try to assign type '%s' to type '%s'\n", left->line, type_def_name(pm, right_type), type_def_name(pm, left_type));
                 error_node = true;
             }
             if (error_node)
