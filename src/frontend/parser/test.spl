@@ -6,5 +6,5 @@ int main()
     int c[10];
     #enddef
     c[0] = a + b;
-    return c;
+    return c[0];
 }
