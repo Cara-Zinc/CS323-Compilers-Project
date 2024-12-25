@@ -1,6 +1,8 @@
 #include "ext.h"
 #include "declaration.h"
+#include "compst.h"
 #include "spec.h"
+#include "compst.h"
 #include <stdlib.h>
 
 void ext_def_semantic(program_manager *pm, ASTNode *ExtDef)
@@ -26,13 +28,11 @@ void ext_def_semantic(program_manager *pm, ASTNode *ExtDef)
         if (strcmp(wrapper->func->name, INVALID_FUNC_NAME) == 0)
         {
             scope_wrapper_free(wrapper);
-            
         }
         else
         {
             scope_wrapper_free_without_data(wrapper);
         }
-
     }
     else
     {
@@ -55,14 +55,43 @@ void ext_def_list_semantic(program_manager *pm, ASTNode *ExtDefList)
 
 void ext_dec_list_semantic(program_manager *pm, ASTNode *ExtDecList, type_def *type)
 {
-    if (ExtDecList->numChildren == 1)
+    if (ExtDecList->numChildren == 2)
     {
-        vardec_semantic(pm, alist_get(ExtDecList->children, 0));
+        id_name_and_sizes *ins = vardec_semantic(pm, alist_get(ExtDecList->children, 0));
+        if (ins->size_count > 0)
+        {
+            for (size_t i = ins->size_count - 1; i >= 0; i--)
+            {
+                type = type_def_new_array(type, ins->sizes[i]);
+                if (i == 0)
+                {
+                    break;
+                }
+            }
+        }
+        program_manager_create_field(pm, ins->id, type);
+        ext_dec_list_semantic(pm, alist_get(ExtDecList->children, 2), type);
+    }
+    else if (ExtDecList->numChildren == 1)
+    {
+        id_name_and_sizes *ins = vardec_semantic(pm, alist_get(ExtDecList->children, 0));
+        if (ins->size_count > 0)
+        {
+            for (size_t i = ins->size_count - 1; i >= 0; i--)
+            {
+                type = type_def_new_array(type, ins->sizes[i]);
+                if (i == 0)
+                {
+                    break;
+                }
+            }
+        }
+        program_manager_create_field(pm, ins->id, type);
     }
     else
     {
-        vardec_semantic(pm, alist_get(ExtDecList->children, 0));
-        ext_dec_list_semantic(pm, alist_get(ExtDecList->children, 2), type);
+        fprintf(stderr, "Error at line %zu: invalid syntax structure\n", ExtDecList->line);
+        return;
     }
 }
 

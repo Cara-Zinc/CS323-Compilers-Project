@@ -73,6 +73,10 @@ func_def *fundef_semantic(program_manager *pm, ASTNode *node) {
 }
 
 func_def *fundec_semantic(program_manager *pm, ASTNode *node, type_def *type) {
+    if (strcmp(node->nodeType, "Error") == 0) {
+        return program_manager_create_func_invalid(pm, type);
+    }
+
     func_def *func = NULL;
     char *func_name = alist_get(node->children, 0)->text;
     if (program_manager_get_func_local(pm, func_name) != NULL) {
@@ -153,7 +157,7 @@ field_def *dec_semantic(program_manager *pm, ASTNode *node, type_def *specifier_
 
     if (ins->size_count > 0) {
         for (size_t i = ins->size_count - 1; i >= 0; i--) {
-            specifier_type = type_def_new_array(specifier_type, ins->sizes[i]);
+            type = type_def_new_array(type, ins->sizes[i]);
             if (i == 0) {
                 break;
             }

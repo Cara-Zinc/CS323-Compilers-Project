@@ -69,6 +69,7 @@ type_def *exp_id_semantic(program_manager *pm, ASTNode *node)
     if (!program_manager_get_field(pm, node->text))
     {
         fprintf(stderr, "Error at line %zu: variable %s not declared\n", node->line, node->text);
+        return type_def_new(TYPE_VOID, false);
     }
     type_id id_type = program_manager_get_field(pm, node->text)->type_spec->type_id;
     bool is_struct = program_manager_get_field(pm, node->text)->type_spec->is_struct;
@@ -78,30 +79,47 @@ type_def *exp_id_semantic(program_manager *pm, ASTNode *node)
 type_def *exp_bi_op_semantic(program_manager *pm, ASTNode *left, char *op, ASTNode *right)
 {
     bool error_node = false;
-    if (!left || !right)
-    {
-        fprintf(stderr, "Error: Invalid binary operation, left operand or right operand contains error\n");
-        error_node = true;
-    }
     // first, check if left and right are EXP node with ID leaf node
     // check usage before declaration
-    if (alist_get(left->children, 0) && !strcmp(alist_get(left->children, 0)->nodeType, "ID"))
+    if (!left || strcmp(left->nodeType, "Error") == 0)
+    {
+        fprintf(stderr, "Error at line %zu: left operand contains error\n", left->line);
+        error_node = true;
+    }
+    else if (alist_get(left->children, 0) && !strcmp(alist_get(left->children, 0)->nodeType, "ID"))
     {
         ASTNode *child = alist_get(left->children, 0);
         // assume this is a valid ID node
-        if (!program_manager_get_field(pm, child->text))
+        if (strcmp(op, "==") == 0 || strcmp(op, "!=") == 0 || strcmp(op, "<=") == 0 || strcmp(op, ">=") == 0 || strcmp(op, "<") == 0 || strcmp(op, ">") == 0)
         {
-            fprintf(stderr, "Error at line %zu: variable %s not declared\n", left->line, left->text);
-            error_node = true;
+            if (!program_manager_get_field(pm, child->text) && !program_manager_get_func(pm, child->text) && !program_manager_get_struct(pm, child->text))
+            {
+                fprintf(stderr, "Error at line %zu: variable %s at operator left for assign not declared\n", left->line, child->text);
+                error_node = true;
+            }
+        }
+        else if (strcmp(op, "=") == 0)
+        {
+            if (!program_manager_get_field(pm, child->text))
+            {
+                fprintf(stderr, "Error at line %zu: variable %s at operator left for assign not declared\n", left->line, child->text);
+                error_node = true;
+            }
         }
     }
-    if (alist_get(right->children, 0) && !strcmp(alist_get(right->children, 0)->nodeType, "ID"))
+
+    if (!right || strcmp(right->nodeType, "Error") == 0)
+    {
+        fprintf(stderr, "Error at line %zu: right operand contains error\n", right->line);
+        error_node = true;
+    }
+    else if (alist_get(right->children, 0) && !strcmp(alist_get(right->children, 0)->nodeType, "ID"))
     {
         ASTNode *child = alist_get(right->children, 0);
         // assume this is a valid ID node
-        if (!program_manager_get_field(pm, child->text))
+        if (!program_manager_get_field(pm, child->text) && !program_manager_get_func(pm, child->text) && !program_manager_get_struct(pm, child->text))
         {
-            fprintf(stderr, "Error at line %zu: variable %s not declared\n", right->line, right->text);
+            fprintf(stderr, "Error at line %zu: variable %s at operator right not declared\n", right->line, child->text);
             error_node = true;
         }
     }
@@ -120,9 +138,9 @@ type_def *exp_bi_op_semantic(program_manager *pm, ASTNode *left, char *op, ASTNo
                 error_node = true;
             }
 
-            if (left_type->type_id != right_type->type_id)
+            if (type_def_cmp(left_type, right_type) != 0)
             {
-                fprintf(stderr, "Error at line %zu: type mismatch, try to assign type '%s' to type '%s'\n", left->line, right->nodeType, left->nodeType);
+                fprintf(stderr, "Error at line %zu: type mismatch, try to assign type '%s' to type '%s'\n", left->line, type_def_name(pm, right_type), type_def_name(pm, left_type));
                 error_node = true;
             }
             if (error_node)
@@ -294,7 +312,8 @@ type_def *exp_unary_op_semantic(program_manager *pm, char *op, ASTNode *child)
                 fprintf(stderr, "Error at line %zu: invalid type for operation %s on child expression\n", child->line, op);
                 error_node = true;
             }
-            if(error_node) {
+            if (error_node)
+            {
                 return NULL;
             }
             // int a = ++a;
@@ -317,7 +336,8 @@ type_def *exp_unary_op_semantic(program_manager *pm, char *op, ASTNode *child)
         }
         return type_def_new(child_type->type_id, false);
     }
-    if(error_node) {
+    if (error_node)
+    {
         return NULL;
     }
     return type_def_new(TYPE_VOID, false);
@@ -370,20 +390,22 @@ type_def *exp_func_semantic(program_manager *pm, ASTNode *func_id, ASTNode *args
 type_def *exp_array_semantic(program_manager *pm, ASTNode *exp1, ASTNode *exp2)
 {
     bool error_node = false;
+    ASTNode *child1 = alist_get(exp1->children, 0);
     // check usage before declaration
-    if (!program_manager_get_field(pm, exp1->text))
+    if (!program_manager_get_field(pm, child1->text))
     {
-        fprintf(stderr, "Error at line %zu: variable %s not declared\n", exp1->line, exp1->text);
+        fprintf(stderr, "Error at line %zu: variable %s not declared\n", exp1->line, child1->text);
         error_node = true;
     }
     // check if the variable is an array
-    if (!program_manager_get_field(pm, exp1->text)->type_spec->is_array)
+    if (!program_manager_get_field(pm, child1->text)->type_spec->is_array)
     {
-        fprintf(stderr, "Error at line %zu: %s is not an array\n", exp1->line, exp1->text);
+        fprintf(stderr, "Error at line %zu: %s is not an array\n", exp1->line, child1->text);
         error_node = true;
     }
     // check if the index is an integer
-    if (exp_semantic(pm, exp2)->type_id != TYPE_INT || exp_semantic(pm, exp2)->is_array || exp_semantic(pm, exp2)->is_struct)
+    type_def *index_type = exp_semantic(pm, exp2);
+    if (index_type->type_id != TYPE_INT || index_type->is_array || index_type->is_struct)
     {
         fprintf(stderr, "Error at line %zu: invalid type for array index\n", exp2->line);
         error_node = true;
@@ -393,7 +415,10 @@ type_def *exp_array_semantic(program_manager *pm, ASTNode *exp1, ASTNode *exp2)
     {
         return NULL;
     }
-    return type_def_new(program_manager_get_field(pm, exp1->text)->type_spec->type_id, false);
+
+    type_def *t = program_manager_get_field(pm, child1->text)->type_spec;
+
+    return type_def_new(t->array_type->type_id, false);
 }
 
 /**
