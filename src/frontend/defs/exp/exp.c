@@ -118,3 +118,51 @@ void exp_free(exp *e) {
     type_def_free(e->result_type);
     free(e);
 }
+
+exp *exp_cpy(exp *e) {
+    exp *cpy = new(exp);
+    cpy->result_type = type_def_cpy(e->result_type);
+    cpy->exp_type = e->exp_type;
+    switch (e->exp_type) {
+        case EXP_BI_OP:
+            cpy->bi_op.op = e->bi_op.op;
+            cpy->bi_op.lhs = exp_cpy(e->bi_op.lhs);
+            cpy->bi_op.rhs = exp_cpy(e->bi_op.rhs);
+            break;
+        case EXP_UNARY_OP:
+            cpy->unary_op.op = e->unary_op.op;
+            cpy->unary_op.operand = exp_cpy(e->unary_op.operand);
+            break;
+        case EXP_FUNC_CALL:
+            cpy->func.name = str_copy(e->func.name);
+            cpy->func.num_args = e->func.num_args;
+            cpy->func.arg_exps = new_n(exp *, e->func.num_args);
+            for (int i = 0; i < cpy->func.num_args; i++) {
+                cpy->func.arg_exps[i] = exp_cpy(e->func.arg_exps[i]);
+            }
+            break;
+        case EXP_ARRAY_ACCESS:
+            cpy->array.array_exp = exp_cpy(e->array.array_exp);
+            cpy->array.index_exp = exp_cpy(e->array.index_exp);
+            break;
+        case EXP_STRUCT_ACCESS:
+            cpy->struct_access.lhs_exp = exp_cpy(e->struct_access.lhs_exp);
+            cpy->struct_access.field_name = str_copy(e->struct_access.field_name);
+            break;
+        case EXP_LITERAL:
+            cpy->literal.type = e->literal.type;
+            switch (e->literal.type) {
+                case TYPE_INT:
+                    cpy->literal.int_val = e->literal.int_val;
+                    break;
+                case TYPE_FLOAT:
+                    cpy->literal.float_val = e->literal.float_val;
+                    break;
+                case TYPE_CHAR:
+                    cpy->literal.char_val = e->literal.char_val;
+                    break;
+            }
+            break;
+    }
+    return cpy;
+}

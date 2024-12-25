@@ -38,6 +38,8 @@ stmt *stmt_new_while(exp *predicate, stmt *stmt);
 
 void stmt_free(stmt *stmt);
 
+stmt *stmt_cpy(stmt *s);
+
 #define SNAME stmtlist
 #define PFX stmtlist
 #define V stmt*
