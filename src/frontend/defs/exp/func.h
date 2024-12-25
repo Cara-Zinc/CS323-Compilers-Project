@@ -4,10 +4,10 @@
 #include "exp.h"
 
 typedef struct exp_func {
-    exp *lhs_exp;
+    struct exp *lhs_exp;
     char *name;
     int num_args;
-    exp **arg_exps;
+    struct exp **arg_exps;
 } exp_func;
 
 #endif

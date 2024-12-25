@@ -43,7 +43,7 @@ stmt *stmt_cpy(stmt *s);
 #define SNAME stmtlist
 #define PFX stmtlist
 #define V stmt*
-#include <../../collections/list_h.h>
+#include <../collections/list_h.h>
 
 extern struct stmtlist_fval stmtlist_fvals;
 

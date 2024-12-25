@@ -4,7 +4,7 @@
 #include "exp.h"
 
 typedef struct exp_struct_access {
-    exp *lhs_exp;
+    struct exp *lhs_exp;
     char *field_name;
 } exp_struct_access;
 

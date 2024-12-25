@@ -28,7 +28,7 @@ $(LEX_C): $(LEX_FILE) $(YACC_H)
 
 # Compile and link everything together
 $(EXEC): $(LEX_C) $(YACC_C)
-	$(CC) ../defs/*.c ../mm/*.c ../collections/*.c ../utils/*.c ast.c semantic/*.c $(LEX_C) $(YACC_C) -o $(EXEC) -g -lfl -I $(DEP_CMC) -I $(AST_DIR) -Wall
+	$(CC) ../defs/*.c ../defs/*/*.c ../mm/*.c ../collections/*.c ../utils/*.c ast.c semantic/*.c $(LEX_C) $(YACC_C) -o $(EXEC) -g -lfl -I $(DEP_CMC) -I $(AST_DIR) -Wall
 
 # Clean up intermediate and generated files
 clean:

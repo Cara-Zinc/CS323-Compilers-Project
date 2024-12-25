@@ -4,8 +4,8 @@
 #include "exp.h"
 
 typedef struct exp_array {
-    exp *array_exp;
-    exp *index_exp;
+    struct exp *array_exp;
+    struct exp *index_exp;
 } exp_array;
 
 #endif
