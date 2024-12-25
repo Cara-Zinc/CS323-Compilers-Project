@@ -29,13 +29,13 @@ typedef enum exp_unary_op_enum {
 
 typedef struct exp_bi_op {
     exp_bi_op_enum op;
-    exp *lhs;
-    exp *rhs;
+    struct exp *lhs;
+    struct exp *rhs;
 } exp_bi_op;
 
 typedef struct exp_unary_op {
     exp_unary_op_enum op;
-    exp *operand;
+    struct exp *operand;
 } exp_unary_op;
 
 #endif
