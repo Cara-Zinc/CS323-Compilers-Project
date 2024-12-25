@@ -7,6 +7,7 @@
 #include "field.h"
 #include "scope.h"
 #include "../utils/util.h"
+#include "stmt/stmt.h"
 
 typedef struct scope scope;
 typedef struct field_def field_def;
@@ -18,6 +19,7 @@ typedef struct func_def {
     type_def *return_type; // return type specification of the function
     varlist *args; // arguments of the function
     scope *scope; // scope of the function
+    struct stmtlist *stmts; // statements of the function
 } func_def;
 
 #define INVALID_FUNC_NAME "<invalid_function>"

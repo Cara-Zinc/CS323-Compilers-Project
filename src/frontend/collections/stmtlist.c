@@ -7,7 +7,7 @@
 
 struct stmtlist_fval stmtlist_fvals = {
     .cmp = NULL,
-    .cpy = NULL,
+    .cpy = stmt_cpy,
     .str = NULL,
     .free = stmt_free,
     .hash = NULL,

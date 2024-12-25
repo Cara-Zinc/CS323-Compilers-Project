@@ -48,4 +48,6 @@ exp *exp_new_literal_char(type_id type, char char_val);
 
 void exp_free(exp *e);
 
+exp *exp_cpy(exp *e);
+
 #endif

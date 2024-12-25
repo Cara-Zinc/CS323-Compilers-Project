@@ -7,6 +7,7 @@ func_def *func_def_new(char *name, type_def *return_type) {
     res->return_type = return_type;
     res->args = vlist_new(4, &vlist_fvals);
     res->scope = scope_new();
+    res->stmts = stmtlist_new(1, &stmtlist_fvals);
     return res;
 }
 
@@ -17,6 +18,7 @@ void func_def_free(func_def *f) {
     while (vlist_pop_back(f->args)) {}
     vlist_free(f->args);
     scope_free(f->scope);
+    stmtlist_free(f->stmts);
     free(f);
 }
 
@@ -79,6 +81,7 @@ func_def *func_def_cpy(func_def *f) {
     res->return_type = type_def_cpy(f->return_type);
     res->args = vlist_copy_of(f->args);
     res->scope = scope_cpy(f->scope);
+    res->stmts = stmtlist_copy_of(f->stmts);
     return res;
 }
 
