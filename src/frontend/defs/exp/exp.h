@@ -46,11 +46,11 @@ exp *exp_new_array_access(type_def *result_type, exp *array_exp, exp *index_exp)
 
 exp *exp_new_struct_access(type_def *result_type, exp *lhs_exp, char *field_name);
 
-exp *exp_new_literal_int(type_id type, int int_val);
+exp *exp_new_literal_int(int int_val);
 
-exp *exp_new_literal_float(type_id type, float float_val);
+exp *exp_new_literal_float(float float_val);
 
-exp *exp_new_literal_char(type_id type, char char_val);
+exp *exp_new_literal_char(char char_val);
 
 exp *exp_new_id(type_def *result_type, char *name);
 
