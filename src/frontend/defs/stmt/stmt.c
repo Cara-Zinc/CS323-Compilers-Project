@@ -1,6 +1,12 @@
 #include "stmt.h"
 #include "../../utils/util.h"
 
+stmt *stmt_new_invalid() {
+    stmt *s = new(stmt);
+    s->stmt_type = STMT_INVALID;
+    return s;
+}
+
 stmt *stmt_new_exp(exp *exp) {
     stmt *s = new(stmt);
     s->stmt_type = STMT_EXP;
@@ -41,6 +47,8 @@ stmt *stmt_new_while(exp *predicate, stmt *stmt) {
 
 void stmt_free(stmt *stmt) {
     switch (stmt->stmt_type) {
+        case STMT_INVALID:
+            break;
         case STMT_EXP:
             exp_free(stmt->exp.exp);
             break;
@@ -69,6 +77,8 @@ stmt *stmt_cpy(stmt *s) {
     stmt *cpy = new(stmt);
     cpy->stmt_type = s->stmt_type;
     switch (s->stmt_type) {
+        case STMT_INVALID:
+            break;
         case STMT_EXP:
             cpy->exp.exp = exp_cpy(s->exp.exp);
             break;

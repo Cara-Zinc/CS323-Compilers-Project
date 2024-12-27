@@ -2,6 +2,13 @@
 #include "../../utils/util.h"
 #include <stdarg.h>
 
+exp *exp_new_invalid() {
+    exp *e = new(exp);
+    e->result_type = type_def_new_primitive(TYPE_VOID);
+    e->exp_type = EXP_INVALID;
+    return e;
+}
+
 exp *exp_new_bi_op(type_def *result_type, exp_bi_op_enum op, exp *lhs, exp *rhs) {
     exp *e = new(exp);
     e->result_type = result_type;
@@ -86,6 +93,14 @@ exp *exp_new_literal_char(type_id type, char char_val) {
     return e;
 }
 
+exp *exp_new_id(type_def *result_type, char *name) {
+    exp *e = new(exp);
+    e->result_type = result_type;
+    e->exp_type = EXP_ID;
+    e->id.name = name;
+    return e;
+}
+
 void exp_free(exp *e) {
     switch (e->exp_type) {
         case EXP_BI_OP:
@@ -113,6 +128,11 @@ void exp_free(exp *e) {
             free(e->struct_access.field_name);
             break;
         case EXP_LITERAL:
+            break;
+        case EXP_ID:
+            str_free(e->id.name);
+            break;
+        case EXP_INVALID:
             break;
     }
     type_def_free(e->result_type);
@@ -162,6 +182,11 @@ exp *exp_cpy(exp *e) {
                     cpy->literal.char_val = e->literal.char_val;
                     break;
             }
+            break;
+        case EXP_ID:
+            cpy->id.name = str_copy(e->id.name);
+            break;
+        case EXP_INVALID:
             break;
     }
     return cpy;
