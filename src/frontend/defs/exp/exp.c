@@ -63,32 +63,32 @@ exp *exp_new_struct_access(type_def *result_type, exp *lhs_exp, char *field_name
     return e;
 }
 
-exp *exp_new_literal_int(type_id type, int int_val) {
+exp *exp_new_literal_int(int int_val) {
     exp *e = new(exp);
-    type_def *type_def = type_def_new_primitive(type);
+    type_def *type_def = type_def_new_primitive(TYPE_INT);
     e->result_type = type_def;
     e->exp_type = EXP_LITERAL;
-    e->literal.type = type;
+    e->literal.type = TYPE_INT;
     e->literal.int_val = int_val;
     return e;
 }
 
-exp *exp_new_literal_float(type_id type, float float_val) {
+exp *exp_new_literal_float(float float_val) {
     exp *e = new(exp);
-    type_def *type_def = type_def_new_primitive(type);
+    type_def *type_def = type_def_new_primitive(TYPE_FLOAT);
     e->result_type = type_def;
     e->exp_type = EXP_LITERAL;
-    e->literal.type = type;
+    e->literal.type = TYPE_FLOAT;
     e->literal.float_val = float_val;
     return e;
 }
 
-exp *exp_new_literal_char(type_id type, char char_val) {
+exp *exp_new_literal_char(char char_val) {
     exp *e = new(exp);
-    type_def *type_def = type_def_new_primitive(type);
+    type_def *type_def = type_def_new_primitive(TYPE_CHAR);
     e->result_type = type_def;
     e->exp_type = EXP_LITERAL;
-    e->literal.type = type;
+    e->literal.type = TYPE_CHAR;
     e->literal.char_val = char_val;
     return e;
 }
