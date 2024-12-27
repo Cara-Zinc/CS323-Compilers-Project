@@ -242,3 +242,155 @@ entry:
 - [LLVM Language Reference Manual](https://llvm.org/docs/LangRef.html)
 - [LLVM IR入门指南 by Evian Zhang](https://evian-zhang.github.io/llvm-ir-tutorial/)
 
+
+
+
+
+
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <llvm-c/Core.h>
+#include <llvm-c/IRReader.h>
+#include <llvm-c/BitWriter.h>
+#include <llvm-c/Analysis.h>
+#include <llvm-c/Transforms/PassManagerBuilder.h>
+
+#include "program_manager.h"
+
+/**
+ * Lower a single field (variable) to LLVM IR.
+ */
+static void convert_field_to_llvm(LLVMModuleRef module, LLVMBuilderRef builder, field_def *field) {
+    const char *field_name = field->name;
+    LLVMTypeRef llvm_type = LLVMInt32Type(); // Example: Assuming all fields are int32 for simplicity.
+    
+    // Create a global variable for the field.
+    LLVMValueRef global_var = LLVMAddGlobal(module, llvm_type, field_name);
+    LLVMSetInitializer(global_var, LLVMConstInt(llvm_type, 0, 0)); // Default to 0.
+    
+    printf("  [LLVM] Added global variable '%s'.\n", field_name);
+}
+
+/**
+ * Lower a single function to LLVM IR.
+ */
+static void convert_func_to_llvm(LLVMModuleRef module, LLVMBuilderRef builder, func_def *fn) {
+    const char *func_name = fn->name;
+
+    // Example: Define function signature.
+    LLVMTypeRef return_type = LLVMInt32Type(); // Assuming int32 return type for simplicity.
+    LLVMTypeRef param_types[] = {};            // Assuming no parameters for simplicity.
+    LLVMTypeRef func_type = LLVMFunctionType(return_type, param_types, 0, 0);
+    
+    // Add the function to the module.
+    LLVMValueRef llvm_func = LLVMAddFunction(module, func_name, func_type);
+    LLVMBasicBlockRef entry = LLVMAppendBasicBlock(llvm_func, "entry");
+    LLVMPositionBuilderAtEnd(builder, entry);
+    
+    // Example: Return 0 for all functions.
+    LLVMValueRef ret_val = LLVMConstInt(return_type, 0, 0);
+    LLVMBuildRet(builder, ret_val);
+
+    printf("  [LLVM] Added function '%s'.\n", func_name);
+}
+
+/**
+ * Lower a single struct to LLVM IR.
+ */
+static void convert_struct_to_llvm(LLVMModuleRef module, struct_def *st) {
+    const char *struct_name = st->name;
+
+    // Example: Define struct type (empty for simplicity).
+    LLVMTypeRef struct_type = LLVMStructCreateNamed(LLVMGetGlobalContext(), struct_name);
+    LLVMTypeRef element_types[] = { LLVMInt32Type(), LLVMFloatType() }; // Example: int32 and float.
+    LLVMStructSetBody(struct_type, element_types, 2, 0);
+
+    printf("  [LLVM] Defined struct '%s'.\n", struct_name);
+}
+
+/**
+ * Recursively convert everything in a given scope to LLVM IR.
+ */
+static void convert_scope_to_llvm(program_manager *pm, scope *sc, LLVMModuleRef module, LLVMBuilderRef builder) {
+    if (!sc) return;
+
+    // Convert fields in this scope.
+    size_t field_count = scope_get_field_count(sc);
+    for (size_t i = 0; i < field_count; i++) {
+        field_def *f = scope_get_field_by_index(sc, i);
+        convert_field_to_llvm(module, builder, f);
+    }
+
+    // Convert functions in this scope.
+    size_t func_count = scope_get_func_count(sc);
+    for (size_t i = 0; i < func_count; i++) {
+        func_def *fn = scope_get_func_by_index(sc, i);
+        convert_func_to_llvm(module, builder, fn);
+    }
+
+    // Convert structs in this scope.
+    size_t struct_count = scope_get_struct_count(sc);
+    for (size_t i = 0; i < struct_count; i++) {
+        struct_def *st = scope_get_struct_by_index(sc, i);
+        convert_struct_to_llvm(module, st);
+    }
+
+    // Recurse into subscopes.
+    size_t subscope_count = program_manager_get_subscope_count(pm);
+    for (size_t i = 0; i < subscope_count; i++) {
+        scope *sub = program_manager_get_subscope(pm, i);
+        convert_scope_to_llvm(pm, sub, module, builder);
+    }
+}
+
+/**
+ * High-level driver to convert an entire program to LLVM IR.
+ */
+LLVMModuleRef program_manager_convert_to_llvm_ir(program_manager *pm) {
+    // Create an LLVM module.
+    LLVMModuleRef module = LLVMModuleCreateWithName("program");
+    LLVMBuilderRef builder = LLVMCreateBuilder();
+
+    // Convert the global scope recursively.
+    convert_scope_to_llvm(pm, pm->global_scope, module, builder);
+
+    // Cleanup the builder.
+    LLVMDisposeBuilder(builder);
+
+    return module;
+}
+
+/**
+ * Example usage:
+ */
+int main() {
+    // Create a program manager.
+    program_manager *pm = program_manager_new();
+
+    // (Hypothetical) Add some fields, funcs, structs...
+    type_def *int_type = ...; // Assume type_def for int32.
+    program_manager_create_field(pm, "g_x", int_type);
+    program_manager_create_func(pm, "foo", int_type);
+    program_manager_create_struct(pm, "Bar");
+
+    // Convert to LLVM IR.
+    LLVMModuleRef module = program_manager_convert_to_llvm_ir(pm);
+
+    // Print the LLVM IR.
+    char *ir_str = LLVMPrintModuleToString(module);
+    printf("%s\n", ir_str);
+    LLVMDisposeMessage(ir_str);
+
+    // Write to file.
+    LLVMWriteBitcodeToFile(module, "output.bc");
+
+    // Cleanup.
+    LLVMDisposeModule(module);
+    program_manager_free(pm);
+
+    return 0;
+}
+```
+
