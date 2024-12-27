@@ -8,6 +8,7 @@
 #include "while.h"
 
 typedef enum stmt_type {
+    STMT_INVALID = 0,
     STMT_EXP,
     STMT_COMP,
     STMT_RETURN,
@@ -25,6 +26,8 @@ typedef struct stmt {
         stmt_while while_;
     };
 } stmt;
+
+stmt *stmt_new_invalid();
 
 stmt *stmt_new_exp(exp *exp);
 

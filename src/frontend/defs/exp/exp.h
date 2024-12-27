@@ -7,14 +7,17 @@
 #include "array.h"
 #include "struct.h"
 #include "literal.h"
+#include "id.h"
 
 typedef enum exp_type {
+    EXP_INVALID = 0,
     EXP_BI_OP,
     EXP_UNARY_OP,
     EXP_FUNC_CALL,
     EXP_ARRAY_ACCESS,
     EXP_STRUCT_ACCESS,
     EXP_LITERAL,
+    EXP_ID,
 } exp_type;
 
 typedef struct exp {
@@ -27,8 +30,11 @@ typedef struct exp {
         exp_array array;
         exp_struct_access struct_access;
         exp_literal literal;
+        exp_id id;
     };
 } exp;
+
+exp *exp_new_invalid();
 
 exp *exp_new_bi_op(type_def *result_type, exp_bi_op_enum op, exp *lhs, exp *rhs);
 
@@ -45,6 +51,8 @@ exp *exp_new_literal_int(type_id type, int int_val);
 exp *exp_new_literal_float(type_id type, float float_val);
 
 exp *exp_new_literal_char(type_id type, char char_val);
+
+exp *exp_new_id(type_def *result_type, char *name);
 
 void exp_free(exp *e);
 
