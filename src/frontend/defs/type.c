@@ -14,7 +14,11 @@ type_def *type_def_new(type_id type_id, bool is_struct) {
 }
 
 type_def *type_def_cpy(type_def *t) {
-    return mem_copy(type_def, t);
+    type_def *res = mem_copy(type_def, t);
+    if (res->array_type != NULL) {
+        res->array_type = type_def_cpy(res->array_type);
+    }
+    return res;
 }
 
 // create a new primitive type specification
@@ -73,4 +77,19 @@ int type_def_cmp(type_def *t1, type_def *t2) {
     }
 
     return cmc_size_cmp(t1->type_id, t2->type_id);
+}
+
+// check if a type specification is a primitive type
+bool type_def_is_primitive(type_def *t) {
+    return !t->is_struct && !t->is_array;
+}
+
+// check if a type specification is a void type
+bool type_def_is_void(type_def *t) {
+    return (t->type_id == TYPE_VOID) && type_def_is_primitive(t);
+}
+
+// check if a type specification is int, float or char
+bool type_def_is_operable(type_def *t) {
+    return type_def_is_primitive(t) && (t->type_id != TYPE_VOID);
 }

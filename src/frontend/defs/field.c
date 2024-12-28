@@ -5,6 +5,15 @@ field_def *field_def_new(char *name, type_def *type_spec) {
     field_def *res = new(field_def);
     res->name = name;
     res->type_spec = type_spec;
+    res->assign_exp = NULL;
+    return res;
+}
+
+field_def *field_def_new_with_exp(char *name, type_def *type_spec, exp *assign_exp) {
+    field_def *res = new(field_def);
+    res->name = name;
+    res->type_spec = type_spec;
+    res->assign_exp = assign_exp;
     return res;
 }
 
@@ -12,6 +21,9 @@ field_def *field_def_new(char *name, type_def *type_spec) {
 void field_def_free(field_def *f) {
     free(f->name);
     type_def_free(f->type_spec);
+    if (f->assign_exp != NULL) {
+        exp_free(f->assign_exp);
+    }
     free(f);
 }
 
@@ -21,7 +33,11 @@ int field_def_cmp(field_def *f1, field_def *f2) {
 
 field_def *field_def_cpy(field_def *f) {
     char *name = str_copy(f->name);
-    return field_def_new(name, type_def_cpy(f->type_spec));
+    exp *assign_exp = NULL;
+    if (f->assign_exp != NULL) {
+        assign_exp = exp_cpy(f->assign_exp);
+    }
+    return field_def_new_with_exp(name, type_def_cpy(f->type_spec), assign_exp);
 }
 
 bool field_def_str(FILE *file, field_def *f) {

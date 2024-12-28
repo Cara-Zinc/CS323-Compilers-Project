@@ -352,7 +352,6 @@ ASTNode *exp_int_handler(program_manager *pm, int text, size_t line)
 }
 
 ASTNode *exp_float_handler(program_manager *pm, float text, size_t line)
-
 {
     // convert float to string
     char *str = (char *)malloc(12 * sizeof(char));

@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include "../../mm/program_manager.h"
 #include "../ast.h"
+#include "../../defs/exp/exp.h"
 
-varlist *args_semantic(program_manager *pm, ASTNode *node);
-
+explist *args_semantic(program_manager *pm, ASTNode *node);
 
 #endif

@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "type.h"
+#include "exp/exp.h"
 #include "../utils/util.h"
 
 /**
@@ -13,10 +14,13 @@
 typedef struct field_def {
     char *name; // field name
     type_def *type_spec; // field type specification
+    exp *assign_exp; // field assignment expression
 } field_def;
 
 // create a new field definition
 field_def *field_def_new(char *name, type_def *type_spec);
+
+field_def *field_def_new_with_exp(char *name, type_def *type_spec, exp *assign_exp);
 
 // free a field definition
 void field_def_free(field_def *f);

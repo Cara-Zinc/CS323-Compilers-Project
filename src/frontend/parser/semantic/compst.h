@@ -3,8 +3,12 @@
 
 #include "../../mm/program_manager.h"
 #include "../ast.h"
+#include "../../defs/stmt/stmt.h"
 
-// plain semantic analysis of a compound statement
-void compst_semantic(program_manager *pm, ASTNode *node, func_def *func);
+// plain semantic analysis of function entry
+void func_entry_semantic(program_manager *pm, ASTNode *node, func_def *func);
+
+// semantic analysis of a statement list
+stmtlist *stmtlist_semantic(program_manager *pm, ASTNode *node, func_def *func);
 
 #endif

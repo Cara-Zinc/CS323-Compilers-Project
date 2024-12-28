@@ -23,7 +23,7 @@ void ext_def_semantic(program_manager *pm, ASTNode *ExtDef)
         // Specifier FunDec CompSt
         type_def *spec_type = specifier_semantic(pm, alist_get(ExtDef->children, 0));
         func_def *func = fundec_semantic(pm, alist_get(ExtDef->children, 1), spec_type);
-        compst_semantic(pm, alist_get(ExtDef->children, 2), func);
+        func_entry_semantic(pm, alist_get(ExtDef->children, 2), func);
         scope_wrapper *wrapper = program_manager_pop(pm);
         if (strcmp(wrapper->func->name, INVALID_FUNC_NAME) == 0)
         {
