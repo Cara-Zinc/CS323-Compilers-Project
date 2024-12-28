@@ -3,26 +3,16 @@
 #include "../../utils/util.h"
 #include <stdlib.h>
 
-type_def *exp_semantic(program_manager *pm, ASTNode *node)
+exp *exp_semantic(program_manager *pm, ASTNode *node)
 {
     if (node->numChildren == 1)
     {
-        if (strcmp(alist_get(node->children, 0)->nodeType, "ID") == 0)
+        ASTNode *child = alist_get(node->children, 0);
+        if (strcmp(child->nodeType, "ID") == 0)
         {
-            return exp_id_semantic(pm, alist_get(node->children, 0));
+            return exp_id_semantic(pm, child);
         }
-        else if (strcmp(alist_get(node->children, 0)->nodeType, "INT") == 0)
-        {
-            return type_def_new(TYPE_INT, false);
-        }
-        else if (strcmp(alist_get(node->children, 0)->nodeType, "FLOAT") == 0)
-        {
-            return type_def_new(TYPE_FLOAT, false);
-        }
-        else if (strcmp(alist_get(node->children, 0)->nodeType, "CHAR") == 0)
-        {
-            return type_def_new(TYPE_CHAR, false);
-        }
+        return exp_primitive_semantic(pm, child);
     }
     else if (node->numChildren == 2)
     {
@@ -59,465 +49,429 @@ type_def *exp_semantic(program_manager *pm, ASTNode *node)
         return exp_array_semantic(pm, alist_get(node->children, 0), alist_get(node->children, 2));
     }
     fprintf(stderr, "Error at line %zu: invalid expression with node type '%s' and %d children\n", node->line, node->nodeType, node->numChildren);
-    return type_def_new(TYPE_VOID, false);
+    return exp_new_invalid();
 }
 
-type_def *exp_id_semantic(program_manager *pm, ASTNode *node)
+exp *exp_id_semantic(program_manager *pm, ASTNode *node)
 {
     // the node come in is the ID leaf node
     // check usage before declaration
-    if (!program_manager_get_field(pm, node->text))
+    char *name = node->text;
+    field_def *field = program_manager_get_field(pm, name);
+    if (field == NULL)
     {
-        fprintf(stderr, "Error at line %zu: variable %s not declared\n", node->line, node->text);
-        return type_def_new(TYPE_VOID, false);
+        fprintf(stderr, "Error at line %zu: variable %s not declared\n", node->line, name);
+        return exp_new_invalid();
     }
-    type_id id_type = program_manager_get_field(pm, node->text)->type_spec->type_id;
-    bool is_struct = program_manager_get_field(pm, node->text)->type_spec->is_struct;
-    return type_def_new(id_type, is_struct);
+    return exp_new_id(type_def_cpy(field->type_spec), str_copy(name));
 }
 
-type_def *exp_bi_op_semantic(program_manager *pm, ASTNode *left, char *op, ASTNode *right)
+exp *exp_bi_op_semantic(program_manager *pm, ASTNode *left, char *op, ASTNode *right)
 {
-    bool error_node = false;
-    // first, check if left and right are EXP node with ID leaf node
-    // check usage before declaration
-    if (!left || strcmp(left->nodeType, "Error") == 0)
+    exp *left_exp = exp_semantic(pm, left);
+    exp *right_exp = exp_semantic(pm, right);
+
+    if (left_exp->exp_type == EXP_INVALID || right_exp->exp_type == EXP_INVALID)
     {
-        fprintf(stderr, "Error at line %zu: left operand contains error\n", left->line);
-        error_node = true;
-    }
-    else if (alist_get(left->children, 0) && !strcmp(alist_get(left->children, 0)->nodeType, "ID"))
-    {
-        ASTNode *child = alist_get(left->children, 0);
-        // assume this is a valid ID node
-        if (strcmp(op, "==") == 0 || strcmp(op, "!=") == 0 || strcmp(op, "<=") == 0 || strcmp(op, ">=") == 0 || strcmp(op, "<") == 0 || strcmp(op, ">") == 0)
-        {
-            if (!program_manager_get_field(pm, child->text) && !program_manager_get_func(pm, child->text) && !program_manager_get_struct(pm, child->text))
-            {
-                fprintf(stderr, "Error at line %zu: variable %s at operator left for assign not declared\n", left->line, child->text);
-                error_node = true;
-            }
-        }
-        else if (strcmp(op, "=") == 0)
-        {
-            if (!program_manager_get_field(pm, child->text))
-            {
-                fprintf(stderr, "Error at line %zu: variable %s at operator left for assign not declared\n", left->line, child->text);
-                error_node = true;
-            }
-        }
+        exp_free(left_exp);
+        exp_free(right_exp);
+        return exp_new_invalid();
     }
 
-    if (!right || strcmp(right->nodeType, "Error") == 0)
+    type_def *left_type = left_exp->result_type;
+    type_def *right_type = right_exp->result_type;
+    if (!type_def_is_operable(left_type))
     {
-        fprintf(stderr, "Error at line %zu: right operand contains error\n", right->line);
-        error_node = true;
+        char *left_type_name = type_def_name(pm, left_type);
+        fprintf(stderr, "Error at line %zu: left expression of type %s is not int, float or char\n", left->line, left_type_name);
+        str_free(left_type_name);
+        exp_free(left_exp);
+        exp_free(right_exp);
+        return exp_new_invalid();
     }
-    else if (alist_get(right->children, 0) && !strcmp(alist_get(right->children, 0)->nodeType, "ID"))
+    if (!type_def_is_operable(right_type))
     {
-        ASTNode *child = alist_get(right->children, 0);
-        // assume this is a valid ID node
-        if (!program_manager_get_field(pm, child->text) && !program_manager_get_func(pm, child->text) && !program_manager_get_struct(pm, child->text))
-        {
-            fprintf(stderr, "Error at line %zu: variable %s at operator right not declared\n", right->line, child->text);
-            error_node = true;
-        }
+        char *right_type_name = type_def_name(pm, right_type);
+        fprintf(stderr, "Error at line %zu: right expression of type %s is not int, float or char\n", right->line, right_type_name);
+        str_free(right_type_name);
+        exp_free(left_exp);
+        exp_free(right_exp);
+        return exp_new_invalid();
     }
 
     // check type compatibility for binary operations
-    if (!strcmp(op, "="))
+    if (strcmp(op, "=") == 0)
     {
-        type_def *left_type = exp_semantic(pm, left);
-        type_def *right_type = exp_semantic(pm, right);
-        if (left_type && right_type)
+        if (type_def_cmp(left_type, right_type) != 0)
         {
-            // check type compatibility: arrays and structs are not supported
-            if (left_type->is_array || left_type->is_struct || right_type->is_array || right_type->is_struct)
-            {
-                fprintf(stderr, "Error at line %zu: type mismatch, arrays and structs can neither be assigned to or assigned from\n", left->line);
-                error_node = true;
-            }
-
-            if (type_def_cmp(left_type, right_type) != 0)
-            {
-                fprintf(stderr, "Error at line %zu: type mismatch, try to assign type '%s' to type '%s'\n", left->line, type_def_name(pm, right_type), type_def_name(pm, left_type));
-                error_node = true;
-            }
-            if (error_node)
-            {
-                return NULL;
-            }
-            return type_def_new(right_type->type_id, false);
+            char *left_type_name = type_def_name(pm, left_type);
+            char *right_type_name = type_def_name(pm, right_type);
+            fprintf(stderr, "Error at line %zu: type mismatch, trying to assign type '%s' to type '%s'\n", left->line, right_type_name, left_type_name);
+            str_free(left_type_name);
+            str_free(right_type_name);
+            exp_free(left_exp);
+            exp_free(right_exp);
+            return exp_new_invalid();
         }
-        else
-        {
-            fprintf(stderr, "Error: Invalid binary operation, left operand or right operand contains error\n");
-            error_node = true;
-        }
+        return exp_new_bi_op(type_def_new_primitive(TYPE_VOID), BI_OP_ASSIGN, left_exp, right_exp);
     }
     else if (!strcmp(op, "+") || !strcmp(op, "-") || !strcmp(op, "*"))
     {
-        type_def *left_type = exp_semantic(pm, left);
-        type_def *right_type = exp_semantic(pm, right);
-        if (left_type->type_id != TYPE_INT && left_type->type_id != TYPE_FLOAT && left_type->type_id != TYPE_CHAR)
-        {
-            fprintf(stderr, "Error at line %zu: invalid type for operation %s on left expression\n", left->line, op);
-            error_node = true;
-        }
-        if (right_type->type_id != TYPE_INT && right_type->type_id != TYPE_FLOAT && right_type->type_id != TYPE_CHAR)
-        {
-            fprintf(stderr, "Error at line %zu: invalid type for operation %s on right expression\n", right->line, op);
-            error_node = true;
-        }
         // CHAR + INT = CHAR, CHAR + FLOAT = FLOAT, CHAR + CHAR = CHAR, INT + CHAR = CHAR,INT + INT = INT, INT + FLOAT = FLOAT, FLOAT + FLOAT = FLOAT
-        if (error_node)
-        {
-            return NULL;
-        }
-
+        type_id result_type_id = TYPE_VOID;
         // if one of the operands is a float, the result is a float
         if (left_type->type_id == TYPE_FLOAT || right_type->type_id == TYPE_FLOAT)
         {
-            return type_def_new(TYPE_FLOAT, false);
+            result_type_id = TYPE_FLOAT;
         }
         // if one of the operands is a int, the result is a int
         else if (left_type->type_id == TYPE_INT || right_type->type_id == TYPE_INT)
         {
-            return type_def_new(TYPE_INT, false);
+            result_type_id = TYPE_INT;
         }
         // if both operands are char, the result is a char
         else if (left_type->type_id == TYPE_CHAR && right_type->type_id == TYPE_CHAR)
         {
-            return type_def_new(TYPE_CHAR, false);
+            result_type_id = TYPE_CHAR;
         }
+
+        exp_bi_op_enum op_enum = BI_OP_PLUS;
+        if (!strcmp(op, "+"))
+        {
+            op_enum = BI_OP_PLUS;
+        }
+        else if (!strcmp(op, "-"))
+        {
+            op_enum = BI_OP_MINUS;
+        }
+        else if (!strcmp(op, "*"))
+        {
+            op_enum = BI_OP_MUL;
+        }
+
+        return exp_new_bi_op(type_def_new_primitive(result_type_id), op_enum, left_exp, right_exp);
     }
     else if (!strcmp(op, "/"))
     {
-        type_def *left_type = exp_semantic(pm, left);
-        type_def *right_type = exp_semantic(pm, right);
-        if (left_type->type_id != TYPE_INT && left_type->type_id != TYPE_FLOAT && left_type->type_id != TYPE_CHAR)
-        {
-            fprintf(stderr, "Error at line %zu: invalid type for operation %s on left expression\n", left->line, op);
-            error_node = true;
-        }
-        if (right_type->type_id != TYPE_INT && right_type->type_id != TYPE_FLOAT && right_type->type_id != TYPE_CHAR)
-        {
-            fprintf(stderr, "Error at line %zu: invalid type for operation %s on right expression\n", right->line, op);
-            error_node = true;
-        }
-        // check divide-by-zero, such as 0, 0.0f, .0f, 0.0, .0, 0x0
-        char *right_text = alist_get(right->children, 0)->text;
-        if (!strcmp(right_text, "0") && !strcmp(right_text, "0.0f") && !strcmp(right_text, ".0f") && !strcmp(right_text, "0.0") && !strcmp(right_text, ".0") && !strcmp(right_text, "0x0"))
-        {
-            fprintf(stderr, "Error at line %zu: divide by zero\n", right->line);
-            error_node = true;
-        }
-        if (error_node)
-        {
-            return NULL;
-        }
         // CHAR / INT = CHAR, CHAR / FLOAT = FLOAT, CHAR / CHAR = CHAR, INT / CHAR = CHAR,INT / INT = INT, INT / FLOAT = FLOAT, FLOAT / FLOAT = FLOAT
-
+        type_id result_type_id = TYPE_VOID;
         // if one of the operands is a float, the result is a float
         if (left_type->type_id == TYPE_FLOAT || right_type->type_id == TYPE_FLOAT)
         {
-            return type_def_new(TYPE_FLOAT, false);
+            result_type_id = TYPE_FLOAT;
         }
         // if one of the operands is a int, the result is a int
         else if (left_type->type_id == TYPE_INT || right_type->type_id == TYPE_INT)
         {
-            return type_def_new(TYPE_INT, false);
+            result_type_id = TYPE_INT;
         }
         // if both operands are char, the result is a char
         else if (left_type->type_id == TYPE_CHAR && right_type->type_id == TYPE_CHAR)
         {
-            return type_def_new(TYPE_CHAR, false);
+            result_type_id = TYPE_CHAR;
         }
+        return exp_new_bi_op(type_def_new_primitive(result_type_id), BI_OP_DIV, left_exp, right_exp);
     }
     else if (!strcmp(op, "<") || !strcmp(op, ">") || !strcmp(op, "<=") || !strcmp(op, ">=") || !strcmp(op, "==") || !strcmp(op, "!="))
     {
-        type_def *left_type = exp_semantic(pm, left);
-        type_def *right_type = exp_semantic(pm, right);
-        if (left_type->type_id != TYPE_INT && left_type->type_id != TYPE_FLOAT && left_type->type_id != TYPE_CHAR)
-        {
-            fprintf(stderr, "Error at line %zu: invalid type for operation %s on left expression\n", left->line, op);
-            error_node = true;
-        }
-        if (right_type->type_id != TYPE_INT && right_type->type_id != TYPE_FLOAT && right_type->type_id != TYPE_CHAR)
-        {
-            fprintf(stderr, "Error at line %zu: invalid type for operation %s on right expression\n", right->line, op);
-            error_node = true;
-        }
-        if (left_type->type_id != right_type->type_id)
+        if (type_def_cmp(left_type, right_type) != 0)
         {
             fprintf(stderr, "Error at line %zu: type mismatch, try to compare type '%s' with type '%s'\n", left->line, right->nodeType, left->nodeType);
-            error_node = true;
+            exp_free(left_exp);
+            exp_free(right_exp);
+            return exp_new_invalid();
         }
 
-        if (error_node)
+        exp_bi_op_enum op_enum = BI_OP_EQUAL;
+        if (!strcmp(op, "<"))
         {
-            return NULL;
+            op_enum = BI_OP_LESS_THAN;
         }
-        return type_def_new(TYPE_INT, false);
+        else if (!strcmp(op, ">"))
+        {
+            op_enum = BI_OP_GREATER_THAN;
+        }
+        else if (!strcmp(op, "<="))
+        {
+            op_enum = BI_OP_LESS_EQUAL;
+        }
+        else if (!strcmp(op, ">="))
+        {
+            op_enum = BI_OP_GREATER_EQUAL;
+        }
+        else if (!strcmp(op, "=="))
+        {
+            op_enum = BI_OP_EQUAL;
+        }
+        else if (!strcmp(op, "!="))
+        {
+            op_enum = BI_OP_NOT_EQUAL;
+        }
+
+        return exp_new_bi_op(type_def_new_primitive(TYPE_INT), op_enum, left_exp, right_exp);
     }
     else if (!strcmp(op, "&&") || !strcmp(op, "||"))
     {
-        type_def *left_type = exp_semantic(pm, left);
-        type_def *right_type = exp_semantic(pm, right);
         if (left_type->type_id != TYPE_INT)
         {
             fprintf(stderr, "Error at line %zu: invalid type for operation %s on left expression\n", left->line, op);
-            error_node = true;
+            exp_free(left_exp);
+            exp_free(right_exp);
+            return exp_new_invalid();
         }
         if (right_type->type_id != TYPE_INT)
         {
             fprintf(stderr, "Error at line %zu: invalid type for operation %s on right expression\n", right->line, op);
-            error_node = true;
+            exp_free(left_exp);
+            exp_free(right_exp);
+            return exp_new_invalid();
         }
-        if (error_node)
-        {
-            return NULL;
-        }
-        return type_def_new(TYPE_INT, false);
-    }
-    if (error_node)
-    {
-        return NULL;
-    }
-    return type_def_new(TYPE_VOID, false);
-}
 
-type_def *exp_unary_op_semantic(program_manager *pm, char *op, ASTNode *child)
-{
-    bool error_node = false;
-    if (!exp_semantic(pm, child))
-    {
-        fprintf(stderr, "Error: Invalid unary operation, child is NULL\n");
-        error_node = true;
-        return NULL;
-    }
-
-    if (alist_get(child->children, 0) && !strcmp(alist_get(child->children, 0)->nodeType, "ID"))
-    {
-        if (!program_manager_get_field(pm, child->text))
+        if (!strcmp(op, "&&"))
         {
-            fprintf(stderr, "Error at line %zu: variable %s not declared\n", child->line, child->text);
-            error_node = true;
+            return exp_new_bi_op(type_def_new_primitive(TYPE_INT), BI_OP_AND, left_exp, right_exp);
         }
         else
         {
-            type_def *child_type = exp_semantic(pm, child);
-            if (child_type->type_id != TYPE_INT && child_type->type_id != TYPE_FLOAT)
-            {
-                fprintf(stderr, "Error at line %zu: invalid type for operation %s on child expression\n", child->line, op);
-                error_node = true;
-            }
-            if (error_node)
-            {
-                return NULL;
-            }
-            // int a = ++a;
-            // --a;
-            // -++a;
-            // +--a;
-            // +a;
-            // -a;
-            return type_def_new(child_type->type_id, false);
+            return exp_new_bi_op(type_def_new_primitive(TYPE_INT), BI_OP_OR, left_exp, right_exp);
         }
     }
-    else
-    {
-        type_def *child_type = exp_semantic(pm, child);
-        if (child_type->type_id != TYPE_INT && child_type->type_id != TYPE_FLOAT)
-        {
-            fprintf(stderr, "Error at line %zu: invalid type for operation %s on child expression\n", child->line, op);
-            error_node = true;
-            return NULL;
-        }
-        return type_def_new(child_type->type_id, false);
-    }
-    if (error_node)
-    {
-        return NULL;
-    }
-    return type_def_new(TYPE_VOID, false);
+    printf("Error at line %zu: Invalid binary operator %s\n", right->line, op);
+    return exp_new_invalid();
 }
 
-type_def *exp_func_semantic(program_manager *pm, ASTNode *func_id, ASTNode *args)
+exp *exp_unary_op_semantic(program_manager *pm, char *op, ASTNode *child)
 {
-    bool error_node = false;
+    exp *child_exp = exp_semantic(pm, child);
+    if (child_exp->exp_type == EXP_INVALID)
+    {
+        exp_free(child_exp);
+        return exp_new_invalid();
+    }
+
+    type_def *child_type = child_exp->result_type;
+    if (!type_def_is_primitive(child_type) || (child_type->type_id != TYPE_INT && child_type->type_id != TYPE_FLOAT))
+    {
+        fprintf(stderr, "Error at line %zu: invalid type for operation %s on child expression\n", child->line, op);
+        exp_free(child_exp);
+        return exp_new_invalid();
+    }
+
+    exp_unary_op_enum op_enum = UNARY_OP_MINUS;
+    if (strcmp(op, "-") == 0)
+    {
+        op_enum = UNARY_OP_MINUS;
+    }
+    else if (strcmp(op, "!") == 0)
+    {
+        op_enum = UNARY_OP_NOT;
+    }
+    else if (strcmp(op, "PLUS") == 0)
+    {
+        op_enum = UNARY_OP_PLUS;
+    }
+
+    return exp_new_unary_op(type_def_cpy(child_type), op_enum, child_exp);
+}
+
+exp *exp_func_semantic(program_manager *pm, ASTNode *func_id, ASTNode *args)
+{
+    func_def *func = program_manager_get_func(pm, func_id->text);
     // check if the function is a function
-    if (!program_manager_get_func(pm, func_id->text))
+    if (func == NULL)
     {
         fprintf(stderr, "Error at line %zu: %s is not a function\n", func_id->line, func_id->text);
-        error_node = true;
+        return exp_new_invalid();
     }
-    else
+
+    // check if the function is called with the correct number of arguments
+    explist *args_list = args_semantic(pm, args);
+    size_t func_args_cnt = vlist_count(func->args);
+
+    if (func_args_cnt != explist_count(args_list))
     {
-        // check if the function is called with the correct number of arguments
-        varlist *args_list = args_semantic(pm, args);
-        func_def *func = program_manager_get_func(pm, func_id->text);
-        int fun_args_cnt = vlist_count(func->args);
-
-        if (fun_args_cnt != vlist_count(args_list))
-        {
-            fprintf(stderr, "Error at line %zu: function %s is called with %zu arguments, but it expects %d arguments\n", func_id->line, func_id->text, vlist_count(args_list), fun_args_cnt);
-            error_node = true;
-        }
-
-        // check if the arguments are of the correct type
-        // vlist = args_semantic(pm, args);
-        for (int i = 0; i < fun_args_cnt; i++)
-        {
-            // @TODO: use util function to get name of a type from its type_id
-            if (type_def_cmp(vlist_get(args_list, i)->type_spec, vlist_get(func->args, i)->type_spec) != 0)
-            {
-                // fprintf(stderr, "Error at line %zu: argument %d of function %s is of type %s, but it expects type %s\n", func_id->line, i, func_id->text)
-                error_node = true;
-            }
-        }
-        if (error_node)
-        {
-            return NULL;
-        }
-
-        return program_manager_get_func(pm, func_id->text)->return_type;
+        fprintf(stderr, "Error at line %zu: function %s is called with %zu arguments, but it expects %zu arguments\n", func_id->line, func_id->text, explist_count(args_list), func_args_cnt);
+        explist_free(args_list);
+        return exp_new_invalid();
     }
 
-    return type_def_new(TYPE_VOID, false);
+    // check if the arguments are of the correct type
+    for (int i = 0; i < func_args_cnt; i++)
+    {
+        type_def *expected_type = vlist_get(func->args, i)->type_spec;
+        type_def *actual_type = explist_get(args_list, i)->result_type;
+        if (type_def_cmp(expected_type, actual_type) != 0)
+        {
+            char *expected_type_name = type_def_name(pm, expected_type);
+            char *actual_type_name = type_def_name(pm, actual_type);
+            fprintf(stderr, "Error at line %zu: argument %d of function %s is of type %s, but it expects type %s\n", args->line, i, func->name, actual_type_name, expected_type_name);
+            str_free(expected_type_name);
+            str_free(actual_type_name);
+            explist_free(args_list);
+            return exp_new_invalid();
+        }
+    }
+
+    return exp_new_func_call(type_def_cpy(func->return_type), NULL, str_copy(func->name), args_list);
 }
 
-type_def *exp_array_semantic(program_manager *pm, ASTNode *exp1, ASTNode *exp2)
+exp *exp_array_semantic(program_manager *pm, ASTNode *exp1, ASTNode *exp2)
 {
     bool error_node = false;
-    ASTNode *child1 = alist_get(exp1->children, 0);
-    // check usage before declaration
-    if (!program_manager_get_field(pm, child1->text))
-    {
-        fprintf(stderr, "Error at line %zu: variable %s not declared\n", exp1->line, child1->text);
-        error_node = true;
-    }
+    exp *array_exp = exp_semantic(pm, exp1);
+    exp *index_exp = exp_semantic(pm, exp2);
+
     // check if the variable is an array
-    if (!program_manager_get_field(pm, child1->text)->type_spec->is_array)
+    if (!array_exp->result_type->is_array)
     {
-        fprintf(stderr, "Error at line %zu: %s is not an array\n", exp1->line, child1->text);
+        fprintf(stderr, "Error at line %zu: expression is not an array\n", exp1->line);
         error_node = true;
     }
     // check if the index is an integer
-    type_def *index_type = exp_semantic(pm, exp2);
-    if (index_type->type_id != TYPE_INT || index_type->is_array || index_type->is_struct)
+    if (!(type_def_is_primitive(index_exp->result_type) && index_exp->result_type->type_id == TYPE_INT))
     {
-        fprintf(stderr, "Error at line %zu: invalid type for array index\n", exp2->line);
+        fprintf(stderr, "Error at line %zu: index of array is not int\n", exp2->line);
         error_node = true;
     }
 
     if (error_node)
     {
-        return NULL;
+        exp_free(array_exp);
+        exp_free(index_exp);
+        return exp_new_invalid();
     }
 
-    type_def *t = program_manager_get_field(pm, child1->text)->type_spec;
-
-    return type_def_new(t->array_type->type_id, false);
+    return exp_new_array_access(type_def_cpy(array_exp->result_type->array_type), array_exp, index_exp);
 }
 
 /**
  * @brief Perform semantic analysis for a struct member expression: struct.member
  * @param pm The program manager to manage scopes and symbols.
- * @param exp The AST node representing the struct expression.
- * @param id The name of the struct member.
+ * @param struct_exp_node The AST node representing the struct expression.
+ * @param id_node The name of the struct member.
  */
-type_def *exp_struct_semantic(program_manager *pm, ASTNode *exp, ASTNode *id)
+exp *exp_struct_semantic(program_manager *pm, ASTNode *struct_exp_node, ASTNode *id_node)
 {
-    bool error_node = false;
     // check if exp node itself is a struct
-    type_def *exp_type = exp_semantic(pm, exp);
-    if (!exp_type->is_struct)
+    exp *struct_exp = exp_semantic(pm, struct_exp_node);
+    type_def *struct_type = struct_exp->result_type;
+    if (!struct_type->is_struct)
     {
-        fprintf(stderr, "Error at line %zu: expression is not a struct\n", exp->line);
-        error_node = true;
+        fprintf(stderr, "Error at line %zu: expression is not a struct\n", struct_exp_node->line);
+        exp_free(struct_exp);
+        return exp_new_invalid();
     }
-    // check if the struct has the member
-    if (!program_manager_get_struct_by_id(pm, exp_type->type_id))
+
+    // get the struct definition
+    struct_def *struct_def = program_manager_get_struct_by_id(pm, struct_type->type_id);
+    if (struct_def == NULL)
     {
-        fprintf(stderr, "Error at line %zu: struct does not have member %s\n", exp->line, id->nodeType);
-        error_node = true;
+        fprintf(stderr, "Error at line %zu: struct does not exist, this shouldn't happen!\n", struct_exp_node->line);
+        exp_free(struct_exp);
+        return exp_new_invalid();
     }
-    if (error_node)
+
+    // check if the struct has the field
+    char *field_name = id_node->text;
+    field_def *field = struct_def_get_field(struct_def, field_name);
+    if (field == NULL)
     {
-        return NULL;
+        char *struct_name = type_def_name(pm, struct_type);
+        fprintf(stderr, "Error at line %zu: struct %s does not have field %s\n", id_node->line, struct_name, field_name);
+        str_free(struct_name);
+        exp_free(struct_exp);
+        return exp_new_invalid();
     }
-    struct_def *s = program_manager_get_struct_by_id(pm, exp_type->type_id);
-    if (!struct_def_get_field(s, id->text))
-    {
-        fprintf(stderr, "Error at line %zu: struct does not have member %s\n", id->line, id->text);
-        return NULL;
-    }
-    else
-    {
-        field_def *f = struct_def_get_field(s, id->text);
-        return f->type_spec;
-    }
+
+    return exp_new_struct_access(type_def_cpy(field->type_spec), struct_exp, str_copy(field_name));
 }
 
-type_def *exp_struct_func_semantic(program_manager *pm, ASTNode *exp, ASTNode *id, ASTNode *args)
+exp *exp_struct_func_semantic(program_manager *pm, ASTNode *struct_exp_node, ASTNode *id_node, ASTNode *args_node)
 {
-    // @TODO: implement this function
-    bool error_node = false;
     // check if exp node itself is a struct
-    type_def *exp_type = exp_semantic(pm, exp);
-    if (!exp_type->is_struct)
+    exp *struct_exp = exp_semantic(pm, struct_exp_node);
+    type_def *struct_type = struct_exp->result_type;
+    if (!struct_type->is_struct)
     {
-        fprintf(stderr, "Error at line %zu: expression is not a struct\n", exp->line);
-        error_node = true;
+        fprintf(stderr, "Error at line %zu: expression is not a struct\n", struct_exp_node->line);
+        exp_free(struct_exp);
+        return exp_new_invalid();
     }
-    // check if the struct has the member
-    if (!program_manager_get_struct_by_id(pm, exp_type->type_id))
+
+    // get the struct definition
+    struct_def *struct_def = program_manager_get_struct_by_id(pm, struct_type->type_id);
+    if (struct_def == NULL)
     {
-        fprintf(stderr, "Error at line %zu: struct does not have member %s\n", exp->line, id->nodeType);
-        error_node = true;
+        fprintf(stderr, "Error at line %zu: struct does not exist, this shouldn't happen!\n", struct_exp_node->line);
+        exp_free(struct_exp);
+        return exp_new_invalid();
     }
-    if (error_node)
+
+    // check if the struct has the function
+    char *func_name = id_node->text;
+    func_def *func = struct_def_get_func(struct_def, func_name);
+    if (func == NULL)
     {
-        return NULL;
+        char *struct_name = type_def_name(pm, struct_type);
+        fprintf(stderr, "Error at line %zu: struct %s does not have function %s\n", id_node->line, struct_name, func_name);
+        str_free(struct_name);
+        exp_free(struct_exp);
+        return exp_new_invalid();
     }
-    struct_def *s = program_manager_get_struct_by_id(pm, exp_type->type_id);
-    if (!struct_def_get_field(s, id->text))
+
+    // check if the function is called with the correct number of arguments
+    explist *args_list = args_semantic(pm, args_node);
+    size_t func_args_cnt = vlist_count(func->args);
+
+    if (func_args_cnt != explist_count(args_list))
     {
-        fprintf(stderr, "Error at line %zu: struct does not have member %s\n", id->line, id->text);
-        return NULL;
+        fprintf(stderr, "Error at line %zu: function %s is called with %zu arguments, but it expects %zu arguments\n", id_node->line, func_name, explist_count(args_list), func_args_cnt);
+        exp_free(struct_exp);
+        explist_free(args_list);
+        return exp_new_invalid();
     }
-    else if (!struct_def_get_func(s, id->text))
+
+    // check if the arguments are of the correct type
+    for (int i = 0; i < func_args_cnt; i++)
     {
-        fprintf(stderr, "Error at line %zu: struct does not have function %s\n", id->line, id->text);
-        return NULL;
+        type_def *expected_type = vlist_get(func->args, i)->type_spec;
+        type_def *actual_type = explist_get(args_list, i)->result_type;
+        if (type_def_cmp(expected_type, actual_type) != 0)
+        {
+            char *expected_type_name = type_def_name(pm, expected_type);
+            char *actual_type_name = type_def_name(pm, actual_type);
+            fprintf(stderr, "Error at line %zu: argument %d of function %s is of type %s, but it expects type %s\n", args_node->line, i, func->name, actual_type_name, expected_type_name);
+            str_free(expected_type_name);
+            str_free(actual_type_name);
+            exp_free(struct_exp);
+            explist_free(args_list);
+            return exp_new_invalid();
+        }
+    }
+
+    return exp_new_func_call(type_def_cpy(func->return_type), struct_exp, str_copy(func->name), args_list);
+}
+
+exp *exp_primitive_semantic(program_manager *pm, ASTNode *node)
+{
+    if (strcmp(node->nodeType, "INT") == 0)
+    {
+        int val = atoi(node->text);
+        return exp_new_literal_int(val);
+    }
+    else if (strcmp(node->nodeType, "FLOAT") == 0)
+    {
+        float val = atof(node->text);
+        return exp_new_literal_float(val);
+    }
+    else if (strcmp(node->nodeType, "CHAR") == 0)
+    {
+        char val = node->text[0];
+        return exp_new_literal_char(val);
     }
     else
     {
-        func_def *f = struct_def_get_func(s, id->text);
-        // check if the function is called with the correct number of arguments
-        varlist *args_list = args_semantic(pm, args);
-        int fun_args_cnt = vlist_count(f->args);
-        if (fun_args_cnt != vlist_count(args_list))
-        {
-            fprintf(stderr, "Error at line %zu: function %s is called with %zu arguments, but it expects %d arguments\n", id->line, id->text, vlist_count(args_list), fun_args_cnt);
-            error_node = true;
-        }
-        // check if the arguments are of the correct type
-        for (int i = 0; i < fun_args_cnt; i++)
-        {
-            type_def *t1 = vlist_get(args_list, i)->type_spec;
-            type_def *t2 = vlist_get(f->args, i)->type_spec;
-            if (type_def_cmp(t1, t2) != 0)
-            {
-                fprintf(stderr, "Error at line %zu: argument %d of function %s is of type %s, but it expects type %s\n", id->line, i, id->text, type_def_name(pm, t1), type_def_name(pm, t2));
-                error_node = true;
-            }
-        }
-        if (error_node)
-        {
-            return NULL;
-        }
-        return f->return_type;
+        fprintf(stderr, "Error at line %zu: invalid primitive expression\n", node->line);
+        return exp_new_invalid();
     }
 }

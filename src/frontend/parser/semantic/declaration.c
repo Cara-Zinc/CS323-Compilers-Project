@@ -59,7 +59,7 @@ func_def *fundef_semantic(program_manager *pm, ASTNode *node) {
 
     if (node->numChildren == 3)
     {
-        compst_semantic(pm, alist_get(node->children, 2), func);
+        func_entry_semantic(pm, alist_get(node->children, 2), func);
     }
 
     scope_wrapper *wrapper = program_manager_pop(pm);
@@ -135,26 +135,10 @@ field_def *paramdec_semantic(program_manager *pm, ASTNode *node) {
 }
 
 field_def *dec_semantic(program_manager *pm, ASTNode *node, type_def *specifier_type) {
-    type_def *type = NULL;
-    // vardec assign exp
-    if (node->numChildren == 3)
-    {
-        type = exp_semantic(pm, alist_get(node->children, 2));
-        if (type->is_array || type->is_struct || type->type_id == TYPE_VOID) {
-            fprintf(stderr, "Error at line %zu: cannot assign array, struct or void type to variable.\n", alist_get(node->children, 0)->line);
-        }
-        if (type_def_cmp(type, specifier_type) != 0) {
-            fprintf(stderr, "Error at line %zu: type mismatch, trying to assign type '%zu' to type '%zu'.\n", alist_get(node->children, 0)->line, type->type_id, specifier_type->type_id);
-        }
-    }
-    else if (node->numChildren == 1)
-    {
-        type = specifier_type;
-    }
-
+    type_def *type = type_def_cpy(specifier_type);
     // set the id and size from vardec_semantic to a new char*, then create a field_def
     id_name_and_sizes *ins = vardec_semantic(pm, alist_get(node->children, 0));
-
+    char *name = str_copy(ins->id);
     if (ins->size_count > 0) {
         for (size_t i = ins->size_count - 1; i >= 0; i--) {
             type = type_def_new_array(type, ins->sizes[i]);
@@ -164,7 +148,37 @@ field_def *dec_semantic(program_manager *pm, ASTNode *node, type_def *specifier_
         }
     }
 
-    return program_manager_create_field(pm, ins->id, type);
+    id_name_and_sizes_free(ins);
+    ins = NULL;
+
+    exp *assign_exp = NULL;
+    // vardec assign exp
+    if (node->numChildren == 3)
+    {
+        assign_exp = exp_semantic(pm, alist_get(node->children, 2));
+        type_def *exp_type = assign_exp->result_type;
+        bool error = false;
+        if (!type_def_is_operable(exp_type)) {
+            error = true;
+            fprintf(stderr, "Error at line %zu: cannot assign array, struct or void type to variable.\n", alist_get(node->children, 0)->line);
+        }
+        if (type_def_cmp(type, exp_type) != 0) {
+            error = true;
+            char *expected_type_name = type_def_name(pm, type);
+            char *actual_type_name = type_def_name(pm, exp_type);
+            fprintf(stderr, "Error at line %zu: type mismatch, trying to assign type %s to type %s.\n", alist_get(node->children, 0)->line, actual_type_name, expected_type_name);
+            str_free(expected_type_name);
+            str_free(actual_type_name);
+        }
+        if (error) {
+            exp_free(assign_exp);
+            assign_exp = exp_new_invalid();
+        }
+    }
+
+    field_def *field = program_manager_create_field(pm, name, type);
+    field->assign_exp = assign_exp;
+    return field;
 }
 
 void declist_semantic(program_manager *pm, ASTNode *node, type_def *type) {

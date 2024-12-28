@@ -43,5 +43,13 @@ void type_def_free(type_def *t);
 // compare two type specifications
 int type_def_cmp(type_def *t1, type_def *t2);
 
+// check if a type specification is a primitive type
+bool type_def_is_primitive(type_def *t);
+
+// check if a type specification is a void type
+bool type_def_is_void(type_def *t);
+
+// check if a type specification is int, float or char
+bool type_def_is_operable(type_def *t);
 
 #endif

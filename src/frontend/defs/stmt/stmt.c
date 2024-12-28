@@ -14,10 +14,10 @@ stmt *stmt_new_exp(exp *exp) {
     return s;
 }
 
-stmt *stmt_new_comp() {
+stmt *stmt_new_comp(struct stmtlist *stmts) {
     stmt *s = new(stmt);
     s->stmt_type = STMT_COMP;
-    s->comp.stmts = stmtlist_new(1, &stmtlist_fvals);
+    s->comp.stmts = stmts;
     return s;
 }
 

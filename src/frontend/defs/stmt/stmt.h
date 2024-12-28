@@ -31,7 +31,7 @@ stmt *stmt_new_invalid();
 
 stmt *stmt_new_exp(exp *exp);
 
-stmt *stmt_new_comp();
+stmt *stmt_new_comp(struct stmtlist *stmts);
 
 stmt *stmt_new_return(exp *exp);
 
@@ -47,6 +47,8 @@ stmt *stmt_cpy(stmt *s);
 #define PFX stmtlist
 #define V stmt*
 #include <../collections/list_h.h>
+
+typedef struct stmtlist stmtlist;
 
 extern struct stmtlist_fval stmtlist_fvals;
 

@@ -28,20 +28,13 @@ exp *exp_new_unary_op(type_def *result_type, exp_unary_op_enum op, exp *operand)
     return e;
 }
 
-exp *exp_new_func_call(type_def *result_type, exp *lhs_exp, char *name, int num_args, ...) {
+exp *exp_new_func_call(type_def *result_type, exp *lhs_exp, char *name, explist *exp_args) {
     exp *e = new(exp);
     e->result_type = result_type;
     e->exp_type = EXP_FUNC_CALL;
     e->func.lhs_exp = lhs_exp;
     e->func.name = name;
-    e->func.num_args = num_args;
-    e->func.arg_exps = new_n(exp *, num_args);
-    va_list args;
-    va_start(args, num_args);
-    for (int i = 0; i < num_args; i++) {
-        e->func.arg_exps[i] = va_arg(args, exp *);
-    }
-    va_end(args);
+    e->func.arg_exps = exp_args;
     return e;
 }
 
@@ -111,21 +104,19 @@ void exp_free(exp *e) {
             exp_free(e->unary_op.operand);
             break;
         case EXP_FUNC_CALL:
-            free(e->func.name);
-            for (int i = 0; i < e->func.num_args; i++) {
-                exp_free(e->func.arg_exps[i]);
+            if (e->func.lhs_exp != NULL) {
+                exp_free(e->func.lhs_exp);
             }
-            free(e->func.arg_exps);
+            str_free(e->func.name);
+            explist_free(e->func.arg_exps);
             break;
         case EXP_ARRAY_ACCESS:
             exp_free(e->array.array_exp);
             exp_free(e->array.index_exp);
             break;
         case EXP_STRUCT_ACCESS:
-            if (e->struct_access.lhs_exp != NULL) {
-                exp_free(e->struct_access.lhs_exp);
-            }
-            free(e->struct_access.field_name);
+            exp_free(e->struct_access.lhs_exp);
+            str_free(e->struct_access.field_name);
             break;
         case EXP_LITERAL:
             break;
@@ -154,12 +145,11 @@ exp *exp_cpy(exp *e) {
             cpy->unary_op.operand = exp_cpy(e->unary_op.operand);
             break;
         case EXP_FUNC_CALL:
-            cpy->func.name = str_copy(e->func.name);
-            cpy->func.num_args = e->func.num_args;
-            cpy->func.arg_exps = new_n(exp *, e->func.num_args);
-            for (int i = 0; i < cpy->func.num_args; i++) {
-                cpy->func.arg_exps[i] = exp_cpy(e->func.arg_exps[i]);
+            if (e->func.lhs_exp != NULL) {
+                cpy->func.lhs_exp = exp_cpy(e->func.lhs_exp);
             }
+            cpy->func.name = str_copy(e->func.name);
+            cpy->func.arg_exps = explist_copy_of(e->func.arg_exps);
             break;
         case EXP_ARRAY_ACCESS:
             cpy->array.array_exp = exp_cpy(e->array.array_exp);
