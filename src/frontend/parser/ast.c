@@ -39,7 +39,7 @@ void printAST(ASTNode *node, int level) {
 bool rprintAST(ASTNode *node, int level) {
     bool success = true;
 
-    if (!node) return false;
+    if (!node) return true;
 
     // Print the current node with appropriate indentation
     for (int i = 0; i < level; i++) {

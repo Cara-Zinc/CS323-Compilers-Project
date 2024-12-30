@@ -16,8 +16,10 @@ struct Student {
 };
 
 void main() {
+    #def
     struct Student s;
-    s.setID('B');  
-    s.setAge(20);      
-    s.display();       
+    #enddef
+    s.setID('B');
+    s.setAge(20);
+    s.display();
 }

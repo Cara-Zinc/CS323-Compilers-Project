@@ -13,7 +13,9 @@ struct Person {
 };
 
 void main() {
+    #def
     struct Person p;
+    #enddef
     p.setAge(28);
     p.introduce();
 }

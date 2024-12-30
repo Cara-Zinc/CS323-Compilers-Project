@@ -420,6 +420,24 @@ exp *exp_struct_func_semantic(program_manager *pm, ASTNode *struct_exp_node, AST
     }
 
     // check if the function is called with the correct number of arguments
+    if (func->args->count == 0 && args_node != NULL)
+    {
+        fprintf(stderr, "Error at line %zu: function %s is called with arguments, but it expects no arguments\n", id_node->line, func_name);
+        exp_free(struct_exp);
+        return exp_new_invalid();
+    }
+    else if (func->args->count != 0 && args_node == NULL)
+    {
+        fprintf(stderr, "Error at line %zu: function %s is called with no arguments, but it expects arguments\n", id_node->line, func_name);
+        exp_free(struct_exp);
+        return exp_new_invalid();
+    }
+    else if (func->args->count == NULL && args_node == NULL)
+    {
+        return exp_new_func_call(type_def_cpy(func->return_type), struct_exp, str_copy(func->name), NULL);
+    }
+
+
     explist *args_list = args_semantic(pm, args_node);
     size_t func_args_cnt = vlist_count(func->args);
 
