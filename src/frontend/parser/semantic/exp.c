@@ -432,7 +432,7 @@ exp *exp_struct_func_semantic(program_manager *pm, ASTNode *struct_exp_node, AST
         exp_free(struct_exp);
         return exp_new_invalid();
     }
-    else if (func->args->count == NULL && args_node == NULL)
+    else if (func->args->count == 0 && args_node == NULL)
     {
         return exp_new_func_call(type_def_cpy(func->return_type), struct_exp, str_copy(func->name), NULL);
     }

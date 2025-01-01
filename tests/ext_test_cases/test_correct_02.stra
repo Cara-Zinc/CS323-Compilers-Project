@@ -1,4 +1,4 @@
-void print_info(char name[50], int a);
+void print_info(char name[50], int a){}
 struct Person {
     char name[50];
     int age;
