@@ -11,7 +11,8 @@ typedef struct explist explist;
 #include "literal.h"
 #include "id.h"
 
-typedef enum exp_type {
+typedef enum exp_type
+{
     EXP_INVALID = 0,
     EXP_BI_OP,
     EXP_UNARY_OP,
@@ -22,10 +23,12 @@ typedef enum exp_type {
     EXP_ID,
 } exp_type;
 
-typedef struct exp {
+typedef struct exp
+{
     type_def *result_type;
     exp_type exp_type;
-    union {
+    union
+    {
         exp_bi_op bi_op;
         exp_unary_op unary_op;
         exp_func func;
@@ -60,9 +63,25 @@ void exp_free(exp *e);
 
 exp *exp_cpy(exp *e);
 
+char *exp_bi_op_ir_gen(exp *e, IRContext *ctx);
+
+char *exp_unary_op_ir_gen(exp *e, IRContext *ctx);
+
+char *exp_func_call_ir_gen(exp *e, IRContext *ctx);
+
+char *exp_array_access_ir_gen(exp *e, IRContext *ctx);
+
+char *exp_struct_access_ir_gen(exp *e, IRContext *ctx);
+
+char *exp_literal_ir_gen(exp *e, IRContext *ctx);
+
+char *exp_id_ir_gen(exp *e, IRContext *ctx);
+
+char *exp_ir_gen(exp *e, IRContext *ctx);
+
 #define SNAME explist
 #define PFX explist
-#define V exp*
+#define V exp *
 #include <../collections/list_h.h>
 
 extern struct explist_fval explist_fvals;
