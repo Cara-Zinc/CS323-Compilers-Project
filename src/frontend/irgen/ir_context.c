@@ -8,7 +8,7 @@ IRContext* ir_context_create(const char *filename, program_manager *pm) {
         fprintf(stderr, "Failed to allocate memory for IRContext\n");
         exit(EXIT_FAILURE);
     }
-    
+
     ctx->ir_size = 0;
     ctx->ir_file = fopen(filename, "w");
     if(!ctx->ir_file)
@@ -37,7 +37,7 @@ void ir_context_free(IRContext *ctx) {
 void ir_context_append(IRContext *ctx, const char *fmt, ...) {
     if(!ctx || !ctx->ir_file) return;
     va_list args;
-    va_start(args, fmt);   
+    va_start(args, fmt);
     vfprintf(ctx->ir_file, fmt, args);
     va_end(args);
 
@@ -49,6 +49,13 @@ void ir_context_append(IRContext *ctx, const char *fmt, ...) {
 char* ir_context_new_temp(IRContext *ctx) {
     char buffer[32];
     snprintf(buffer, sizeof(buffer), "temp_%d", ctx->temp_count++);
+    return strdup(buffer);
+}
+
+// generate a new temporary variable name
+char* ir_context_new_label(IRContext *ctx, char *type) {
+    char buffer[32];
+    snprintf(buffer, sizeof(buffer), "%s_%d", type, ctx->temp_count++);
     return strdup(buffer);
 }
 
@@ -88,16 +95,16 @@ char *map_type_to_llvm(type_def *type, program_manager *pm)
             }
             free(field_type);
         }
-        
+
 
         // traverse the struct definition inside the struct definition
         // struct_list *structs = s->scope->struct_defs
         // size = sclist_count(structs);
         // @TODO: A struct's type in llvm ir looks like this:
         // %struct.RT = type { i8, i32, [5 x i32], %struct.<name> } ; <name> is the name of the struct
-    
+
         /*
-            needn't traverse the func map, 
+            needn't traverse the func map,
             we declare the function members globally and pass struct pointer as argument
         */
         strcat(result, " }");

@@ -6,6 +6,7 @@
 #include "return.h"
 #include "if.h"
 #include "while.h"
+#include "../irgen/ir_context.h"
 
 typedef enum stmt_type {
     STMT_INVALID = 0,
@@ -42,6 +43,12 @@ stmt *stmt_new_while(exp *predicate, stmt *stmt);
 void stmt_free(stmt *stmt);
 
 stmt *stmt_cpy(stmt *s);
+
+void stmt_ir_gen(stmt *s, IRContext *ctx);
+
+void compst_ir_gen(struct stmtlist *stmts, IRContext *ctx);
+
+void stmtlist_ir_gen(struct stmtlist *stmts, IRContext *ctx);
 
 #define SNAME stmtlist
 #define PFX stmtlist
