@@ -7,6 +7,11 @@
 #include <stdarg.h>
 #include "symbol.h"
 #include "../defs/type.h"
+#include "../defs/field.h"
+#include "../defs/struct.h"
+#include "../defs/func.h"
+#include "../mm/program_manager.h"
+#include "../utils/util.h"
 
 // A struct to store the context of IR code and symbols
 typedef struct IRContext {
@@ -14,10 +19,11 @@ typedef struct IRContext {
     size_t ir_size;          // current length of IR code   
     int temp_count;          // count of temporary variables
     SymbolTable *sym_table;  // symbol table
+    program_manager *pm;     // program manager
 } IRContext;
 
 
-IRContext* ir_context_create(const char *filename);
+IRContext* ir_context_create(const char *filename, program_manager *pm);
 
 void ir_context_free(IRContext *ctx);
 
