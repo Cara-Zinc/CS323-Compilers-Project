@@ -66,3 +66,17 @@ scope *scope_get_subscope(scope *s, size_t index) {
 size_t scope_get_subscope_count(scope *s) {
     return sclist_count(s->subscopes);
 }
+
+void scope_ir_gen(scope *s, IRContext *ctx) {
+    
+    // generate IR for all struct defs
+    
+    // generate IR for all fields
+
+    // generate IR for all funcs
+
+    // generate IR for all subscopes
+    for(int i=0; i<sclist_count(s->subscopes); i++) {
+        scope_ir_gen(sclist_get(s->subscopes, i), ctx);
+    }
+}
