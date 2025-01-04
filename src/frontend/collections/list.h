@@ -32,10 +32,6 @@
  */
 #define CMC_EXT_LIST_PARTS INIT, ITER, SEQ, STR
 /**/
-#include "cmc/list/ext/struct.h"
-/**/
-#include "cmc/list/ext/header.h"
-/**/
 #include "cmc/list/ext/code.h"
 
 #include "cmc/cor/undef.h"
