@@ -7,11 +7,12 @@
 #include "syntax/syntax_analysis.h" // 语法分析相关的函数和声明
 #include "../mm/program_manager.h" // 程序管理器相关的函数和声明
 #include "semantic/ext.h" // 语义分析相关的函数和声明
-#include "irgen/ir_context.h" // 中间代码生成相关的函数和声明
+#include "../irgen/ir_context.h" // 中间代码生成相关的函数和声明
 
 int yylex(void);
 extern int yylineno;
 program_manager *pm;
+IRContext *ctx;
 ASTNode *root;
 
 void yyerror(const char *s) {
