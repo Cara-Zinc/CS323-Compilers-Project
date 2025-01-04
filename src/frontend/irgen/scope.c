@@ -1,7 +1,7 @@
 #include "scope.h"
 
 void func_ir_gen(func_def *f, IRContext *ctx) {
-    ir_context_append(ctx, "define %s @%s(", map_type_to_llvm(f->ret_type, ctx->pm), f->name);
+    ir_context_append(ctx, "define %s @%s(", map_type_to_llvm(f->return_type, ctx->pm), f->name);
 }
 
 void scope_ir_gen(scope *s, IRContext *ctx) {
