@@ -1,3 +1,5 @@
+#define CMC_EXT_ITER
+
 #include <cmc/cor/core.h>
 #include <cmc/cor/hashtable.h>
 

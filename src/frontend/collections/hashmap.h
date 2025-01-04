@@ -1,3 +1,5 @@
+#define CMC_EXT_ITER
+
 // modified based on cmc
 
 #include "cmc/cor/core.h"
