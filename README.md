@@ -10,8 +10,11 @@ git submodule update --recursive
 
 ## How to call iterators and foreaches in CMC
 See src/frontend/parser/iter_collections_example.c
+
 For more APIS see PFX_iter_xxx functions.
+
 [iterator docs](https://cmc.leoven.dev/Examples/examples.html#iteration)
+
 [foreach docs](https://cmc.leoven.dev/utl/foreach.h/index.html)
 
 ## Project overview
