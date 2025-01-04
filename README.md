@@ -9,7 +9,7 @@ git submodule update --recursive
 ```
 
 ## How to call iterators and foreaches in CMC
-See src/frontend/parser/iter_collections_example.c
+See [example](src/frontend/parser/iter_collections_example.c).
 
 For more APIS see PFX_iter_xxx functions.
 
