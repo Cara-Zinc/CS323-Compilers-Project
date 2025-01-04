@@ -8,7 +8,7 @@ void *_mem_copy(size_t size, void *src) {
     return dst;
 }
 
-char *str_copy(char *src) {
+char *str_copy(const char *src) {
     char *dst = malloc(strlen(src) + 1);
     strcpy(dst, src);
     return dst;

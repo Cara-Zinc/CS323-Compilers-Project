@@ -1,6 +1,5 @@
 #include "exp.h"
 
-
 char *exp_ir_gen(exp *e, IRContext *ctx)
 {
     switch (e->exp_type)
@@ -78,46 +77,14 @@ char *exp_bi_op_ir_gen(exp *e, IRContext *ctx)
 {
     char *lhs_tmp = exp_ir_gen(e->bi_op.lhs, ctx);
     char *rhs_tmp = exp_ir_gen(e->bi_op.rhs, ctx);
-    char *ir = NULL;
 
     char *tmp = ir_context_new_temp(ctx);
-    char *type = map_type_to_llvm(e->result_type,ctx->pm);
+    char *type = map_type_to_llvm(e->result_type, ctx->pm);
 
     switch (e->bi_op.op)
     {
-    case BI_OP_ASSIGN:
-        // TODO: fetch address from ptr and store value
-        /*
-         * 赋值通常需要：
-         *   - 左值是一个指针(比如变量指针)
-         *   - 把右值 store 到左值所在的内存
-         *   - 最终结果常常是右值本身(或被赋予的值)
-         *   - 如果左值指向数组或者结构体，他们本来就是指针，所以不需要额外处理
-         * 
-         * 示例(假设 lhs_tmp 是指针):
-         *   store i32 %rhs, i32* %lhs
-         *   ; result_var = %rhs (可选)
-         */
-        char *rhs_tmp = exp_ir_gen(e->bi_op.rhs, ctx);
-        char *lhs_tmp = exp_ir_gen(e->bi_op.lhs, ctx);
-        if(e->bi_op.lhs->exp_type == EXP_ARRAY_ACCESS || e->bi_op.lhs->exp_type == EXP_STRUCT_ACCESS) {
-            ir_context_append(ctx,
-                              "  store %s %s, %s* %s\n",
-                              type, rhs_tmp,
-                              type, lhs_tmp);
-        } else {
-            ir_context_append(ctx,
-                              "  store %s %s, %s %s\n",
-                              type, rhs_tmp,
-                              type, lhs_tmp);
-        }
-        free(rhs_tmp);
-        free(lhs_tmp);
-        /* 赋值表达式的值, 大多数情况下 C/C++ 语义是 “被赋值后的值” */
-        // 这里简单返回右值
-        free(tmp); // 如果我们不需要再分配新的临时寄存器，就可以释放或不生成
-        return rhs_tmp;
-
+    case BI_OP_INVALID:
+        break;
     case BI_OP_PLUS:
         ir_context_append(ctx, "  %s = add %s %s, %s\n", tmp, type, lhs_tmp, rhs_tmp);
         break;
@@ -170,6 +137,41 @@ char *exp_bi_op_ir_gen(exp *e, IRContext *ctx)
         free(tmp);
         return tmp1;
     }
+    case BI_OP_ASSIGN:
+        // TODO: fetch address from ptr and store value
+        /*
+         * 赋值通常需要：
+         *   - 左值是一个指针(比如变量指针)
+         *   - 把右值 store 到左值所在的内存
+         *   - 最终结果常常是右值本身(或被赋予的值)
+         *   - 如果左值指向数组或者结构体，他们本来就是指针，所以不需要额外处理
+         *
+         * 示例(假设 lhs_tmp 是指针):
+         *   store i32 %rhs, i32* %lhs
+         *   ; result_var = %rhs (可选)
+         */
+        char *rhs_tmp = exp_ir_gen(e->bi_op.rhs, ctx);
+        char *lhs_tmp = exp_ir_gen(e->bi_op.lhs, ctx);
+        if (e->bi_op.lhs->exp_type == EXP_ARRAY_ACCESS || e->bi_op.lhs->exp_type == EXP_STRUCT_ACCESS)
+        {
+            ir_context_append(ctx,
+                              "  store %s %s, %s* %s\n",
+                              type, rhs_tmp,
+                              type, lhs_tmp);
+        }
+        else
+        {
+            ir_context_append(ctx,
+                              "  store %s %s, %s %s\n",
+                              type, rhs_tmp,
+                              type, lhs_tmp);
+        }
+        free(rhs_tmp);
+        free(lhs_tmp);
+        /* 赋值表达式的值, 大多数情况下 C/C++ 语义是 “被赋值后的值” */
+        // 这里简单返回右值
+        free(tmp); // 如果我们不需要再分配新的临时寄存器，就可以释放或不生成
+        return NULL;
     }
     free(lhs_tmp);
     free(rhs_tmp);
@@ -184,6 +186,8 @@ char *exp_unary_op_ir_gen(exp *e, IRContext *ctx)
 
     switch (e->unary_op.op)
     {
+    case UNARY_OP_INVALID:
+        break;
     case UNARY_OP_MINUS:
         if (e->result_type->type_id == TYPE_INT)
         {
@@ -209,10 +213,13 @@ char *exp_unary_op_ir_gen(exp *e, IRContext *ctx)
     return tmp;
 }
 
-char *concat_args(explist *args, IRContext *ctx) {
-    if (args == NULL) {
+char *concat_args(explist *args, IRContext *ctx)
+{
+    if (args == NULL)
+    {
         char *empty = malloc(1);
-        if (!empty) {
+        if (!empty)
+        {
             fprintf(stderr, "Failed to allocate memory for empty arguments string.\n");
             exit(EXIT_FAILURE);
         }
@@ -222,29 +229,34 @@ char *concat_args(explist *args, IRContext *ctx) {
 
     size_t buffer_size = 256;
     char *args_str = malloc(buffer_size);
-    if (!args_str) {
+    if (!args_str)
+    {
         fprintf(stderr, "Failed to allocate memory for arguments string.\n");
         exit(EXIT_FAILURE);
     }
     size_t current_length = 0;
 
-    for (int i=0;i<explist_len(args);i++) {
+    for (int i = 0; i < explist_count(args); i++)
+    {
         exp *arg_exp = explist_get(args, i);
-        if (!arg_exp) {
+        if (!arg_exp)
+        {
             fprintf(stderr, "Encountered NULL expression in argument list.\n");
             free(args_str);
             exit(EXIT_FAILURE);
         }
 
         char *arg_tmp = exp_ir_gen(arg_exp, ctx);
-        if (!arg_tmp) {
+        if (!arg_tmp)
+        {
             fprintf(stderr, "Failed to generate IR for function argument.\n");
             free(args_str);
             exit(EXIT_FAILURE);
         }
 
         const char *arg_type = map_type_to_llvm(arg_exp->result_type, ctx->pm);
-        if (!arg_type) {
+        if (!arg_type)
+        {
             fprintf(stderr, "Failed to map type to LLVM IR type string.\n");
             free(arg_tmp);
             free(args_str);
@@ -254,10 +266,12 @@ char *concat_args(explist *args, IRContext *ctx) {
         // 计算当前参数部分的长度："type %var, " -> strlen(type) + 1 + strlen(var) + 2
         size_t arg_part_length = strlen(arg_type) + 1 + strlen(arg_tmp) + 2;
 
-        if (current_length + arg_part_length >= buffer_size) {
+        if (current_length + arg_part_length >= buffer_size)
+        {
             buffer_size *= 2; // 扩展缓冲区大小
             char *new_buffer = realloc(args_str, buffer_size);
-            if (!new_buffer) {
+            if (!new_buffer)
+            {
                 fprintf(stderr, "Failed to realloc memory for arguments string.\n");
                 free(arg_tmp);
                 free(args_str);
@@ -276,19 +290,20 @@ char *concat_args(explist *args, IRContext *ctx) {
         current_length += 2;
 
         free(arg_tmp);
-    
     }
 
     // 移除最后的 ", "
-    if (current_length >= 2) {
+    if (current_length >= 2)
+    {
         args_str[current_length - 2] = '\0';
-    } else {
+    }
+    else
+    {
         args_str[0] = '\0';
     }
 
     return args_str;
 }
-
 
 char *exp_func_call_ir_gen(exp *e, IRContext *ctx)
 {
@@ -297,7 +312,7 @@ char *exp_func_call_ir_gen(exp *e, IRContext *ctx)
     // %1 = call i32 @foo(i32 %a, i32 %b, i32 %c)
     char *tmp = ir_context_new_temp(ctx);
     char *type = map_type_to_llvm(e->result_type, ctx->pm);
-    
+
     //@TODO: get the function name from the symbol table
     char *func_name = e->func.name;
     explist *args = e->func.arg_exps;
@@ -305,7 +320,6 @@ char *exp_func_call_ir_gen(exp *e, IRContext *ctx)
     ir_context_append(ctx, "  %s = call %s @%s(%s)\n", tmp, type, func_name, args_str);
     free(args_str);
     return tmp;
-    
 }
 
 char *exp_array_access_ir_gen(exp *e, IRContext *ctx)
@@ -314,20 +328,20 @@ char *exp_array_access_ir_gen(exp *e, IRContext *ctx)
     char *array_type = map_type_to_llvm(e->array.array_exp->result_type, ctx->pm);
     char *index = exp_ir_gen(e->array.index_exp, ctx);
     char *gep_tmp = ir_context_new_temp(ctx);
-    
+
     // <result> = getelementptr <type>, ptr <ptrval>, i32 0, i32 <index>
     ir_context_append(ctx, "  %s = getelementptr %s, ptr %s, i32 0, i32 %s\n", gep_tmp, array_type, array_ptr, index);
     return gep_tmp;
     // example: for a C code: s[1].Z.B[5][13]
     //  struct RT {
-        // char A;
-        // int B[10][20];
-        // char C;
+    // char A;
+    // int B[10][20];
+    // char C;
     // };
     // struct ST {
-        // int X;
-        // double Y;
-        // struct RT Z;
+    // int X;
+    // double Y;
+    // struct RT Z;
     // };
     // int *foo(struct ST *s) {
     //     return &s[1].Z.B[5][13];

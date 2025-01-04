@@ -78,7 +78,7 @@ char *map_type_to_llvm(type_def *type, program_manager *pm)
         struct_def *s = program_manager_get_struct_by_id(pm, type->type_id);
 
         // traverse the fields(variables) in the struct definition
-        varlist *fields = s->scope->fields;
+        varmap *fields = s->scope->fields;
         size_t size = vlist_count(fields);
         char *result = malloc(1024);
         char *tmp = malloc(1024);
