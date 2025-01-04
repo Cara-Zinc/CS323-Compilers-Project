@@ -1,4 +1,5 @@
 #include "symbol.h"
+#include "../utils/copy.h"
 
 #define INITIAL_CAPACITY 16
 
@@ -32,10 +33,8 @@ void symbol_table_add(SymbolTable *sym_table, const char *name, const char *llvm
         sym_table->symbols = realloc(sym_table->symbols, sizeof(Symbol *) * sym_table->capacity);
     }
     Symbol *sym = malloc(sizeof(Symbol));
-    sym->name = malloc(strlen(name) + 1);
-    strcpy(sym->name, name);
-    sym->llvm_name = malloc(strlen(llvm_name) + 1);
-    strcpy(sym->llvm_name, llvm_name);
+    sym->name = str_copy(name);
+    sym->llvm_name = str_copy(llvm_name);
     sym_table->symbols[sym_table->size++] = sym;
 }
 
