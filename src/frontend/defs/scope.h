@@ -46,8 +46,6 @@ scope *scope_get_subscope(scope *s, size_t index);
 
 size_t scope_get_subscope_count(scope *s);
 
-void scope_ir_gen(scope *s, IRContext *ctx);
-
 #define SNAME scopelist
 #define PFX sclist
 #define V scope*
