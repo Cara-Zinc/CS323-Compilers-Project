@@ -33,6 +33,6 @@ void ir_context_append(IRContext *ctx, const char *fmt, ...);
 // generate a new temporary variable name
 char* ir_context_new_temp(IRContext *ctx);
 
-char *map_type_to_llvm(type_def *type);
+char *map_type_to_llvm(type_def *type, program_manager *pm);
 
 #endif

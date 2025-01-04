@@ -10,6 +10,10 @@ typedef struct explist explist;
 #include "struct.h"
 #include "literal.h"
 #include "id.h"
+#include "../../utils/util.h"
+#include <stdarg.h>
+#include <string.h>
+#include "../../irgen/ir_context.h"
 
 typedef enum exp_type
 {
