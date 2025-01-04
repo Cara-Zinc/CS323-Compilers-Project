@@ -211,7 +211,12 @@ char *exp_ir_gen(exp *e, IRContext *ctx)
     case EXP_FUNC_CALL:
         return exp_func_call_ir_gen(e, ctx);
     case EXP_ARRAY_ACCESS:
-        return exp_array_access_ir_gen(e, ctx);
+        char *gep_tmp = exp_array_access_ir_gen(e, ctx);
+        char *tmp = ir_context_new_temp(ctx);
+        char *type = map_type_to_llvm(e->result_type);
+        ir_context_append(ctx, "  %s = load %s, ptr %s\n", tmp, type, gep_tmp);
+        free(gep_tmp);
+        return tmp;
     case EXP_STRUCT_ACCESS:
         return exp_struct_access_ir_gen(e, ctx);
     case EXP_LITERAL:
@@ -286,7 +291,8 @@ char *exp_bi_op_ir_gen(exp *e, IRContext *ctx)
          *   - 左值是一个指针(比如变量指针)
          *   - 把右值 store 到左值所在的内存
          *   - 最终结果常常是右值本身(或被赋予的值)
-         *
+         *   - 如果左值指向数组或者结构体，他们本来就是指针，所以不需要额外处理
+         * 
          * 示例(假设 lhs_tmp 是指针):
          *   store i32 %rhs, i32* %lhs
          *   ; result_var = %rhs (可选)
@@ -339,8 +345,6 @@ char *exp_bi_op_ir_gen(exp *e, IRContext *ctx)
             /* int/char：icmp */
             const char *predicate = get_icmp_predicate(e->bi_op.op);
             ir_context_append(ctx, "  %s = icmp %s %s %s, %s\n", tmp, predicate, type, lhs_tmp, rhs_tmp);
-            // @TODO convert icmp result to i32
-
         }
         else if (e->result_type->type_id == TYPE_FLOAT)
         {
@@ -348,7 +352,11 @@ char *exp_bi_op_ir_gen(exp *e, IRContext *ctx)
             const char *predicate = get_fcmp_predicate(e->bi_op.op);
             ir_context_append(ctx, "  %s = fcmp %s %s %s, %s\n", tmp, predicate, type, lhs_tmp, rhs_tmp);
         }
-        break;
+        // @TODO convert icmp result to i32
+        char *tmp1 = ir_context_new_temp(ctx);
+        ir_context_append(ctx, "  %s = zext i1 %s to i32\n", tmp1, tmp);
+        free(tmp);
+        return tmp1;
     }
     }
     free(lhs_tmp);
@@ -375,9 +383,59 @@ char *exp_unary_op_ir_gen(exp *e, IRContext *ctx)
         }
         break;
     case UNARY_OP_NOT:
-        ir_context_append(ctx, "  %s = xor %s %s, 1\n", tmp, type, operand_tmp);
+        char *tmp1 = ir_context_new_temp(ctx);
+        ir_context_append(ctx, "  %s = icmp eq %s %s, 0\n", tmp1, type, operand_tmp);
+        ir_context_append(ctx, "  %s = zext i1 %s to i32\n", tmp, tmp1);
+        free(tmp1);
+        break;
+    case UNARY_OP_PLUS:
+        // do nothing, in structura '+' before number is just a placeholder
         break;
     }
+
     free(operand_tmp);
     return tmp;
+}
+
+char *exp_func_call_ir_gen(exp *e, IRContext *ctx)
+{
+    //@TODO: implement function call
+}
+
+char *exp_array_access_ir_gen(exp *e, IRContext *ctx)
+{
+    char *array_ptr = exp_ir_gen(e->array.array_exp, ctx);
+    char *array_type = map_type_to_llvm(e->array.array_exp->result_type);
+    char *index = exp_ir_gen(e->array.index_exp, ctx);
+    char *gep_tmp = ir_context_new_temp(ctx);
+    
+    // <result> = getelementptr <type>, ptr <ptrval>, i32 0, i32 <index>
+    ir_context_append(ctx, "  %s = getelementptr %s, ptr %s, i32 0, i32 %s\n", gep_tmp, array_type, array_ptr, index);
+    return gep_tmp;
+    // example: for a C code: s[1].Z.B[5][13]
+    //  struct RT {
+        // char A;
+        // int B[10][20];
+        // char C;
+    // };
+    // struct ST {
+        // int X;
+        // double Y;
+        // struct RT Z;
+    // };
+    // int *foo(struct ST *s) {
+    //     return &s[1].Z.B[5][13];
+    // }
+    // %arrayidx = getelementptr inbounds %struct.ST, ptr %s, i64 1, i32 2, i32 1, i64 5, i64 13
+    // is equivalent to:
+    //   %t1 = getelementptr %struct.ST, ptr %s, i32 1                  ; s[1], a pointer
+    //   %t2 = getelementptr %struct.ST, ptr %t1, i32 0, i32 2          ; s[1].Z, a pointer
+    //   %t3 = getelementptr %struct.RT, ptr %t2, i32 0, i32 1          ; s[1].Z.B, a pointer
+    //   %t4 = getelementptr [10 x [20 x i32]], ptr %t3, i32 0, i32 5
+    //   %t5 = getelementptr [20 x i32], ptr %t4, i32 0, i32 13
+}
+
+char *exp_struct_access_ir_gen(exp *e, IRContext *ctx)
+{
+    
 }

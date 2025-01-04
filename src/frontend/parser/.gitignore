@@ -4,3 +4,4 @@ syntax.tab.h
 structura_parser
 structura_parser.dSYM/
 test.spl
+ir.out
