@@ -152,19 +152,21 @@ char *exp_bi_op_ir_gen(exp *e, IRContext *ctx)
          */
         char *rhs_tmp = exp_ir_gen(e->bi_op.rhs, ctx);
         char *lhs_tmp = exp_ir_gen(e->bi_op.lhs, ctx);
+        char *rhs_type = map_type_to_llvm(e->bi_op.rhs->result_type, ctx->pm);
+        char *lhs_type = map_type_to_llvm(e->bi_op.lhs->result_type, ctx->pm);
         if (e->bi_op.lhs->exp_type == EXP_ARRAY_ACCESS || e->bi_op.lhs->exp_type == EXP_STRUCT_ACCESS)
         {
             ir_context_append(ctx,
                               "  store %s %s, %s* %s\n",
-                              type, rhs_tmp,
-                              type, lhs_tmp);
+                              rhs_type, rhs_tmp,
+                              lhs_type, lhs_tmp);
         }
         else
         {
             ir_context_append(ctx,
-                              "  store %s %s, %s %s\n",
-                              type, rhs_tmp,
-                              type, lhs_tmp);
+                              "  store %s %s, %s* %s\n",
+                              rhs_type, rhs_tmp,
+                              lhs_type, lhs_tmp);
         }
         free(rhs_tmp);
         free(lhs_tmp);
@@ -389,10 +391,12 @@ char *exp_literal_ir_gen(exp *e, IRContext *ctx)
 
 char *exp_id_ir_gen(exp *e, IRContext *ctx)
 {
-    char *tmp = ir_context_new_temp(ctx);
-    char *type = map_type_to_llvm(e->result_type, ctx->pm);
-    // @TODO: find out the variable name allocated for e->id.name in the symbol table
-    char *var_name = e->id.name;
-    ir_context_append(ctx, "  %s = load %s, ptr %%%s\n", tmp, type, var_name);
-    return tmp;
+    char *var = malloc(strlen(e->id.name) + 2);
+    if (!var)
+    {
+        fprintf(stderr, "Failed to allocate memory for variable name.\n");
+        exit(EXIT_FAILURE);
+    }
+    sprintf(var, "%%%s", e->id.name);
+    return var;
 }
