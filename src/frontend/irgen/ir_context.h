@@ -1,5 +1,6 @@
 #ifndef __IR_CONTEXT_H__
 #define __IR_CONTEXT_H__
+typedef struct IRContext IRContext;
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,16 +13,16 @@
 #include "../defs/func.h"
 #include "../mm/program_manager.h"
 #include "../utils/util.h"
+#include "scope.h"
 
 // A struct to store the context of IR code and symbols
-typedef struct IRContext {
+struct IRContext {
     FILE *ir_file;           // file pointer, store the generated IR code
     size_t ir_size;          // current length of IR code
     int temp_count;          // count of temporary variables
     SymbolTable *sym_table;  // symbol table
     program_manager *pm;     // program manager
-} IRContext;
-
+};
 
 IRContext *ir_context_create(const char *filename, program_manager *pm);
 
@@ -37,5 +38,7 @@ char* ir_context_new_temp(IRContext *ctx);
 char *ir_context_new_label(IRContext *ctx, char *type);
 
 char *map_type_to_llvm(type_def *type, program_manager *pm);
+
+void ir_gen(IRContext *ctx);
 
 #endif

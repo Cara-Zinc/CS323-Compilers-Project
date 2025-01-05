@@ -101,14 +101,20 @@ char *map_type_to_llvm(type_def *type, program_manager *pm)
     switch (type->type_id)
     {
     case TYPE_INT:
-        return "i32";
+        return strdup("i32");
     case TYPE_FLOAT:
-        return "float";
+        return strdup("float");
     case TYPE_CHAR:
-        return "i8";
+        return strdup("i8");
     case TYPE_VOID:
-        return "void";
+        return strdup("void");
     default:
-        return "i32*";
+        return strdup("i32*");
     }
+}
+
+void ir_gen(IRContext *ctx)
+{
+    scope *global_scope = ctx->pm->global_scope;
+    scope_ir_gen(global_scope, ctx);
 }

@@ -244,6 +244,6 @@ int main() {
     printf("Syntax tree printed successfully\n");
     program_semantic(pm, root);
     ctx = ir_context_create("ir.txt", pm);
-    // program_manager_free(pm);
+    ir_gen(ctx);
     return 0;
 }   
