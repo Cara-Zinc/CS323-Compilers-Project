@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Test Parser (Phase 1)
+      - name: Test Parser (Phase 1~2)
         run: |
           sudo -S apt-get install -y flex bison libfl-dev
           flex --version
@@ -30,7 +30,14 @@ jobs:
           python3 compare.py --tests_dir ../../../tests/phase1/
         working-directory: .
 
-      - name: Test Parser (Phase 1, Extended)
+      - name: Test Parser (Phase 1~2, Extended)
         run: |
           python3 compare_ext.py --tests_dir ../../../tests/ext_test_cases/
+        working-directory: src/frontend/parser
+
+      - name: Test LLVM IR Generation (Phase 3)
+        run: |
+          sudo -S apt-get install -y llvm
+          ./structura_parser < test.spl
+          llc -march=mips -mcpu=mips32 ir.txt -o ir.s
         working-directory: src/frontend/parser
