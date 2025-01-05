@@ -44,3 +44,9 @@ jobs:
           echo "=============================================="
           llc -march=mips -mcpu=mips32 -opaque-pointers ir.txt -o ir.s
         working-directory: src/frontend/parser
+
+      - name: Test MIPS Assembly Generation (Phase 4)
+        run: |
+          cat ir.s
+          spim read "ir.s"
+        working-directory: src/frontend/parser
