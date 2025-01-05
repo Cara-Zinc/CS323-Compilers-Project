@@ -1,5 +1,6 @@
 #include "ir_context.h"
 #include <stdarg.h>
+#include <cmc/utl/foreach.h>
 
 IRContext* ir_context_create(const char *filename, program_manager *pm) {
     IRContext *ctx = malloc(sizeof(IRContext));
@@ -79,38 +80,22 @@ char *map_type_to_llvm(type_def *type, program_manager *pm)
 
         // traverse the fields(variables) in the struct definition
         varmap *fields = s->scope->fields;
-        size_t size = vlist_count(fields);
         char *result = malloc(1024);
         char *tmp = malloc(1024);
         strcpy(result, "{ ");
-        for(size_t i = 0; i < size; i++)
+        CMC_FOREACH(vmap, varmap, iter, fields)
         {
-            field_def *f = vlist_get(fields, i);
-            char *field_type = map_type_to_llvm(f->type_spec, pm);
-            sprintf(tmp, "%s ", field_type, f->name);
+            char *field_name = vmap_iter_key(&iter);
+            field_def *field = vmap_iter_value(&iter);
+            char *field_type = map_type_to_llvm(field->type_spec, pm);
+            sprintf(tmp, "%s %s, ", field_type, field_name);
             strcat(result, tmp);
-            if(i < size - 1)
-            {
-                strcat(result, ", ");
-            }
             free(field_type);
-        }
+        } 
 
-
-        // traverse the struct definition inside the struct definition
-        // struct_list *structs = s->scope->struct_defs
-        // size = sclist_count(structs);
-        // @TODO: A struct's type in llvm ir looks like this:
-        // %struct.RT = type { i8, i32, [5 x i32], %struct.<name> } ; <name> is the name of the struct
-
-        /*
-            needn't traverse the func map,
-            we declare the function members globally and pass struct pointer as argument
-        */
         strcat(result, " }");
         free(tmp);
         return result;
-
     }
 
     switch (type->type_id)
