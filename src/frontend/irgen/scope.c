@@ -1,5 +1,6 @@
 #include "scope.h"
 #include "stmt.h"
+#include "../defs/field.h"
 
 bool var_is_arg(field_def *var, varlist *args) {
     for(int i=0; i<varlist_count(args); i++) {
