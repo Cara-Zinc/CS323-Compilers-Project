@@ -393,6 +393,6 @@ char *exp_id_ir_gen(exp *e, IRContext *ctx)
     char *type = map_type_to_llvm(e->result_type, ctx->pm);
     // @TODO: find out the variable name allocated for e->id.name in the symbol table
     char *var_name = e->id.name;
-    ir_context_append(ctx, "  %s = load %s, ptr %s\n", tmp, type, var_name);
+    ir_context_append(ctx, "  %s = load %s, ptr %%%s\n", tmp, type, var_name);
     return tmp;
 }
