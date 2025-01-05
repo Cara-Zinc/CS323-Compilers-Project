@@ -39,5 +39,8 @@ jobs:
         run: |
           sudo -S apt-get install -y llvm
           ./structura_parser < test.spl
+          echo "=============== Generated IR ================="
+          touch ir.txt
+          echo "=============================================="
           llc -march=mips -mcpu=mips32 -opaque-pointers ir.txt -o ir.s
         working-directory: src/frontend/parser
