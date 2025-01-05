@@ -49,7 +49,7 @@ void ir_context_append(IRContext *ctx, const char *fmt, ...) {
 // generate a new temporary variable name
 char* ir_context_new_temp(IRContext *ctx) {
     char buffer[32];
-    snprintf(buffer, sizeof(buffer), "temp_%d", ctx->temp_count++);
+    snprintf(buffer, sizeof(buffer), "%%temp_%d", ctx->temp_count++);
     return strdup(buffer);
 }
 
