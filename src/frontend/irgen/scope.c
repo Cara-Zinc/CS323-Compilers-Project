@@ -31,8 +31,8 @@ void func_ir_gen(func_def *f, IRContext *ctx) {
 
 void struct_ir_gen(struct_def *sd, IRContext *ctx) {
     ir_context_append(ctx, "%%struct.%s = type {", sd->name);
-    for(int i=0; i<varlist_count(sd->fields); i++) {
-        field_def *f = varlist_get(sd->fields, i);
+    for(int i=0; i<varlist_count(sd->scope->fields); i++) {
+        field_def *f = varlist_get(sd->scope->fields, i);
         if(i > 0) ir_context_append(ctx, ", ");
         ir_context_append(ctx, "%s", map_type_to_llvm(f->type_spec, ctx->pm));
     }
