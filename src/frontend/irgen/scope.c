@@ -3,8 +3,8 @@
 #include "../defs/field.h"
 
 bool var_is_arg(field_def *var, varlist *args) {
-    for(int i=0; i<varlist_count(args); i++) {
-        field_def *arg = varlist_get(args, i);
+    for(int i=0; i<vlist_count(args); i++) {
+        field_def *arg = vlist_get(args, i);
         if(strcmp(arg->name, var->name) == 0) return true;
     }
     return false;
@@ -12,8 +12,8 @@ bool var_is_arg(field_def *var, varlist *args) {
 
 void func_ir_gen(func_def *f, IRContext *ctx) {
     ir_context_append(ctx, "define %s @%s(", map_type_to_llvm(f->return_type, ctx->pm), f->name);
-    for(int i=0; i<varlist_count(f->args); i++) {
-        field_def *arg = varlist_get(f->args, i);
+    for(int i=0; i<vlist_count(f->args); i++) {
+        field_def *arg = vlist_get(f->args, i);
         if(i > 0) ir_context_append(ctx, ", ");
         ir_context_append(ctx, "%s %%%s", map_type_to_llvm(arg->type_spec, ctx->pm), arg->name);
     }
@@ -32,8 +32,8 @@ void func_ir_gen(func_def *f, IRContext *ctx) {
 
 void struct_ir_gen(struct_def *sd, IRContext *ctx) {
     ir_context_append(ctx, "%%struct.%s = type {", sd->name);
-    for(int i=0; i<varlist_count(sd->scope->fields); i++) {
-        field_def *f = varlist_get(sd->scope->fields, i);
+    for(int i=0; i<vlist_count(sd->scope->fields); i++) {
+        field_def *f = vlist_get(sd->scope->fields, i);
         if(i > 0) ir_context_append(ctx, ", ");
         ir_context_append(ctx, "%s", map_type_to_llvm(f->type_spec, ctx->pm));
     }
