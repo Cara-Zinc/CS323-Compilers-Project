@@ -48,5 +48,6 @@ jobs:
       - name: Test MIPS Assembly Generation (Phase 4)
         run: |
           cat ir.s
+          sudo -S apt-get install -y spim
           spim read "ir.s"
         working-directory: src/frontend/parser
