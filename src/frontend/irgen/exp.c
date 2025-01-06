@@ -421,7 +421,7 @@ char *exp_array_access_ir_gen(exp *e, IRContext *ctx)
     }
     char *array_type = map_type_to_llvm(e->array.array_exp->result_type, ctx->pm);
     char *index = NULL;
-    if(e->array.index_exp->exp_type==EXP_LITERAL)
+    if(e->array.index_exp->exp_type==EXP_LITERAL||e->array.index_exp->exp_type==EXP_ID)
     {
         index = exp_ir_gen(e->array.index_exp, ctx);
     }
