@@ -43,14 +43,15 @@ void func_ir_gen(func_def *f, IRContext *ctx)
     stmtlist_ir_gen(f->stmts, ctx);
 
     // return statement
+    ir_context_append(ctx, "RETURN:\n");
     if (f->return_type != TYPE_VOID)
     {
-        ir_context_append(ctx, "ret %s %%%s\n", map_type_to_llvm(f->return_type, ctx->pm), "retval");
+        ir_context_append(ctx, "  ret %s %%%s\n", map_type_to_llvm(f->return_type, ctx->pm), "retval");
     }
-    // else
-    // {
-    //     ir_context_append(ctx, "ret void\n");
-    // }
+    else
+    {
+        ir_context_append(ctx, "  ret void\n");
+    }
     ir_context_append(ctx, "}\n");
 }
 
