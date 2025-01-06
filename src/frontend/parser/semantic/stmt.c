@@ -1,6 +1,7 @@
 #include "stmt.h"
 #include "exp.h"
 #include "compst.h"
+#include "../../utils/error.h"
 
 stmt *stmt_semantic(program_manager *pm, ASTNode *node, func_def *func)
 {
@@ -33,7 +34,7 @@ stmt *stmt_semantic(program_manager *pm, ASTNode *node, func_def *func)
         return if_else_semantic(pm, node, func);
     }
 
-    fprintf(stderr, "Error at line %zu: invalid statement, whose children amount is %d\n", node->line, node->numChildren);
+    efprintf(stderr, "Error at line %zu: invalid statement, whose children amount is %d\n", node->line, node->numChildren);
     return stmt_new_invalid();
 }
 
@@ -46,7 +47,7 @@ stmt *return_semantic(program_manager *pm, ASTNode *node, func_def *func)
     {
         char *exp_type_name = type_def_name(pm, return_exp->result_type);
         char *func_type_name = type_def_name(pm, func->return_type);
-        fprintf(stderr, "Error at line %zu: return type mismatch, expected %s but got %s.\n", node->line, func_type_name, exp_type_name);
+        efprintf(stderr, "Error at line %zu: return type mismatch, expected %s but got %s.\n", node->line, func_type_name, exp_type_name);
         str_free(exp_type_name);
         str_free(func_type_name);
         exp_free(return_exp);
@@ -81,7 +82,7 @@ stmt *if_semantic(program_manager *pm, ASTNode *node, func_def *func)
     type_def *exp_type = predicate_exp->result_type;
     if (!(type_def_is_primitive(exp_type) && exp_type->type_id == TYPE_INT))
     {
-        fprintf(stderr, "Error at line %zu: condition of if statement must be of type int.\n", predicate_node->line);
+        efprintf(stderr, "Error at line %zu: condition of if statement must be of type int.\n", predicate_node->line);
         exp_free(predicate_exp);
         return stmt_new_invalid();
     }
@@ -95,7 +96,7 @@ stmt *while_semantic(program_manager *pm, ASTNode *node, func_def *func)
     type_def *exp_type = predicate_exp->result_type;
     if (!(type_def_is_primitive(exp_type) && exp_type->type_id == TYPE_INT))
     {
-        fprintf(stderr, "Error at line %zu: condition of while statement must be of type int.\n", node->line);
+        efprintf(stderr, "Error at line %zu: condition of while statement must be of type int.\n", node->line);
         exp_free(predicate_exp);
         return stmt_new_invalid();
     }
@@ -111,7 +112,7 @@ stmt *if_else_semantic(program_manager *pm, ASTNode *node, func_def *func)
     type_def *exp_type = predicate_exp->result_type;
     if (!(type_def_is_primitive(exp_type) && exp_type->type_id == TYPE_INT))
     {
-        fprintf(stderr, "Error at line %zu: condition of if statement must be of type int.\n", node->line);
+        efprintf(stderr, "Error at line %zu: condition of if statement must be of type int.\n", node->line);
         exp_free(predicate_exp);
         return stmt_new_invalid();
     }

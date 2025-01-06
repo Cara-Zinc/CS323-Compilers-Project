@@ -1,4 +1,5 @@
 #include "spec.h"
+#include "../../utils/error.h"
 
 type_def *specifier_semantic(program_manager *pm, ASTNode *node)
 {
@@ -24,7 +25,7 @@ type_def *specifier_semantic(program_manager *pm, ASTNode *node)
         }
         else
         {
-            fprintf(stderr, "Error at line %zu: unknown type %s\n", node->line, typename);
+            efprintf(stderr, "Error at line %zu: unknown type %s\n", node->line, typename);
             return NULL;
         }
     }
@@ -37,7 +38,7 @@ type_def *specifier_semantic(program_manager *pm, ASTNode *node)
         }
         else
         {
-            fprintf(stderr, "Error at line %zu: unknown specifier\n", node->line);
+            efprintf(stderr, "Error at line %zu: unknown specifier\n", node->line);
             return NULL;
         }
     }
@@ -49,7 +50,7 @@ type_def *struct_specifier_semantic(program_manager *pm, ASTNode *node)
 {
     if (!node->children)
     {
-        fprintf(stderr, "Error at line %zu: invalid struct specifier without children node\n", node->line);
+        efprintf(stderr, "Error at line %zu: invalid struct specifier without children node\n", node->line);
         return NULL;
     }
 
@@ -87,7 +88,7 @@ type_def *struct_specifier_semantic(program_manager *pm, ASTNode *node)
             struct_def *s = program_manager_get_struct(pm, id->text);
             if (s)
             {
-                fprintf(stderr, "Error at line %zu: redefinition of struct %s\n", node->line, id->text);
+                efprintf(stderr, "Error at line %zu: redefinition of struct %s\n", node->line, id->text);
                 struct_def *s = program_manager_create_struct_invalid(pm);
                 struct_def_list_semantic(pm, alist_get(node->children, 1), s->id);
                 return NULL;

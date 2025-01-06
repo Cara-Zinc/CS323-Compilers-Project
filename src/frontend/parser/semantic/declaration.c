@@ -3,6 +3,7 @@
 #include "exp.h"
 #include "compst.h"
 #include "../../utils/util.h"
+#include "../../utils/error.h"
 #include <stdlib.h>
 
 id_name_and_sizes *id_name_and_sizes_new(char *id) {
@@ -34,7 +35,7 @@ id_name_and_sizes *vardec_semantic(program_manager *pm, ASTNode *node) {
 
     if(!node->children)
     {
-        fprintf(stderr, "Error at line %zu: invalid variable declaration.\n", node->line);
+        efprintf(stderr, "Error at line %zu: invalid variable declaration.\n", node->line);
         return id_name_and_sizes_new("INVALID");
     }
 
@@ -46,7 +47,7 @@ id_name_and_sizes *vardec_semantic(program_manager *pm, ASTNode *node) {
     }
     int size = atoi(alist_get(node->children, 2)->text);
     if (size < 0) {
-        fprintf(stderr, "Error at line %zu: array size must not be negative.\n", alist_get(node->children, 2)->line);
+        efprintf(stderr, "Error at line %zu: array size must not be negative.\n", alist_get(node->children, 2)->line);
         size = 0;
     }
     id_name_and_sizes_push_size(ins, size);
@@ -80,7 +81,7 @@ func_def *fundec_semantic(program_manager *pm, ASTNode *node, type_def *type) {
     func_def *func = NULL;
     char *func_name = alist_get(node->children, 0)->text;
     if (program_manager_get_func_local(pm, func_name) != NULL) {
-        fprintf(stderr, "Error at line %zu: redeclaration of function %s.\n", alist_get(node->children, 0)->line, func_name);
+        efprintf(stderr, "Error at line %zu: redeclaration of function %s.\n", alist_get(node->children, 0)->line, func_name);
         func = program_manager_create_func_invalid(pm, type);
     } else {
         func = program_manager_create_func(pm, str_copy(func_name), type);
@@ -109,7 +110,7 @@ varlist *varlist_semantic(program_manager *pm, ASTNode *node) {
     field_def *param = paramdec_semantic(pm, alist_get(node->children, 0));
     for (size_t i = 0; i < vlist_count(list); i++) {
         if (strcmp(vlist_get(list, i)->name, param->name) == 0) {
-            fprintf(stderr, "Error at line %zu: redeclaration of variable %s.\n", alist_get(node->children, 0)->line, param->name);
+            efprintf(stderr, "Error at line %zu: redeclaration of variable %s.\n", alist_get(node->children, 0)->line, param->name);
             field_def_free(param);
             return list;
         }
@@ -160,13 +161,13 @@ field_def *dec_semantic(program_manager *pm, ASTNode *node, type_def *specifier_
         bool error = false;
         if (!type_def_is_operable(exp_type)) {
             error = true;
-            fprintf(stderr, "Error at line %zu: cannot assign array, struct or void type to variable.\n", alist_get(node->children, 0)->line);
+            efprintf(stderr, "Error at line %zu: cannot assign array, struct or void type to variable.\n", alist_get(node->children, 0)->line);
         }
         if (type_def_cmp(type, exp_type) != 0) {
             error = true;
             char *expected_type_name = type_def_name(pm, type);
             char *actual_type_name = type_def_name(pm, exp_type);
-            fprintf(stderr, "Error at line %zu: type mismatch, trying to assign type %s to type %s.\n", alist_get(node->children, 0)->line, actual_type_name, expected_type_name);
+            efprintf(stderr, "Error at line %zu: type mismatch, trying to assign type %s to type %s.\n", alist_get(node->children, 0)->line, actual_type_name, expected_type_name);
             str_free(expected_type_name);
             str_free(actual_type_name);
         }

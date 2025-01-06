@@ -1,4 +1,5 @@
 #include "../mm/program_manager.h"
+#include "../../utils/error.h"
 #include "ast.h"
 
 ASTNode *exp_id_handler(program_manager *pm, char *name, size_t line)
@@ -23,11 +24,11 @@ ASTNode *exp_bi_op_handler(program_manager *pm, ASTNode *left, char *op, ASTNode
     //     // check if both operands are INT or FLOAT
     //     if (strcmp(left->nodeType, "INT") && strcmp(left->nodeType, "FLOAT") && strcmp(left->nodeType, "CHAR"))
     //     {
-    //         printf("Error: type mismatch on left expression\n");
+    //         eprintf("Error: type mismatch on left expression\n");
     //     }
     //     if (strcmp(right->nodeType, "INT") && strcmp(right->nodeType, "FLOAT") && strcmp(right->nodeType, "CHAR"))
     //     {
-    //         printf("Error: type mismatch on right expression\n");
+    //         eprintf("Error: type mismatch on right expression\n");
     //     }
 
     //     // CHAR + INT = CHAR, CHAR + FLOAT = FLOAT, CHAR + CHAR = CHAR, INT + CHAR = CHAR,INT + INT = INT, INT + FLOAT = FLOAT, FLOAT + FLOAT = FLOAT
@@ -39,17 +40,17 @@ ASTNode *exp_bi_op_handler(program_manager *pm, ASTNode *left, char *op, ASTNode
     //     // check if both operands are INT or FLOAT
     //     if (strcmp(left->nodeType, "INT") && strcmp(left->nodeType, "FLOAT") && strcmp(left->nodeType, "CHAR"))
     //     {
-    //         printf("Error: type mismatch on left expression\n");
+    //         eprintf("Error: type mismatch on left expression\n");
     //     }
     //     if (strcmp(right->nodeType, "INT") && strcmp(right->nodeType, "FLOAT") && strcmp(right->nodeType, "CHAR"))
     //     {
-    //         printf("Error: type mismatch on right expression\n");
+    //         eprintf("Error: type mismatch on right expression\n");
     //     }
 
     //     // check divide-by-zero, such as 0, 0.0f, .0f, 0.0, .0, 0x0
     //     if (strcmp(right->text, "0") && strcmp(right->text, "0.0f") && strcmp(right->text, ".0f") && strcmp(right->text, "0.0") && strcmp(right->text, ".0") && strcmp(right->text, "0x0"))
     //     {
-    //         printf("Error: divide by zero\n");
+    //         eprintf("Error: divide by zero\n");
     //         // exit(1);
     //     }
     //     node_type = "EXP";
@@ -61,11 +62,11 @@ ASTNode *exp_bi_op_handler(program_manager *pm, ASTNode *left, char *op, ASTNode
     // {
     //     if (strcmp(left->nodeType, "INT") && strcmp(left->nodeType, "FLOAT") && strcmp(left->nodeType, "CHAR"))
     //     {
-    //         printf("Error: type mismatch on left expression\n");
+    //         eprintf("Error: type mismatch on left expression\n");
     //     }
     //     if (strcmp(right->nodeType, "INT") && strcmp(right->nodeType, "FLOAT") && strcmp(right->nodeType, "CHAR"))
     //     {
-    //         printf("Error: type mismatch on right expression\n");
+    //         eprintf("Error: type mismatch on right expression\n");
     //     }
     //     // TODO: Type promotion
     //     node_type = "BOOL";
@@ -74,7 +75,7 @@ ASTNode *exp_bi_op_handler(program_manager *pm, ASTNode *left, char *op, ASTNode
     // {
     //     if (strcmp(left->nodeType, right->nodeType))
     //     {
-    //         printf("Error: type mismatch\n");
+    //         eprintf("Error: type mismatch\n");
     //         // exit(1);
     //     }
     // }
@@ -82,7 +83,7 @@ ASTNode *exp_bi_op_handler(program_manager *pm, ASTNode *left, char *op, ASTNode
     // {
     //     if (strcmp(left->nodeType, "BOOL") && strcmp(right->nodeType, "BOOL"))
     //     {
-    //         printf("Error: type mismatch\n");
+    //         eprintf("Error: type mismatch\n");
     //         // exit(1);
     //     }
     // }
@@ -101,7 +102,7 @@ ASTNode *exp_bi_op_handler(program_manager *pm, ASTNode *left, char *op, ASTNode
     //     }
     //     else
     //     {
-    //         printf("Error: Invalid text in expression nodes\n");
+    //         eprintf("Error: Invalid text in expression nodes\n");
     //         free(node->text);
     //         return NULL;
     //     }
@@ -114,7 +115,7 @@ ASTNode *exp_assign_handler(program_manager *pm, ASTNode *left, ASTNode *right, 
 {
     // if (left == NULL || right == NULL)
     // {
-    //     printf("Error: Invalid assignment, both sides are NULL\n");
+    //     eprintf("Error: Invalid assignment, both sides are NULL\n");
     //     return NULL;
     // }
 
@@ -123,13 +124,13 @@ ASTNode *exp_assign_handler(program_manager *pm, ASTNode *left, ASTNode *right, 
     // {
     //     if (!program_manager_get_field(pm, left->text))
     //     {
-    //         printf("Error: variable %s not declared\n", left->text);
+    //         eprintf("Error: variable %s not declared\n", left->text);
     //         // exit(1);
     //     }
     // }
     // else
     // {
-    //     printf("Error: Invalid left expression in assignment, should be ID\n");
+    //     eprintf("Error: Invalid left expression in assignment, should be ID\n");
     //     // exit(1);
     // }
 
@@ -139,7 +140,7 @@ ASTNode *exp_assign_handler(program_manager *pm, ASTNode *left, ASTNode *right, 
     //     // check if type of right expression is compatible with left expression
     //     if (strcmp(left->nodeType, right->nodeType))
     //     {
-    //         printf("Error: type mismatch\n");
+    //         eprintf("Error: type mismatch\n");
     //         // exit(1);
     //     }
     // }
@@ -157,14 +158,14 @@ ASTNode *exp_assign_handler(program_manager *pm, ASTNode *left, ASTNode *right, 
     //     }
     //     else
     //     {
-    //         printf("Error: Invalid text in expression nodes\n");
+    //         eprintf("Error: Invalid text in expression nodes\n");
     //         free(text);
     //         return NULL;
     //     }
     // }
     // else
     // {
-    //     printf("Error: Memory allocation failed\n");
+    //     eprintf("Error: Memory allocation failed\n");
     //     return NULL;
     //
     return node;
@@ -174,7 +175,7 @@ ASTNode *exp_neg_handler(program_manager *pm, ASTNode *child, size_t line)
 {
     // if (child == NULL)
     // {
-    //     printf("Error: Invalid negation, child is NULL\n");
+    //     eprintf("Error: Invalid negation, child is NULL\n");
     //     return NULL;
     // }
 
@@ -183,14 +184,14 @@ ASTNode *exp_neg_handler(program_manager *pm, ASTNode *child, size_t line)
     // {
     //     if (!program_manager_get_field(pm, child->text))
     //     {
-    //         //printf("Error: variable %s not declared\n", child->text);
+    //         //eprintf("Error: variable %s not declared\n", child->text);
     //         // exit(1);
     //     }
     // }
 
     // if (strcmp(child->nodeType, "INT") && strcmp(child->nodeType, "FLOAT"))
     // {
-    //     printf("Error: type mismatch, should be INT or FLOAT\n");
+    //     eprintf("Error: type mismatch, should be INT or FLOAT\n");
     //     // exit(1);
     // }
 
@@ -206,14 +207,14 @@ ASTNode *exp_neg_handler(program_manager *pm, ASTNode *child, size_t line)
     //     }
     //     else
     //     {
-    //         printf("Error: Invalid text in expression nodes\n");
+    //         eprintf("Error: Invalid text in expression nodes\n");
     //         free(text);
     //         return NULL;
     //     }
     // }
     // else
     // {
-    //     printf("Error: Memory allocation failed\n");
+    //     eprintf("Error: Memory allocation failed\n");
     //     return NULL;
     // }
     return node;
@@ -223,7 +224,7 @@ ASTNode *exp_not_handler(program_manager *pm, ASTNode *child, size_t line)
 {
     // if (child == NULL)
     // {
-    //     printf("Error: Invalid negation, child is NULL\n");
+    //     eprintf("Error: Invalid negation, child is NULL\n");
     //     return NULL;
     // }
 
@@ -232,14 +233,14 @@ ASTNode *exp_not_handler(program_manager *pm, ASTNode *child, size_t line)
     // {
     //     if (!program_manager_get_field(pm, child->text))
     //     {
-    //         printf("Error: variable %s not declared\n", child->text);
+    //         eprintf("Error: variable %s not declared\n", child->text);
     //         // exit(1);
     //     }
     // }
 
     // if (strcmp(child->nodeType, "BOOL"))
     // {
-    //     printf("Error: type mismatch, should be BOOL\n");
+    //     eprintf("Error: type mismatch, should be BOOL\n");
     //     // exit(1);
     // }
 
@@ -255,14 +256,14 @@ ASTNode *exp_not_handler(program_manager *pm, ASTNode *child, size_t line)
     //     }
     //     else
     //     {
-    //         printf("Error: Invalid text in expression nodes\n");
+    //         eprintf("Error: Invalid text in expression nodes\n");
     //         free(text);
     //         return NULL;
     //     }
     // }
     // else
     // {
-    //     printf("Error: Memory allocation failed\n");
+    //     eprintf("Error: Memory allocation failed\n");
     //     return NULL;
     // }
     return node;
@@ -284,7 +285,7 @@ ASTNode *exp_unary_op_handler(program_manager *pm, char *op, ASTNode *child, siz
     }
     else
     {
-        printf("Error: Invalid unary operator\n");
+        eprintf("Error: Invalid unary operator\n");
         return NULL;
     }
 }
@@ -343,7 +344,7 @@ ASTNode *exp_int_handler(program_manager *pm, int text, size_t line)
     }
     else
     {
-        printf("Error: Memory allocation failed\n");
+        eprintf("Error: Memory allocation failed\n");
         return NULL;
     }
     ASTNode *leaf = createASTLeaf("INT", line, str);
@@ -361,7 +362,7 @@ ASTNode *exp_float_handler(program_manager *pm, float text, size_t line)
     }
     else
     {
-        printf("Error: Memory allocation failed\n");
+        eprintf("Error: Memory allocation failed\n");
         return NULL;
     }
     ASTNode *leaf = createASTLeaf("FLOAT", line, str);
@@ -380,7 +381,7 @@ ASTNode *exp_char_handler(program_manager *pm, char text, size_t line)
     }
     else
     {
-        printf("Error: Memory allocation failed\n");
+        eprintf("Error: Memory allocation failed\n");
         return NULL;
     }
     ASTNode *leaf = createASTLeaf("CHAR", line, str);

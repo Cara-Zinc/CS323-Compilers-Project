@@ -3,6 +3,7 @@
 #include "compst.h"
 #include "spec.h"
 #include "compst.h"
+#include "../../utils/error.h"
 #include <stdlib.h>
 
 void ext_def_semantic(program_manager *pm, ASTNode *ExtDef)
@@ -36,7 +37,7 @@ void ext_def_semantic(program_manager *pm, ASTNode *ExtDef)
     }
     else
     {
-        fprintf(stderr, "Error at line %zu: invalid syntax structure\n", ExtDef->line);
+        efprintf(stderr, "Error at line %zu: invalid syntax structure\n", ExtDef->line);
     }
 }
 
@@ -90,7 +91,7 @@ void ext_dec_list_semantic(program_manager *pm, ASTNode *ExtDecList, type_def *t
     }
     else
     {
-        fprintf(stderr, "Error at line %zu: invalid syntax structure\n", ExtDecList->line);
+        efprintf(stderr, "Error at line %zu: invalid syntax structure\n", ExtDecList->line);
         return;
     }
 }

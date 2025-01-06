@@ -1,4 +1,6 @@
 %{
+#include "../utils/error.h"
+
 #include "ast.h"
 #include "syntax.tab.h"
 #include <stdio.h>
@@ -8,7 +10,7 @@
 
 int lineno = 1;
 void yyerrora(const char *s) {
-    fprintf(stderr, "Error type A at Line %d: unknown lexeme %s\n", lineno, s);
+    efprintf(stderr, "Error type A at Line %d: unknown lexeme %s\n", lineno, s);
 }
 
 #include "../utils/copy.h"
@@ -57,7 +59,7 @@ void yyerrora(const char *s) {
     return CHAR; 
 }
 \'\\x.*\' {
-    printf("Error: illegal hex char '%s'\n", yytext);
+    eprintf("Error: illegal hex char '%s'\n", yytext);
     return -1;
 }
 "#def"                  { yylval.str = yytext; return STARTDEF; }

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "../utils/error.h"
 #include "ast.h"            // 抽象语法树相关的函数和声明
 #include "syntax.tab.h"
 #include "syntax/syntax_analysis.h" // 语法分析相关的函数和声明
@@ -16,7 +17,7 @@ IRContext *ctx;
 ASTNode *root;
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Error type B at Line %d: %s\n", yylineno, s);
+    efprintf(stderr, "Error type B at Line %d: %s\n", yylineno, s);
 }
 %}
 
@@ -237,13 +238,22 @@ Args : Exp COMMA Args {$$ = args_handler(pm, $1, $3, yylineno); }
 int main() {
     pm = program_manager_new();
     yyparse();
-    if(!rprintAST(root, 0)) {
-        printf("Syntax error, skip semantic and code-gen phases\n");
-        return 0;
+    if(compiler_error) {
+        eprintf("Syntax error, skip semantic and code-gen phases.\n");
+        return 1;
     }
+    rprintAST(root, 0);
     printf("Syntax tree printed successfully\n");
     program_semantic(pm, root);
+    if(compiler_error) {
+        eprintf("Semantic error, skip code-gen phase.\n");
+        return 2;
+    }
     ctx = ir_context_create("ir.txt", pm);
     ir_gen(ctx);
+    if(compiler_error) {
+        eprintf("Code-gen error.\n");
+        return 3;
+    }
     return 0;
 }   

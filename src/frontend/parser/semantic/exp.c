@@ -1,6 +1,7 @@
 #include "args.h"
 #include "exp.h"
 #include "../../utils/util.h"
+#include "../../utils/error.h"
 #include <stdlib.h>
 
 exp *exp_semantic(program_manager *pm, ASTNode *node)
@@ -48,7 +49,7 @@ exp *exp_semantic(program_manager *pm, ASTNode *node)
     {
         return exp_array_semantic(pm, alist_get(node->children, 0), alist_get(node->children, 2));
     }
-    fprintf(stderr, "Error at line %zu: invalid expression with node type '%s' and %d children\n", node->line, node->nodeType, node->numChildren);
+    efprintf(stderr, "Error at line %zu: invalid expression with node type '%s' and %d children\n", node->line, node->nodeType, node->numChildren);
     return exp_new_invalid();
 }
 
@@ -60,7 +61,7 @@ exp *exp_id_semantic(program_manager *pm, ASTNode *node)
     field_def *field = program_manager_get_field(pm, name);
     if (field == NULL)
     {
-        fprintf(stderr, "Error at line %zu: variable %s not declared\n", node->line, name);
+        efprintf(stderr, "Error at line %zu: variable %s not declared\n", node->line, name);
         return exp_new_invalid();
     }
     return exp_new_id(type_def_cpy(field->type_spec), str_copy(name));
@@ -83,7 +84,7 @@ exp *exp_bi_op_semantic(program_manager *pm, ASTNode *left, char *op, ASTNode *r
     if (!type_def_is_operable(left_type))
     {
         char *left_type_name = type_def_name(pm, left_type);
-        fprintf(stderr, "Error at line %zu: left expression of type %s is not int, float or char\n", left->line, left_type_name);
+        efprintf(stderr, "Error at line %zu: left expression of type %s is not int, float or char\n", left->line, left_type_name);
         str_free(left_type_name);
         exp_free(left_exp);
         exp_free(right_exp);
@@ -92,7 +93,7 @@ exp *exp_bi_op_semantic(program_manager *pm, ASTNode *left, char *op, ASTNode *r
     if (!type_def_is_operable(right_type))
     {
         char *right_type_name = type_def_name(pm, right_type);
-        fprintf(stderr, "Error at line %zu: right expression of type %s is not int, float or char\n", right->line, right_type_name);
+        efprintf(stderr, "Error at line %zu: right expression of type %s is not int, float or char\n", right->line, right_type_name);
         str_free(right_type_name);
         exp_free(left_exp);
         exp_free(right_exp);
@@ -106,7 +107,7 @@ exp *exp_bi_op_semantic(program_manager *pm, ASTNode *left, char *op, ASTNode *r
         {
             char *left_type_name = type_def_name(pm, left_type);
             char *right_type_name = type_def_name(pm, right_type);
-            fprintf(stderr, "Error at line %zu: type mismatch, trying to assign type '%s' to type '%s'\n", left->line, right_type_name, left_type_name);
+            efprintf(stderr, "Error at line %zu: type mismatch, trying to assign type '%s' to type '%s'\n", left->line, right_type_name, left_type_name);
             str_free(left_type_name);
             str_free(right_type_name);
             exp_free(left_exp);
@@ -176,7 +177,7 @@ exp *exp_bi_op_semantic(program_manager *pm, ASTNode *left, char *op, ASTNode *r
     {
         if (type_def_cmp(left_type, right_type) != 0)
         {
-            fprintf(stderr, "Error at line %zu: type mismatch, try to compare type '%s' with type '%s'\n", left->line, right->nodeType, left->nodeType);
+            efprintf(stderr, "Error at line %zu: type mismatch, try to compare type '%s' with type '%s'\n", left->line, right->nodeType, left->nodeType);
             exp_free(left_exp);
             exp_free(right_exp);
             return exp_new_invalid();
@@ -214,14 +215,14 @@ exp *exp_bi_op_semantic(program_manager *pm, ASTNode *left, char *op, ASTNode *r
     {
         if (left_type->type_id != TYPE_INT)
         {
-            fprintf(stderr, "Error at line %zu: invalid type for operation %s on left expression\n", left->line, op);
+            efprintf(stderr, "Error at line %zu: invalid type for operation %s on left expression\n", left->line, op);
             exp_free(left_exp);
             exp_free(right_exp);
             return exp_new_invalid();
         }
         if (right_type->type_id != TYPE_INT)
         {
-            fprintf(stderr, "Error at line %zu: invalid type for operation %s on right expression\n", right->line, op);
+            efprintf(stderr, "Error at line %zu: invalid type for operation %s on right expression\n", right->line, op);
             exp_free(left_exp);
             exp_free(right_exp);
             return exp_new_invalid();
@@ -236,7 +237,7 @@ exp *exp_bi_op_semantic(program_manager *pm, ASTNode *left, char *op, ASTNode *r
             return exp_new_bi_op(type_def_new_primitive(TYPE_INT), BI_OP_OR, left_exp, right_exp);
         }
     }
-    printf("Error at line %zu: Invalid binary operator %s\n", right->line, op);
+    eprintf("Error at line %zu: Invalid binary operator %s\n", right->line, op);
     return exp_new_invalid();
 }
 
@@ -252,7 +253,7 @@ exp *exp_unary_op_semantic(program_manager *pm, char *op, ASTNode *child)
     type_def *child_type = child_exp->result_type;
     if (!type_def_is_primitive(child_type) || (child_type->type_id != TYPE_INT && child_type->type_id != TYPE_FLOAT))
     {
-        fprintf(stderr, "Error at line %zu: invalid type for operation %s on child expression\n", child->line, op);
+        efprintf(stderr, "Error at line %zu: invalid type for operation %s on child expression\n", child->line, op);
         exp_free(child_exp);
         return exp_new_invalid();
     }
@@ -280,7 +281,7 @@ exp *exp_func_semantic(program_manager *pm, ASTNode *func_id, ASTNode *args)
     // check if the function is a function
     if (func == NULL)
     {
-        fprintf(stderr, "Error at line %zu: %s is not a function\n", func_id->line, func_id->text);
+        efprintf(stderr, "Error at line %zu: %s is not a function\n", func_id->line, func_id->text);
         return exp_new_invalid();
     }
 
@@ -290,7 +291,7 @@ exp *exp_func_semantic(program_manager *pm, ASTNode *func_id, ASTNode *args)
 
     if (func_args_cnt != explist_count(args_list))
     {
-        fprintf(stderr, "Error at line %zu: function %s is called with %zu arguments, but it expects %zu arguments\n", func_id->line, func_id->text, explist_count(args_list), func_args_cnt);
+        efprintf(stderr, "Error at line %zu: function %s is called with %zu arguments, but it expects %zu arguments\n", func_id->line, func_id->text, explist_count(args_list), func_args_cnt);
         explist_free(args_list);
         return exp_new_invalid();
     }
@@ -304,7 +305,7 @@ exp *exp_func_semantic(program_manager *pm, ASTNode *func_id, ASTNode *args)
         {
             char *expected_type_name = type_def_name(pm, expected_type);
             char *actual_type_name = type_def_name(pm, actual_type);
-            fprintf(stderr, "Error at line %zu: argument %d of function %s is of type %s, but it expects type %s\n", args->line, i, func->name, actual_type_name, expected_type_name);
+            efprintf(stderr, "Error at line %zu: argument %d of function %s is of type %s, but it expects type %s\n", args->line, i, func->name, actual_type_name, expected_type_name);
             str_free(expected_type_name);
             str_free(actual_type_name);
             explist_free(args_list);
@@ -324,13 +325,13 @@ exp *exp_array_semantic(program_manager *pm, ASTNode *exp1, ASTNode *exp2)
     // check if the variable is an array
     if (!array_exp->result_type->is_array)
     {
-        fprintf(stderr, "Error at line %zu: expression is not an array\n", exp1->line);
+        efprintf(stderr, "Error at line %zu: expression is not an array\n", exp1->line);
         error_node = true;
     }
     // check if the index is an integer
     if (!(type_def_is_primitive(index_exp->result_type) && index_exp->result_type->type_id == TYPE_INT))
     {
-        fprintf(stderr, "Error at line %zu: index of array is not int\n", exp2->line);
+        efprintf(stderr, "Error at line %zu: index of array is not int\n", exp2->line);
         error_node = true;
     }
 
@@ -357,7 +358,7 @@ exp *exp_struct_semantic(program_manager *pm, ASTNode *struct_exp_node, ASTNode 
     type_def *struct_type = struct_exp->result_type;
     if (!struct_type->is_struct)
     {
-        fprintf(stderr, "Error at line %zu: expression is not a struct\n", struct_exp_node->line);
+        efprintf(stderr, "Error at line %zu: expression is not a struct\n", struct_exp_node->line);
         exp_free(struct_exp);
         return exp_new_invalid();
     }
@@ -366,7 +367,7 @@ exp *exp_struct_semantic(program_manager *pm, ASTNode *struct_exp_node, ASTNode 
     struct_def *struct_def = program_manager_get_struct_by_id(pm, struct_type->type_id);
     if (struct_def == NULL)
     {
-        fprintf(stderr, "Error at line %zu: struct does not exist, this shouldn't happen!\n", struct_exp_node->line);
+        efprintf(stderr, "Error at line %zu: struct does not exist, this shouldn't happen!\n", struct_exp_node->line);
         exp_free(struct_exp);
         return exp_new_invalid();
     }
@@ -377,7 +378,7 @@ exp *exp_struct_semantic(program_manager *pm, ASTNode *struct_exp_node, ASTNode 
     if (field == NULL)
     {
         char *struct_name = type_def_name(pm, struct_type);
-        fprintf(stderr, "Error at line %zu: struct %s does not have field %s\n", id_node->line, struct_name, field_name);
+        efprintf(stderr, "Error at line %zu: struct %s does not have field %s\n", id_node->line, struct_name, field_name);
         str_free(struct_name);
         exp_free(struct_exp);
         return exp_new_invalid();
@@ -393,7 +394,7 @@ exp *exp_struct_func_semantic(program_manager *pm, ASTNode *struct_exp_node, AST
     type_def *struct_type = struct_exp->result_type;
     if (!struct_type->is_struct)
     {
-        fprintf(stderr, "Error at line %zu: expression is not a struct\n", struct_exp_node->line);
+        efprintf(stderr, "Error at line %zu: expression is not a struct\n", struct_exp_node->line);
         exp_free(struct_exp);
         return exp_new_invalid();
     }
@@ -402,7 +403,7 @@ exp *exp_struct_func_semantic(program_manager *pm, ASTNode *struct_exp_node, AST
     struct_def *struct_def = program_manager_get_struct_by_id(pm, struct_type->type_id);
     if (struct_def == NULL)
     {
-        fprintf(stderr, "Error at line %zu: struct does not exist, this shouldn't happen!\n", struct_exp_node->line);
+        efprintf(stderr, "Error at line %zu: struct does not exist, this shouldn't happen!\n", struct_exp_node->line);
         exp_free(struct_exp);
         return exp_new_invalid();
     }
@@ -413,7 +414,7 @@ exp *exp_struct_func_semantic(program_manager *pm, ASTNode *struct_exp_node, AST
     if (func == NULL)
     {
         char *struct_name = type_def_name(pm, struct_type);
-        fprintf(stderr, "Error at line %zu: struct %s does not have function %s\n", id_node->line, struct_name, func_name);
+        efprintf(stderr, "Error at line %zu: struct %s does not have function %s\n", id_node->line, struct_name, func_name);
         str_free(struct_name);
         exp_free(struct_exp);
         return exp_new_invalid();
@@ -422,13 +423,13 @@ exp *exp_struct_func_semantic(program_manager *pm, ASTNode *struct_exp_node, AST
     // check if the function is called with the correct number of arguments
     if (func->args->count == 0 && args_node != NULL)
     {
-        fprintf(stderr, "Error at line %zu: function %s is called with arguments, but it expects no arguments\n", id_node->line, func_name);
+        efprintf(stderr, "Error at line %zu: function %s is called with arguments, but it expects no arguments\n", id_node->line, func_name);
         exp_free(struct_exp);
         return exp_new_invalid();
     }
     else if (func->args->count != 0 && args_node == NULL)
     {
-        fprintf(stderr, "Error at line %zu: function %s is called with no arguments, but it expects arguments\n", id_node->line, func_name);
+        efprintf(stderr, "Error at line %zu: function %s is called with no arguments, but it expects arguments\n", id_node->line, func_name);
         exp_free(struct_exp);
         return exp_new_invalid();
     }
@@ -443,7 +444,7 @@ exp *exp_struct_func_semantic(program_manager *pm, ASTNode *struct_exp_node, AST
 
     if (func_args_cnt != explist_count(args_list))
     {
-        fprintf(stderr, "Error at line %zu: function %s is called with %zu arguments, but it expects %zu arguments\n", id_node->line, func_name, explist_count(args_list), func_args_cnt);
+        efprintf(stderr, "Error at line %zu: function %s is called with %zu arguments, but it expects %zu arguments\n", id_node->line, func_name, explist_count(args_list), func_args_cnt);
         exp_free(struct_exp);
         explist_free(args_list);
         return exp_new_invalid();
@@ -458,7 +459,7 @@ exp *exp_struct_func_semantic(program_manager *pm, ASTNode *struct_exp_node, AST
         {
             char *expected_type_name = type_def_name(pm, expected_type);
             char *actual_type_name = type_def_name(pm, actual_type);
-            fprintf(stderr, "Error at line %zu: argument %d of function %s is of type %s, but it expects type %s\n", args_node->line, i, func->name, actual_type_name, expected_type_name);
+            efprintf(stderr, "Error at line %zu: argument %d of function %s is of type %s, but it expects type %s\n", args_node->line, i, func->name, actual_type_name, expected_type_name);
             str_free(expected_type_name);
             str_free(actual_type_name);
             exp_free(struct_exp);
@@ -489,7 +490,7 @@ exp *exp_primitive_semantic(program_manager *pm, ASTNode *node)
     }
     else
     {
-        fprintf(stderr, "Error at line %zu: invalid primitive expression\n", node->line);
+        efprintf(stderr, "Error at line %zu: invalid primitive expression\n", node->line);
         return exp_new_invalid();
     }
 }
