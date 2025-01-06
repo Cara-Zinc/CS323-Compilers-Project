@@ -48,6 +48,7 @@ export default function Home() {
       <div style={{ marginTop: '1rem' }}>
         {error && <p style={{ color: 'red' }}>Error: {error}</p>}
         {output && (
+            <div>
           <pre
             style={{
               background: '#f4f4f4',
@@ -57,6 +58,10 @@ export default function Home() {
           >
             {output}
           </pre>
+          <pre style={{ background: '#f4f4f4', padding: '1rem', border: '1px solid #ccc' }}>
+            {ir}
+        </pre>
+        </div>
         )}
       </div>
     </div>

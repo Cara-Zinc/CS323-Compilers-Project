@@ -20,6 +20,8 @@ export default function handler(req, res) {
         return res.status(500).json({ error: stderr || error.message });
       }
 
+      const irOutput = fs.readFileSync('ir.txt', 'utf8');
+
       // 运行 llc
       exec(`llc -march=mips -mcpu=mips32 ir.txt -o ir.s`, (llcError, llcStdout, llcStderr) => {
         if (llcError) {
@@ -35,7 +37,7 @@ export default function handler(req, res) {
         fs.unlinkSync('ir.s');
 
         // 返回结果
-        res.status(200).json({ output: mipsOutput });
+        res.status(200).json({ output: mipsOutput, ir: irOutput });
       });
     });
   } catch (error) {
