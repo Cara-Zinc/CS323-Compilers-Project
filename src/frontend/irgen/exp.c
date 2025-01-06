@@ -75,8 +75,34 @@ static const char *get_fcmp_predicate(exp_bi_op_enum op)
 
 char *exp_bi_op_ir_gen(exp *e, IRContext *ctx)
 {
-    char *lhs_tmp = exp_ir_gen(e->bi_op.lhs, ctx);
-    char *rhs_tmp = exp_ir_gen(e->bi_op.rhs, ctx);
+    char *lhs_tmp = NULL;
+    char *rhs_tmp = NULL;
+    if(e->bi_op.lhs->exp_type == EXP_ARRAY_ACCESS || e->bi_op.lhs->exp_type == EXP_STRUCT_ACCESS)
+    {
+        char *l_tmp = exp_ir_gen(e->bi_op.lhs, ctx);
+        lhs_tmp = ir_context_new_temp(ctx);
+        char *type = map_type_to_llvm(e->bi_op.lhs->result_type, ctx->pm);
+        ir_context_append(ctx, "  %s = load %s, %s* %s\n", lhs_tmp, type, type, l_tmp);
+        free(l_tmp);
+    }
+    else
+    {
+        lhs_tmp = exp_ir_gen(e->bi_op.lhs, ctx);
+    }
+
+    if(e->bi_op.rhs->exp_type == EXP_ARRAY_ACCESS || e->bi_op.rhs->exp_type == EXP_STRUCT_ACCESS)
+    {
+        char *r_tmp = exp_ir_gen(e->bi_op.rhs, ctx);
+        rhs_tmp = ir_context_new_temp(ctx);
+        char *type = map_type_to_llvm(e->bi_op.rhs->result_type, ctx->pm);
+        ir_context_append(ctx, "  %s = load %s, %s* %s\n", rhs_tmp, type, type, r_tmp);
+        free(r_tmp);
+    }
+    else
+    {
+        rhs_tmp = exp_ir_gen(e->bi_op.rhs, ctx);
+    }
+    
 
     char *tmp = ir_context_new_temp(ctx);
     char *type = map_type_to_llvm(e->result_type, ctx->pm);
