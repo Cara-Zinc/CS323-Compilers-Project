@@ -9,6 +9,7 @@
 #include "../mm/program_manager.h" // 程序管理器相关的函数和声明
 #include "semantic/ext.h" // 语义分析相关的函数和声明
 #include "../irgen/ir_context.h" // 中间代码生成相关的函数和声明
+#include "../defs/func.h"
 
 int yylex(void);
 extern int yylineno;
@@ -244,6 +245,14 @@ int main() {
     }
     rprintAST(root, 0);
     printf("Syntax tree printed successfully\n");
+
+    func_def *f = program_manager_create_func(pm, "write", type_def_new(TYPE_VOID, false));
+    func_def_add_arg(f, field_def_new("out", type_def_new(TYPE_INT, false)));
+    scope_wrapper_free_without_data(program_manager_pop(pm));
+    
+    program_manager_create_func(pm, "read", type_def_new(TYPE_INT, false));
+    scope_wrapper_free_without_data(program_manager_pop(pm));
+    
     program_semantic(pm, root);
     if(compiler_error) {
         eprintf("Semantic error, skip code-gen phase.\n");

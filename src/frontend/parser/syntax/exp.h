@@ -300,7 +300,7 @@ ASTNode *exp_func_handler(program_manager *pm, char *name, ASTNode *args, size_t
 {
     if(args == NULL)
     {
-        return createASTNode("Exp", line, 1, createASTLeaf("ID", line, name));
+        return createASTNode("Exp", line, 2, createASTLeaf("ID", line, name), createASTLeaf("EMPTY_ARGS", line, ""));
     }
     ASTNode *node = createASTNode("Exp", line, 2, createASTLeaf("ID", line, name), args);
     return node;

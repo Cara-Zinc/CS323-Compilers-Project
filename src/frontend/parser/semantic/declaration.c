@@ -57,7 +57,7 @@ id_name_and_sizes *vardec_semantic(program_manager *pm, ASTNode *node) {
 func_def *fundef_semantic(program_manager *pm, ASTNode *node) {
     type_def *return_type = specifier_semantic(pm, alist_get(node->children, 0));
     func_def *func = fundec_semantic(pm, alist_get(node->children, 1), return_type);
-
+    
     if (node->numChildren == 3)
     {
         func_entry_semantic(pm, alist_get(node->children, 2), func);

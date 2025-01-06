@@ -286,6 +286,16 @@ exp *exp_func_semantic(program_manager *pm, ASTNode *func_id, ASTNode *args)
     }
 
     // check if the function is called with the correct number of arguments
+    if(strcmp(args->nodeType,"EMPTY_ARGS")==0)
+    {
+        if(vlist_count(func->args) != 0)
+        {
+            efprintf(stderr, "Error at line %zu: function %s is called with 0 arguments, but it expects %zu arguments\n", func_id->line, func_id->text, vlist_count(func->args));
+            return exp_new_invalid();
+        }
+        return exp_new_func_call(type_def_cpy(func->return_type), NULL, str_copy(func->name), explist_new(1, &explist_fvals));
+    }
+
     explist *args_list = args_semantic(pm, args);
     size_t func_args_cnt = vlist_count(func->args);
 
