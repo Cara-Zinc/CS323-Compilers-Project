@@ -11,12 +11,7 @@ char *exp_ir_gen(exp *e, IRContext *ctx)
     case EXP_FUNC_CALL:
         return exp_func_call_ir_gen(e, ctx);
     case EXP_ARRAY_ACCESS:
-        char *gep_tmp = exp_array_access_ir_gen(e, ctx);
-        char *tmp = ir_context_new_temp(ctx);
-        char *type = map_type_to_llvm(e->result_type, ctx->pm);
-        ir_context_append(ctx, "  %s = load %s, ptr %s\n", tmp, type, gep_tmp);
-        free(gep_tmp);
-        return tmp;
+        return exp_array_access_ir_gen(e, ctx);
     case EXP_STRUCT_ACCESS:
         return exp_struct_access_ir_gen(e, ctx);
     case EXP_LITERAL:
@@ -183,7 +178,20 @@ char *exp_bi_op_ir_gen(exp *e, IRContext *ctx)
         {
             lhs_tmp = exp_ir_gen(e->bi_op.lhs, ctx);
         }
-        char *rhs_tmp = exp_ir_gen(e->bi_op.rhs, ctx);
+        char *rhs_tmp = NULL;
+        if(e->bi_op.rhs->exp_type == EXP_ARRAY_ACCESS || e->bi_op.rhs->exp_type == EXP_STRUCT_ACCESS)
+        {
+            char *r_tmp = exp_ir_gen(e->bi_op.rhs, ctx);
+            rhs_tmp = ir_context_new_temp(ctx);
+            char *type = map_type_to_llvm(e->bi_op.rhs->result_type, ctx->pm);
+            ir_context_append(ctx, "  %s = load %s, %s* %s\n", rhs_tmp, type, type, r_tmp);
+            free(r_tmp);
+        }
+        else
+        {
+            rhs_tmp = exp_ir_gen(e->bi_op.rhs, ctx);
+        }
+
         char *rhs_type = map_type_to_llvm(e->bi_op.rhs->result_type, ctx->pm);
         char *lhs_type = map_type_to_llvm(e->bi_op.lhs->result_type, ctx->pm);
 
@@ -276,6 +284,7 @@ char *concat_args(explist *args, IRContext *ctx)
         case EXP_ARRAY_ACCESS:
         case EXP_STRUCT_ACCESS:
             arg_tmp = exp_ir_gen(arg_exp, ctx);
+            break;
         case EXP_ID:
             arg_tmp = malloc(strlen(arg_exp->id.name) + 2);
             if (!arg_tmp)
@@ -392,9 +401,35 @@ char *exp_func_call_ir_gen(exp *e, IRContext *ctx)
 
 char *exp_array_access_ir_gen(exp *e, IRContext *ctx)
 {
-    char *array_ptr = exp_ir_gen(e->array.array_exp, ctx);
+    char *array_ptr = NULL;
+    if(e->array.array_exp->exp_type == EXP_ID)
+    {
+        array_ptr = malloc(strlen(e->array.array_exp->id.name) + 2);
+        if (!array_ptr)
+        {
+            fprintf(stderr, "Failed to allocate memory for array name.\n");
+            exit(EXIT_FAILURE);
+        }
+        sprintf(array_ptr, "%%%s", e->array.array_exp->id.name);
+    }
+    else
+    {
+        array_ptr = exp_ir_gen(e->array.array_exp, ctx);
+    }
     char *array_type = map_type_to_llvm(e->array.array_exp->result_type, ctx->pm);
-    char *index = exp_ir_gen(e->array.index_exp, ctx);
+    char *index = NULL;
+    if(e->array.index_exp->exp_type==EXP_LITERAL)
+    {
+        index = exp_ir_gen(e->array.index_exp, ctx);
+    }
+    else
+    {
+        index = ir_context_new_temp(ctx);
+        char *type = map_type_to_llvm(e->array.index_exp->result_type, ctx->pm);
+        char *idx_ptr = exp_ir_gen(e->array.index_exp, ctx);
+        ir_context_append(ctx, "  %s = load %s, %s* %s\n", index, type, type, idx_ptr);
+        free(idx_ptr);
+    }
     char *gep_tmp = ir_context_new_temp(ctx);
 
     // <result> = getelementptr <type>, ptr <ptrval>, i32 0, i32 <index>
@@ -469,6 +504,10 @@ char *exp_literal_ir_gen(exp *e, IRContext *ctx)
         ir_context_append(ctx, "  %s = add %s 0, %d\n", tmp, type, e->literal.char_val);
         break;
     }
+    // char *tmp_ptr = ir_context_new_temp(ctx);
+    // ir_context_append(ctx, "  %s = alloca %s\n", tmp_ptr, type);
+    // ir_context_append(ctx, "  store %s %s, %s* %s\n", type, tmp, type, tmp_ptr);
+    // return tmp_ptr;
     return tmp;
 }
 

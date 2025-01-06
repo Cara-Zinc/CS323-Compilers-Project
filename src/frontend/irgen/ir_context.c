@@ -67,7 +67,7 @@ char *map_type_to_llvm(type_def *type, program_manager *pm)
         char *array_type = map_type_to_llvm(type->array_type, pm);
         char *array_size = malloc(32);
         snprintf(array_size, 32, "%zu", type->array_size);
-        char *result = malloc(strlen(array_type) + strlen(array_size) + 4);
+        char *result = malloc(strlen(array_type) + strlen(array_size) + 6);
         sprintf(result, "[%s x %s]", array_size, array_type);
         free(array_type);
         free(array_size);
