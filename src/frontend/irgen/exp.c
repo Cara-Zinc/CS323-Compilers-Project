@@ -371,6 +371,7 @@ static int get_field_index(struct_def *s, char *field_name)
         }
         field_idx++;
     }
+    return -1;
 }
 
 char *exp_struct_access_ir_gen(exp *e, IRContext *ctx)
