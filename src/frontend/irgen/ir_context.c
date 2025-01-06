@@ -10,6 +10,7 @@ IRContext* ir_context_create(const char *filename, program_manager *pm) {
     }
 
     ctx->ir_size = 0;
+    ctx->last_op = 0;
     ctx->ir_file = fopen(filename, "w");
     if(!ctx->ir_file)
     {
@@ -40,7 +41,7 @@ void ir_context_append(IRContext *ctx, const char *fmt, ...) {
     va_start(args, fmt);
     vfprintf(ctx->ir_file, fmt, args);
     va_end(args);
-
+    ctx->last_op = 0;
     // to check the file content live, use fflush
     fflush(ctx->ir_file);
 }

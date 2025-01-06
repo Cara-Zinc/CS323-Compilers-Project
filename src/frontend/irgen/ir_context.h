@@ -21,6 +21,7 @@ struct IRContext {
     FILE *ir_file;           // file pointer, store the generated IR code
     size_t ir_size;          // current length of IR code
     int temp_count;          // count of temporary variables
+    int last_op;             // last operation, if it is a 'br', last_op = 1, else last_op = 0
     SymbolTable *sym_table;  // symbol table
     program_manager *pm;     // program manager
 };

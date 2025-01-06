@@ -19,10 +19,14 @@ void stmt_ir_gen(stmt *s, IRContext *ctx)
     case STMT_RETURN:
     {
         char *exp = exp_ir_gen(s->return_.exp, ctx);
-        if(s->return_.exp->exp_type == EXP_LITERAL)
+        if (s->return_.exp->exp_type == EXP_LITERAL || s->return_.exp->exp_type == EXP_BI_OP || s->return_.exp->exp_type == EXP_UNARY_OP || s->return_.exp->exp_type == EXP_FUNC_CALL)
         {
             ir_context_append(ctx, "  store %s %s, %s* %%retval\n", map_type_to_llvm(s->return_.exp->result_type, ctx->pm), exp, map_type_to_llvm(s->return_.exp->result_type, ctx->pm));
-            ir_context_append(ctx, "  br label %%RETURN\n");
+            if (ctx->last_op != 1)
+            {
+                ir_context_append(ctx, "  br label %%RETURN\n");
+                ctx->last_op = 1;
+            }
             break;
         }
         char *retval = ir_context_new_temp(ctx);
@@ -31,7 +35,11 @@ void stmt_ir_gen(stmt *s, IRContext *ctx)
         ir_context_append(ctx, "  %s = load %s, %s* %s\n", retval, type, type, exp);
         ir_context_append(ctx, "  store %s %s, %s* %%retval\n", map_type_to_llvm(s->return_.exp->result_type, ctx->pm), retval, map_type_to_llvm(s->return_.exp->result_type, ctx->pm));
         // ir_context_append(ctx, "  ret %s %s\n", map_type_to_llvm(s->return_.exp->result_type, ctx->pm), exp);
-        ir_context_append(ctx, "  br label %%RETURN\n");
+        if (ctx->last_op != 1)
+        {
+            ir_context_append(ctx, "  br label %%RETURN\n");
+            ctx->last_op = 1;
+        }
         break;
     }
     case STMT_IF:
@@ -40,27 +48,46 @@ void stmt_ir_gen(stmt *s, IRContext *ctx)
         char *end_label = ir_context_new_label(ctx, "END");
         char *predicate_tmp = exp_ir_gen(s->if_.predicate, ctx);
         char *else_label = NULL;
+        bool use_end_label = false;
         if (s->if_.else_stmt)
         {
             else_label = ir_context_new_label(ctx, "ELSE");
-            ir_context_append(ctx, "  br i1 %s, label %%%s, label %%%s\n", predicate_tmp, if_label, else_label);
+            if (ctx->last_op != 1)
+            {
+                ir_context_append(ctx, "  br i1 %s, label %%%s, label %%%s\n", predicate_tmp, if_label, else_label);
+                ctx->last_op = 1;
+            }
         }
         else
         {
-            ir_context_append(ctx, "  br i1 %s, label %%%s, label %%%s\n", predicate_tmp, if_label, end_label);
+            if (ctx->last_op != 1)
+            {
+                ir_context_append(ctx, "  br i1 %s, label %%%s, label %%%s\n", predicate_tmp, if_label, end_label);
+                use_end_label = true;
+                ctx->last_op = 1;
+            }
         }
         ir_context_append(ctx, "%s:\n", if_label);
         stmt_ir_gen(s->if_.if_stmt, ctx);
-        ir_context_append(ctx, "  br label %%%s\n", end_label);
+        if (ctx->last_op != 1)
+        {
+            ir_context_append(ctx, "  br label %%%s\n", end_label);
+            use_end_label = true;
+            ctx->last_op = 1;
+        }
         if (s->if_.else_stmt)
         {
             ir_context_append(ctx, "%s:\n", else_label);
             stmt_ir_gen(s->if_.else_stmt, ctx);
             free(else_label);
         }
-        ir_context_append(ctx, "%s:\n", end_label);
-        char *nop = ir_context_new_temp(ctx);
-        ir_context_append(ctx, "  %s = add i32 0, 0\n", nop);
+        if (use_end_label)
+        {
+            ir_context_append(ctx, "%s:\n", end_label);
+            char *nop = ir_context_new_temp(ctx);
+            ir_context_append(ctx, "  %s = add i32 0, 0\n", nop);
+        }
+
         free(predicate_tmp);
         free(if_label);
         free(end_label);
@@ -71,16 +98,33 @@ void stmt_ir_gen(stmt *s, IRContext *ctx)
         char *while_label = ir_context_new_label(ctx, "WHILE");
         char *execute_label = ir_context_new_label(ctx, "EXECUTE");
         char *exit_label = ir_context_new_label(ctx, "EXIT");
-        ir_context_append(ctx, "  br label %%%s\n", while_label);
+        bool use_exit_label = false;
+        if (ctx->last_op != 1)
+        {
+            ir_context_append(ctx, "  br label %%%s\n", while_label);
+            ctx->last_op = 1;
+        }
         ir_context_append(ctx, "%s:\n", while_label);
         char *predicate_tmp = exp_ir_gen(s->while_.predicate, ctx);
-        ir_context_append(ctx, "  br i1 %s, label %%%s, label %%%s\n", predicate_tmp, execute_label, exit_label);
+        if (ctx->last_op != 1)
+        {
+            ir_context_append(ctx, "  br i1 %s, label %%%s, label %%%s\n", predicate_tmp, execute_label, exit_label);
+            use_exit_label = true;
+            ctx->last_op = 1;
+        }
         ir_context_append(ctx, "%s:\n", execute_label);
         stmt_ir_gen(s->while_.stmt, ctx);
-        ir_context_append(ctx, "  br label %%%s\n", while_label);
-        ir_context_append(ctx, "%s:\n", exit_label);
-        char *nop = ir_context_new_temp(ctx);
-        ir_context_append(ctx, "  %s = add i32 0, 0\n", nop);
+        if (ctx->last_op != 1)
+        {
+            ir_context_append(ctx, "  br label %%%s\n", while_label);
+            ctx->last_op = 1;
+        }
+        if (use_exit_label)
+        {
+            ir_context_append(ctx, "%s:\n", exit_label);
+            char *nop = ir_context_new_temp(ctx);
+            ir_context_append(ctx, "  %s = add i32 0, 0\n", nop);
+        }
         free(while_label);
         free(execute_label);
         free(exit_label);
