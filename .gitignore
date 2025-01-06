@@ -15,3 +15,5 @@
 gui/package-lock.json
 gui/temp.structura
 gui/ir.txt
+
+**/structura_parser

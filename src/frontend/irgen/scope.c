@@ -28,7 +28,7 @@ void func_ir_gen(func_def *f, IRContext *ctx)
     ir_context_append(ctx, "entry:\n");
     // reserve a variable for return value
     if (f->return_type != TYPE_VOID)
-        ir_context_append(ctx, "%%retval = alloca %s\n", map_type_to_llvm(f->return_type, ctx->pm));
+        ir_context_append(ctx, "  %%retval = alloca %s\n", map_type_to_llvm(f->return_type, ctx->pm));
 
     // generate IR for all variables
     varmap *fields = f->scope->fields;
@@ -37,7 +37,7 @@ void func_ir_gen(func_def *f, IRContext *ctx)
         field_def *var = vmap_iter_value(&iter);
         if (var_is_arg(var, f->args))
             continue;
-        ir_context_append(ctx, "%%%s = alloca %s\n", var->name, map_type_to_llvm(var->type_spec, ctx->pm));
+        ir_context_append(ctx, "  %%%s = alloca %s\n", var->name, map_type_to_llvm(var->type_spec, ctx->pm));
     }
     // generate IR for all statements
     stmtlist_ir_gen(f->stmts, ctx);

@@ -49,6 +49,8 @@ void stmt_ir_gen(stmt *s, IRContext *ctx)
             free(else_label);
         }
         ir_context_append(ctx, "%s:\n", end_label);
+        char *nop = ir_context_new_temp(ctx);
+        ir_context_append(ctx, "  %s = add i32 0, 0\n", nop);
         free(predicate_tmp);
         free(if_label);
         free(end_label);
@@ -67,6 +69,8 @@ void stmt_ir_gen(stmt *s, IRContext *ctx)
         stmt_ir_gen(s->while_.stmt, ctx);
         ir_context_append(ctx, "  br label %%%s\n", while_label);
         ir_context_append(ctx, "%s:\n", exit_label);
+        char *nop = ir_context_new_temp(ctx);
+        ir_context_append(ctx, "  %s = add i32 0, 0\n", nop);
         free(while_label);
         free(execute_label);
         free(exit_label);

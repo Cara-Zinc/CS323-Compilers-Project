@@ -15,7 +15,7 @@ export default function handler(req, res) {
 
   try {
     // 运行 structura_parser
-    exec(`./structura_parser < ${tempFilePath} > ir.txt`, (error, stdout, stderr) => {
+    exec(`./structura_parser < ${tempFilePath}`, (error, stdout, stderr) => {
       if (error) {
         return res.status(500).json({ error: stderr || error.message });
       }
@@ -25,7 +25,9 @@ export default function handler(req, res) {
       // 运行 llc
       exec(`llc -march=mips -mcpu=mips32 ir.txt -o ir.s`, (llcError, llcStdout, llcStderr) => {
         if (llcError) {
-          return res.status(500).json({ error: llcStderr || llcError.message });
+          let error_message = llcStderr || llcError.message;
+          error_message = error_message + '\n' + 'IR: ' + irOutput;
+          return res.status(500).json({ error: error_message });
         }
 
         // 读取生成的 MIPS 汇编代码

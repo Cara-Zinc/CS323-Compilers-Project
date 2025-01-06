@@ -20,7 +20,8 @@ export default function Home() {
 
       const result = await response.json();
       if (response.ok) {
-        setOutput(result.output);
+        // setOutput(result.output + '\n' + result.ir);
+        setOutput('=== LLVM IR ===\n' + result.ir + '\n\n=== MIPS Assembly ===\n' + result.output);
       } else {
         setError(result.error || 'Compilation failed.');
       }
@@ -48,20 +49,15 @@ export default function Home() {
       <div style={{ marginTop: '1rem' }}>
         {error && <p style={{ color: 'red' }}>Error: {error}</p>}
         {output && (
-            <div>
-          <pre
-            style={{
-              background: '#f4f4f4',
-              padding: '1rem',
-              border: '1px solid #ccc',
-            }}
-          >
-            {output}
-          </pre>
-          <pre style={{ background: '#f4f4f4', padding: '1rem', border: '1px solid #ccc' }}>
-            {ir}
-        </pre>
-        </div>
+            <pre
+              style={{
+                background: '#f4f4f4',
+                padding: '1rem',
+                border: '1px solid #ccc',
+              }}
+            >
+              {output}
+            </pre>
         )}
       </div>
     </div>
