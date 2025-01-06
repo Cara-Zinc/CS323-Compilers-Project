@@ -80,6 +80,8 @@ type_def *struct_specifier_semantic(program_manager *pm, ASTNode *node)
             {
                 struct_def *s = program_manager_create_struct(pm, id->text);
                 struct_def_list_semantic(pm, alist_get(node->children, 1), s->id);
+                scope_wrapper *wrapper = program_manager_pop(pm);
+                scope_wrapper_free_without_data(wrapper);
                 return type_def_new_struct(s->id);
             }
             struct_def *s = program_manager_get_struct(pm, id->text);

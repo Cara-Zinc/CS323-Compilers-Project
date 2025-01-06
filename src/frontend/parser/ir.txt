@@ -1,16 +1,1 @@
-define i32 @test_semantic_1() {
-entry:
-%i = alloca i32
-%num0 = alloca [1 x i32]
-  temp_1 = load i32, ptr i
-  temp_2 = load [1 x i32], ptr num0
-  temp_3 = add i32 0, 0
-  temp_4 = getelementptr [1 x i32], ptr temp_2, i32 0, i32 temp_3
-  temp_5 = load i32, ptr temp_4
-  temp_7 = load [1 x i32], ptr num0
-  temp_8 = add i32 0, 0
-  temp_9 = getelementptr [1 x i32], ptr temp_7, i32 0, i32 temp_8
-  temp_10 = load i32, ptr temp_9
-  temp_11 = load i32, ptr i
-  store void temp_10, void temp_11
-}
+%struct.test = type {i32, float}

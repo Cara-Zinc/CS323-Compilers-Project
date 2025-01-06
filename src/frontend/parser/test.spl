@@ -1,7 +1,14 @@
-int test_semantic_1(){
+struct test
+{
+  int a;
+  float b;
+};
+int test_semantic_2()
+{
   #def
-  int i = 0;
-  int num0[1];
+  struct test t;
   #enddef
-  i = num0[0];
+  t.a = 1;
+  t.b = 20.0;
+  return 0;
 }
