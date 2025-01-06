@@ -46,7 +46,8 @@ void func_ir_gen(func_def *f, IRContext *ctx)
     ir_context_append(ctx, "RETURN:\n");
     if (f->return_type != TYPE_VOID)
     {
-        ir_context_append(ctx, "  ret %s %%%s\n", map_type_to_llvm(f->return_type, ctx->pm), "retval");
+        ir_context_append(ctx, "  %s return_value = load %s, %s* %%retval\n", map_type_to_llvm(f->return_type, ctx->pm), map_type_to_llvm(f->return_type, ctx->pm), map_type_to_llvm(f->return_type, ctx->pm));
+        ir_context_append(ctx, "  ret %s return_value\n", map_type_to_llvm(f->return_type, ctx->pm));
     }
     else
     {

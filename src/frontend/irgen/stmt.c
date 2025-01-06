@@ -21,7 +21,7 @@ void stmt_ir_gen(stmt *s, IRContext *ctx)
         char *exp = exp_ir_gen(s->return_.exp, ctx);
         ir_context_append(ctx, "  store %s %s, %s* %%retval\n", map_type_to_llvm(s->return_.exp->result_type, ctx->pm), exp, map_type_to_llvm(s->return_.exp->result_type, ctx->pm));
         // ir_context_append(ctx, "  ret %s %s\n", map_type_to_llvm(s->return_.exp->result_type, ctx->pm), exp);
-        ir_context_append(ctx, "  br label RETURN\n");
+        ir_context_append(ctx, "  br label %%RETURN\n");
         break;
     }
     case STMT_IF:
