@@ -27,7 +27,7 @@ void func_ir_gen(func_def *f, IRContext *ctx)
     ir_context_append(ctx, ") {\n");
     ir_context_append(ctx, "entry:\n");
     // reserve a variable for return value
-    if (f->return_type != TYPE_VOID)
+    if (f->return_type->type_id != TYPE_VOID)
         ir_context_append(ctx, "  %%retval = alloca %s\n", map_type_to_llvm(f->return_type, ctx->pm));
 
     // generate IR for all variables
@@ -43,8 +43,9 @@ void func_ir_gen(func_def *f, IRContext *ctx)
     stmtlist_ir_gen(f->stmts, ctx);
 
     // return statement
+    ir_context_append(ctx, "  br label %%RETURN\n");
     ir_context_append(ctx, "RETURN:\n");
-    if (f->return_type != TYPE_VOID)
+    if (f->return_type->type_id != TYPE_VOID)
     {
         ir_context_append(ctx, "  %%return_value = load %s, %s* %%retval\n", map_type_to_llvm(f->return_type, ctx->pm), map_type_to_llvm(f->return_type, ctx->pm), map_type_to_llvm(f->return_type, ctx->pm));
         ir_context_append(ctx, "  ret %s %%return_value\n", map_type_to_llvm(f->return_type, ctx->pm));

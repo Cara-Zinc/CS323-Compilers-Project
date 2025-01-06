@@ -384,13 +384,16 @@ char *concat_args(explist *args, IRContext *ctx)
 
 char *exp_func_call_ir_gen(exp *e, IRContext *ctx)
 {
-    //@TODO: implement function call
-    // example: for a C code: int foo(int a, int b, int c);
-    // %1 = call i32 @foo(i32 %a, i32 %b, i32 %c)
+    // check void return type
+    if (e->result_type->type_id == TYPE_VOID)
+    {
+        ir_context_append(ctx, "  call void @%s(%s)\n", e->func.name, concat_args(e->func.arg_exps, ctx));
+        return NULL;
+    }
+
     char *tmp = ir_context_new_temp(ctx);
     char *type = map_type_to_llvm(e->result_type, ctx->pm);
 
-    //@TODO: get the function name from the symbol table
     char *func_name = e->func.name;
     explist *args = e->func.arg_exps;
     char *args_str = concat_args(args, ctx);

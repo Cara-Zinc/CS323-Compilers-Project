@@ -83,6 +83,7 @@ void stmt_ir_gen(stmt *s, IRContext *ctx)
         }
         if (use_end_label)
         {
+            ir_context_append(ctx, "  br label %%%s\n", end_label);
             ir_context_append(ctx, "%s:\n", end_label);
             char *nop = ir_context_new_temp(ctx);
             ir_context_append(ctx, "  %s = add i32 0, 0\n", nop);
@@ -121,6 +122,7 @@ void stmt_ir_gen(stmt *s, IRContext *ctx)
         }
         if (use_exit_label)
         {
+            ir_context_append(ctx, "  br label %%%s\n", exit_label);
             ir_context_append(ctx, "%s:\n", exit_label);
             char *nop = ir_context_new_temp(ctx);
             ir_context_append(ctx, "  %s = add i32 0, 0\n", nop);
