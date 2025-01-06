@@ -59,6 +59,7 @@ void stmt_ir_gen(stmt *s, IRContext *ctx)
         char *while_label = ir_context_new_label(ctx, "WHILE");
         char *execute_label = ir_context_new_label(ctx, "EXECUTE");
         char *exit_label = ir_context_new_label(ctx, "EXIT");
+        ir_context_append(ctx, "  br label %%%s\n", while_label);
         ir_context_append(ctx, "%s:\n", while_label);
         char *predicate_tmp = exp_ir_gen(s->while_.predicate, ctx);
         ir_context_append(ctx, "  br i1 %s, label %%%s, label %%%s\n", predicate_tmp, execute_label, exit_label);
