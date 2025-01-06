@@ -33,15 +33,15 @@ void stmt_ir_gen(stmt *s, IRContext *ctx)
         if (s->if_.else_stmt)
         {
             else_label = ir_context_new_label(ctx, "ELSE");
-            ir_context_append(ctx, "  br i1 %s, label %s, label %s\n", predicate_tmp, if_label, else_label);
+            ir_context_append(ctx, "  br i1 %s, label %%%s, label %%%s\n", predicate_tmp, if_label, else_label);
         }
         else
         {
-            ir_context_append(ctx, "  br i1 %s, label %s, label %s\n", predicate_tmp, if_label, end_label);
+            ir_context_append(ctx, "  br i1 %s, label %%%s, label %%%s\n", predicate_tmp, if_label, end_label);
         }
         ir_context_append(ctx, "%s:\n", if_label);
         stmt_ir_gen(s->if_.if_stmt, ctx);
-        ir_context_append(ctx, "  br label %s\n", end_label);
+        ir_context_append(ctx, "  br label %%%s\n", end_label);
         if (s->if_.else_stmt)
         {
             ir_context_append(ctx, "%s:\n", else_label);
@@ -61,10 +61,10 @@ void stmt_ir_gen(stmt *s, IRContext *ctx)
         char *exit_label = ir_context_new_label(ctx, "EXIT");
         ir_context_append(ctx, "%s:\n", while_label);
         char *predicate_tmp = exp_ir_gen(s->while_.predicate, ctx);
-        ir_context_append(ctx, "  br i1 %s, label %s, label %s\n", predicate_tmp, execute_label, exit_label);
+        ir_context_append(ctx, "  br i1 %s, label %%%s, label %%%s\n", predicate_tmp, execute_label, exit_label);
         ir_context_append(ctx, "%s:\n", execute_label);
         stmt_ir_gen(s->while_.stmt, ctx);
-        ir_context_append(ctx, "  br label %s\n", while_label);
+        ir_context_append(ctx, "  br label %%%s\n", while_label);
         ir_context_append(ctx, "%s:\n", exit_label);
         free(while_label);
         free(execute_label);
