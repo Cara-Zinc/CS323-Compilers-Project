@@ -22,7 +22,7 @@ void func_ir_gen(func_def *f, IRContext *ctx)
         field_def *arg = vlist_get(f->args, i);
         if (i > 0)
             ir_context_append(ctx, ", ");
-        ir_context_append(ctx, "%s %%%s", map_type_to_llvm(arg->type_spec, ctx->pm), arg->name);
+        ir_context_append(ctx, "%s* %%%s", map_type_to_llvm(arg->type_spec, ctx->pm), arg->name);
     }
     ir_context_append(ctx, ") {\n");
     ir_context_append(ctx, "entry:\n");

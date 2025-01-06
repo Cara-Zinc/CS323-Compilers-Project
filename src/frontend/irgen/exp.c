@@ -131,11 +131,8 @@ char *exp_bi_op_ir_gen(exp *e, IRContext *ctx)
             const char *predicate = get_fcmp_predicate(e->bi_op.op);
             ir_context_append(ctx, "  %s = fcmp %s %s %s, %s\n", tmp, predicate, type, lhs_tmp, rhs_tmp);
         }
-        // @TODO convert icmp result to i32
-        char *tmp1 = ir_context_new_temp(ctx);
-        ir_context_append(ctx, "  %s = zext i1 %s to i32\n", tmp1, tmp);
-        free(tmp);
-        return tmp1;
+        
+        return tmp;
     }
     case BI_OP_ASSIGN:
         // TODO: fetch address from ptr and store value
@@ -202,10 +199,7 @@ char *exp_unary_op_ir_gen(exp *e, IRContext *ctx)
         }
         break;
     case UNARY_OP_NOT:
-        char *tmp1 = ir_context_new_temp(ctx);
-        ir_context_append(ctx, "  %s = icmp eq %s %s, 0\n", tmp1, type, operand_tmp);
-        ir_context_append(ctx, "  %s = zext i1 %s to i32\n", tmp, tmp1);
-        free(tmp1);
+        ir_context_append(ctx, "  %s = icmp eq %s %s, 0\n", tmp, type, operand_tmp);
         break;
     case UNARY_OP_PLUS:
         // do nothing, in structura '+' before number is just a placeholder
@@ -248,8 +242,10 @@ char *concat_args(explist *args, IRContext *ctx)
             free(args_str);
             exit(EXIT_FAILURE);
         }
-
-        char *arg_tmp = exp_ir_gen(arg_exp, ctx);
+        char *arg_tmp = NULL;
+        // 如果参数是数组或结构体，直接返回指针
+        // 否则，生成临时变量, 并返回临时变量名
+        
         if (!arg_tmp)
         {
             fprintf(stderr, "Failed to generate IR for function argument.\n");
@@ -257,14 +253,25 @@ char *concat_args(explist *args, IRContext *ctx)
             exit(EXIT_FAILURE);
         }
 
-        const char *arg_type = map_type_to_llvm(arg_exp->result_type, ctx->pm);
-        if (!arg_type)
+        char *arg_type_tmp = map_type_to_llvm(arg_exp->result_type, ctx->pm);
+        if (!arg_type_tmp)
         {
             fprintf(stderr, "Failed to map type to LLVM IR type string.\n");
             free(arg_tmp);
             free(args_str);
             exit(EXIT_FAILURE);
         }
+        // add * after arg_type
+        char *arg_type = malloc(strlen(arg_type_tmp) + 2);
+        if (!arg_type)
+        {
+            fprintf(stderr, "Failed to allocate memory for argument type string.\n");
+            free(arg_tmp);
+            free(args_str);
+            exit(EXIT_FAILURE);
+        }
+        sprintf(arg_type, "%s*", arg_type_tmp);
+        free(arg_type_tmp);        
 
         // 计算当前参数部分的长度："type %var, " -> strlen(type) + 1 + strlen(var) + 2
         size_t arg_part_length = strlen(arg_type) + 1 + strlen(arg_tmp) + 2;
