@@ -150,24 +150,25 @@ char *exp_bi_op_ir_gen(exp *e, IRContext *ctx)
          *   store i32 %rhs, i32* %lhs
          *   ; result_var = %rhs (可选)
          */
-        char *rhs_tmp = exp_ir_gen(e->bi_op.rhs, ctx);
-        char *lhs_tmp = exp_ir_gen(e->bi_op.lhs, ctx);
-        char *rhs_type = map_type_to_llvm(e->bi_op.rhs->result_type, ctx->pm);
-        char *lhs_type = map_type_to_llvm(e->bi_op.lhs->result_type, ctx->pm);
-        if (e->bi_op.lhs->exp_type == EXP_ARRAY_ACCESS || e->bi_op.lhs->exp_type == EXP_STRUCT_ACCESS)
+        char *lhs_tmp = NULL;
+        if (e->bi_op.lhs->exp_type == EXP_ID)
         {
-            ir_context_append(ctx,
-                              "  store %s %s, %s* %s\n",
-                              rhs_type, rhs_tmp,
-                              lhs_type, lhs_tmp);
+            lhs_tmp = malloc(strlen(e->bi_op.lhs->id.name) + 2);
+            sprintf(lhs_tmp, "%%%s", e->bi_op.lhs->id.name);
         }
         else
         {
-            ir_context_append(ctx,
-                              "  store %s %s, %s* %s\n",
-                              rhs_type, rhs_tmp,
-                              lhs_type, lhs_tmp);
+            lhs_tmp = exp_ir_gen(e->bi_op.lhs, ctx);
         }
+        char *rhs_tmp = exp_ir_gen(e->bi_op.rhs, ctx);
+        char *rhs_type = map_type_to_llvm(e->bi_op.rhs->result_type, ctx->pm);
+        char *lhs_type = map_type_to_llvm(e->bi_op.lhs->result_type, ctx->pm);
+
+        ir_context_append(ctx,
+                          "  store %s %s, %s* %s\n",
+                          rhs_type, rhs_tmp,
+                          lhs_type, lhs_tmp);
+
         free(rhs_tmp);
         free(lhs_tmp);
         /* 赋值表达式的值, 大多数情况下 C/C++ 语义是 “被赋值后的值” */
@@ -357,15 +358,31 @@ char *exp_array_access_ir_gen(exp *e, IRContext *ctx)
     //   %t5 = getelementptr [20 x i32], ptr %t4, i32 0, i32 13
 }
 
+static int get_field_index(struct_def *s, char *field_name)
+{
+    varmap *fields = s->scope->fields;
+    int field_idx = 0;
+    CMC_FOREACH(vmap, varmap, iter, fields)
+    {
+        char *field = vmap_iter_value(&iter)->name;
+        if (strcmp(field, field_name) == 0)
+        {
+            return field_idx;
+        }
+        field_idx++;
+    }
+}
+
 char *exp_struct_access_ir_gen(exp *e, IRContext *ctx)
 {
     char *lhs_tmp = exp_ir_gen(e->struct_access.lhs_exp, ctx);
     char *tmp = ir_context_new_temp(ctx);
-    char *type = map_type_to_llvm(e->result_type, ctx->pm);
+    char *type = map_type_to_llvm(e->struct_access.lhs_exp->result_type, ctx->pm);
+    struct_def *s = program_manager_get_struct_by_id(ctx->pm, e->struct_access.lhs_exp->result_type->type_id);
     // @TODO: find out the member's field index in the struct based on e->struct_access.field_name
-    int field_idx = 0;
+    int field_idx = get_field_index(s, e->struct_access.field_name);
     // <result> = getelementptr <type>, ptr <ptrval>, i32 0, i32 <index>
-    ir_context_append(ctx, "  %s = getelementptr %s, ptr %s, i32 0, i32 %d\n", tmp, type, lhs_tmp, field_idx);
+    ir_context_append(ctx, "  %s = getelementptr %s, ptr %s, i64 0, i32 %d\n", tmp, type, lhs_tmp, field_idx);
     free(lhs_tmp);
     return tmp;
 }
@@ -391,12 +408,23 @@ char *exp_literal_ir_gen(exp *e, IRContext *ctx)
 
 char *exp_id_ir_gen(exp *e, IRContext *ctx)
 {
-    char *var = malloc(strlen(e->id.name) + 2);
-    if (!var)
+    type_def *t = e->result_type;
+    if (t->is_array || t->is_struct)
     {
-        fprintf(stderr, "Failed to allocate memory for variable name.\n");
-        exit(EXIT_FAILURE);
+        char *var = malloc(strlen(e->id.name) + 2);
+        if (!var)
+        {
+            fprintf(stderr, "Failed to allocate memory for variable name.\n");
+            exit(EXIT_FAILURE);
+        }
+        sprintf(var, "%%%s", e->id.name);
+        return var;
     }
-    sprintf(var, "%%%s", e->id.name);
-    return var;
+    else
+    {
+        char *tmp = ir_context_new_temp(ctx);
+        char *type = map_type_to_llvm(e->result_type, ctx->pm);
+        ir_context_append(ctx, "  %s = load %s, %s* %%%s\n", tmp, type, type, e->id.name);
+        return tmp;
+    }
 }

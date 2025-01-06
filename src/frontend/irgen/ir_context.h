@@ -14,6 +14,7 @@ typedef struct IRContext IRContext;
 #include "../mm/program_manager.h"
 #include "../utils/util.h"
 #include "scope.h"
+#include <cmc/utl/foreach.h>
 
 // A struct to store the context of IR code and symbols
 struct IRContext {

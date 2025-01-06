@@ -1,6 +1,5 @@
 #include "ir_context.h"
 #include <stdarg.h>
-#include <cmc/utl/foreach.h>
 
 IRContext* ir_context_create(const char *filename, program_manager *pm) {
     IRContext *ctx = malloc(sizeof(IRContext));
@@ -83,16 +82,22 @@ char *map_type_to_llvm(type_def *type, program_manager *pm)
         char *result = malloc(1024);
         char *tmp = malloc(1024);
         strcpy(result, "{ ");
+        int vmap_count = 0;
         CMC_FOREACH(vmap, varmap, iter, fields)
         {
-            char *field_name = vmap_iter_key(&iter);
+            if(vmap_count > 0)
+            {
+                // add , only if there is more than one field
+                strcat(result, ", ");
+            }
             field_def *field = vmap_iter_value(&iter);
             char *field_type = map_type_to_llvm(field->type_spec, pm);
-            sprintf(tmp, "%s %s, ", field_type, field_name);
+            sprintf(tmp, "%s", field_type);
             strcat(result, tmp);
             free(field_type);
+            vmap_count++;
         } 
-
+        
         strcat(result, " }");
         free(tmp);
         return result;
