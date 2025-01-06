@@ -120,6 +120,7 @@ char *map_type_to_llvm(type_def *type, program_manager *pm)
 
 void ir_gen(IRContext *ctx)
 {
+    ir_context_append(ctx, "  %%nop = alloca i32\n");
     scope *global_scope = ctx->pm->global_scope;
     scope_ir_gen(global_scope, ctx);
 }
