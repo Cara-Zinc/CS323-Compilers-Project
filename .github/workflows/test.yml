@@ -38,7 +38,7 @@ jobs:
       - name: Test LLVM IR Generation (Phase 3)
         run: |
           sudo -S apt-get install -y llvm
-          ./structura_parser < test.spl
+          ./structura_parser < test_workflow.spl
           echo "=============== Generated IR ================="
           cat ir.txt
           echo "=============================================="
