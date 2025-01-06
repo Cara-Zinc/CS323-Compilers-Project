@@ -1,0 +1,14 @@
+struct test
+{
+  int a;
+  float b;
+};
+int main()
+{
+  #def
+  struct test t;
+  #enddef
+  t.a = 1;
+  t.b = 20.0;
+  return 0;
+}
