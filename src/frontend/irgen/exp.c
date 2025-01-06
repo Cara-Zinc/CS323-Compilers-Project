@@ -245,6 +245,38 @@ char *concat_args(explist *args, IRContext *ctx)
         char *arg_tmp = NULL;
         // 如果参数是数组或结构体，直接返回指针
         // 否则，生成临时变量, 并返回临时变量名
+        switch (arg_exp->exp_type)
+        {
+        case EXP_ARRAY_ACCESS:
+        case EXP_STRUCT_ACCESS:
+            arg_tmp = exp_ir_gen(arg_exp, ctx);
+        case EXP_ID:
+            arg_tmp = malloc(strlen(arg_exp->id.name) + 2);
+            if (!arg_tmp)
+            {
+                fprintf(stderr, "Failed to allocate memory for argument name.\n");
+                free(args_str);
+                exit(EXIT_FAILURE);
+            }
+            sprintf(arg_tmp, "%%%s", arg_exp->id.name);
+            break;
+        case EXP_LITERAL:
+        case EXP_UNARY_OP:
+        case EXP_BI_OP:
+        case EXP_FUNC_CALL:
+            // assume function return primitive type
+            char *primitive_tmp = exp_ir_gen(arg_exp, ctx);
+            char *type = map_type_to_llvm(arg_exp->result_type, ctx->pm);
+            arg_tmp = ir_context_new_temp(ctx);
+            ir_context_append(ctx, "  %s = alloca %s", arg_tmp, type);
+            ir_context_append(ctx, "  store %s %s, %s* %s\n", type, primitive_tmp, type, arg_tmp);
+            free(primitive_tmp);
+            free(type);
+            break;
+        case EXP_INVALID:
+        default:
+            break;
+        }
         
         if (!arg_tmp)
         {
