@@ -10,3 +10,8 @@
 **/syntax.tab.h
 **/lex.yy.c
 **/lexer
+/gui/.next
+/gui/node_modules
+gui/package-lock.json
+gui/temp.structura
+gui/ir.txt
