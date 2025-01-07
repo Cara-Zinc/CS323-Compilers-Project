@@ -26,9 +26,9 @@ project-root/
 │   │   ├── lexer/          # Lexical analyzer using Flex
 │   │   ├── parser/         # Syntax parser using Bison
 │   │   ├── ast/            # Abstract Syntax Tree (AST) representation
+│   │   ├── ir/             # Intermediate Representation (IR) generator TAC
 │   │   └── semantic/       # Semantic analyzer (optional)
 │   ├── backend/            
-│   │   ├── ir/             # Intermediate Representation (IR) generator TAC
 │   │   ├── codegen/        # Code generation
 │   │   └── optimizer/      # Optimization passes
 │   ├── runtime/            # Runtime support file
