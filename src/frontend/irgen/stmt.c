@@ -29,6 +29,16 @@ void stmt_ir_gen(stmt *s, IRContext *ctx)
             }
             break;
         }
+        if(s->return_.exp->exp_type == EXP_ID && !s->return_.exp->result_type->is_array && !s->return_.exp->result_type->is_struct)
+        {
+            ir_context_append(ctx, "  store %s %s, %s* %%retval\n", map_type_to_llvm(s->return_.exp->result_type, ctx->pm), exp, map_type_to_llvm(s->return_.exp->result_type, ctx->pm));
+            if (ctx->last_op != 1)
+            {
+                ir_context_append(ctx, "  br label %%RETURN\n");
+                ctx->last_op = 1;
+            }
+            break;
+        }
         char *retval = ir_context_new_temp(ctx);
         // load value from exp*
         char *type = map_type_to_llvm(s->return_.exp->result_type, ctx->pm);
