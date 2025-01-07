@@ -5,3 +5,6 @@ structura_parser
 structura_parser.dSYM/
 test.spl
 ir.txt
+irsim
+mips.txt
+irsim.log

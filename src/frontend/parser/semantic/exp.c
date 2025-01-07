@@ -19,7 +19,7 @@ exp *exp_semantic(program_manager *pm, ASTNode *node)
     {
         if (strcmp(alist_get(node->children, 0)->nodeType, "op") == 0)
         {
-            return exp_unary_op_semantic(pm, node->text, alist_get(node->children, 0));
+            return exp_unary_op_semantic(pm, alist_get(node->children, 0)->nodeType, alist_get(node->children, 1));
         }
         else if (strcmp(alist_get(node->children, 0)->nodeType, "ID") == 0)
         {

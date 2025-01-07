@@ -1,1 +1,66 @@
-%struct.test = type {i32, float}
+define void @write(i32* %out) {
+entry:
+  br label %RETURN
+RETURN:
+  ret void
+}
+define i32 @fib(i32* %n) {
+entry:
+  %retval = alloca i32
+  %temp_3 = load i32, i32* %n
+  %temp_4 = add i32 0, 0
+  %temp_5 = icmp eq i32 %temp_3, %temp_4
+  br i1 %temp_5, label %IF_1, label %ELSE_6
+IF_1:
+  %temp_7 = add i32 0, 0
+  store i32 %temp_7, i32* %retval
+  br label %RETURN
+ELSE_6:
+  %temp_10 = load i32, i32* %n
+  %temp_11 = add i32 0, 1
+  %temp_12 = icmp eq i32 %temp_10, %temp_11
+  br i1 %temp_12, label %IF_8, label %ELSE_13
+IF_8:
+  %temp_14 = add i32 0, 1
+  store i32 %temp_14, i32* %retval
+  br label %RETURN
+ELSE_13:
+  %temp_16 = load i32, i32* %n
+  %temp_17 = add i32 0, 1
+  %temp_18 = sub i32 %temp_16, %temp_17
+  %temp_19 = alloca i32  store i32 %temp_18, i32* %temp_19
+  %temp_15 = call i32 @fib(i32* %temp_19)
+  %temp_21 = load i32, i32* %n
+  %temp_22 = add i32 0, 2
+  %temp_23 = sub i32 %temp_21, %temp_22
+  %temp_24 = alloca i32  store i32 %temp_23, i32* %temp_24
+  %temp_20 = call i32 @fib(i32* %temp_24)
+  %temp_25 = add i32 %temp_15, %temp_20
+  store i32 %temp_25, i32* %retval
+  br label %RETURN
+  br label %RETURN
+RETURN:
+  %return_value = load i32, i32* %retval
+  ret i32 %return_value
+}
+define i32 @main() {
+entry:
+  %retval = alloca i32
+  %temp_27 = add i32 0, 1
+  %temp_28 = alloca i32  store i32 %temp_27, i32* %temp_28
+  %temp_26 = call i32 @fib(i32* %temp_28)
+  store i32 %temp_26, i32* %retval
+  br label %RETURN
+  br label %RETURN
+RETURN:
+  %return_value = load i32, i32* %retval
+  ret i32 %return_value
+}
+define i32 @read() {
+entry:
+  %retval = alloca i32
+  br label %RETURN
+RETURN:
+  %return_value = load i32, i32* %retval
+  ret i32 %return_value
+}

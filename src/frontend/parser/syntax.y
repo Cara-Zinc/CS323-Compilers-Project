@@ -39,6 +39,7 @@ void yyerror(const char *s) {
 /* Declare non-terminals and their types */
 %type <node> Program ExtDefList ExtDef ExtDecList Specifier StructSpecifier VarDec FunDec FunDef VarList ParamDec CompSt StmtList Stmt DefList Def DecList Dec Exp Args StructDefList StructDef
 
+%left PLUS MINUS
 
 %start Program
 
