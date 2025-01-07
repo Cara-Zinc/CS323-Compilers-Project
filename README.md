@@ -8,6 +8,14 @@ git submodule init
 git submodule update --recursive
 ```
 
+## How to Build & Run
+```sh
+cd src/frontend/parser/
+make
+./structura_parser < test.spl
+```
+And check `ir.txt`.
+
 ## How to call iterators and foreaches in CMC
 See [example](src/frontend/parser/iter_collections_example.c).
 
