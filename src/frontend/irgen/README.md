@@ -2,13 +2,14 @@
 
 ## 项目结构
 ```
-.
-├──defs
-│
-│
-│
-│
-└──
+irgen
+├──exp.h           ir generation for EXP nodes in AST           
+├──ir_context.h    infrastructures ir-gen, including program manager
+├──scope.h         ir generation action in scope aspect
+├──stmt.h          ir generation for STMT nodes in AST
+├──symbol.h        definition and interface of symbol table
+├──.c              implementations
+└──ir.txt          generated IR file
 ```
 
 
